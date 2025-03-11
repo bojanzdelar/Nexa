@@ -1,6 +1,15 @@
+<script setup lang="ts">
+import { useAuthStore } from "~/store/auth";
+
+const { initialize } = useAuthStore();
+
+onBeforeMount(() => {
+  initialize();
+});
+</script>
+
 <template>
-  <div>
-    <NuxtRouteAnnouncer />
-    <NuxtWelcome />
-  </div>
+  <NuxtLayout>
+    <NuxtPage />
+  </NuxtLayout>
 </template>
