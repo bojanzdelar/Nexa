@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { useAuthStore } from "~/store/auth";
 
+const { logIn } = useAuthStore();
+
 const form = ref({
   email: "",
   password: "",
@@ -10,8 +12,6 @@ const errors = ref({
   email: false,
   password: false,
 });
-
-const { logIn } = useAuthStore();
 
 const signIn = async () => {
   errors.value.email = !form.value.email;
@@ -55,14 +55,14 @@ const signIn = async () => {
       class="z-10 w-full mt-24 space-y-8 rounded bg-black/75 py-10 px-6 md:mt-0 md:max-w-md md:px-14"
       @submit.prevent="signIn"
     >
-      <h1 class="text-4xl font-semibold text-white">Sign In</h1>
+      <h1 class="text-4xl font-semibold">Sign In</h1>
       <div class="space-y-4">
         <label class="inline-block w-full">
           <input
             v-model="form.email"
             type="email"
             placeholder="Email"
-            class="w-full rounded bg-neutral-800 px-5 py-3 text-white placeholder-neutral-500 outline-none focus:bg-neutral-700"
+            class="w-full rounded bg-neutral-800 px-5 py-3 placeholder-neutral-500 outline-none focus:bg-neutral-700"
           />
           <p v-if="errors.email" class="p-1 text-sm font-light text-malachite">
             Please enter a valid email.
@@ -74,7 +74,7 @@ const signIn = async () => {
             v-model="form.password"
             type="password"
             placeholder="Password"
-            class="w-full rounded bg-neutral-800 px-5 py-3 text-white placeholder-neutral-500 outline-none focus:bg-neutral-700"
+            class="w-full rounded bg-neutral-800 px-5 py-3 placeholder-neutral-500 outline-none focus:bg-neutral-700"
           />
           <p
             v-if="errors.password"

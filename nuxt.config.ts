@@ -5,10 +5,13 @@ export default defineNuxtConfig({
   typescript: {
     typeCheck: true,
   },
+  css: ["~/assets/css/main.css"],
   modules: [
     "@nuxt/eslint",
     "@nuxt/image",
     "@nuxtjs/tailwindcss",
     "@pinia/nuxt",
+    "@nuxt/icon",
+    "@vueuse/nuxt",
   ],
 });
