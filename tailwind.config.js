@@ -24,4 +24,8 @@ export default {
       `${__dirname}/app/spa-loading-template.html`,
     ],
   },
+  plugins: [
+    require("tailwindcss-textshadow"),
+    require("tailwind-scrollbar-hide"),
+  ],
 };

@@ -1,4 +1,2 @@
-export interface UserLogin {
-  email: string;
-  password: string;
-}
+export * from "./auth.types";
+export * from "./content.types";

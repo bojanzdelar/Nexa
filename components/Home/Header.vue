@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const items = [
   { name: "Home", link: "/" },
-  { name: "TV Shows", link: "/tv-shows" },
+  { name: "TV Shows", link: "/shows" },
   { name: "Movies", link: "/movies" },
   { name: "New & Popular", link: "/new-popular" },
   { name: "My List", link: "/my-list" },
@@ -15,18 +15,22 @@ const icons = [
 
 const isScrolled = ref(false);
 
-useEventListener("scroll", () => (isScrolled.value = window.scrollY > 0));
+const handleScroll = () => {
+  isScrolled.value = window.scrollY > 0;
+};
+
+useEventListener("scroll", handleScroll);
 </script>
 
 <template>
   <header
-    class="fixed top-0 z-50 flex w-full items-center justify-between px-4 py-4 transition-all lg:px-10 lg:py-6"
-    :class="{ 'bg-neutral-950': isScrolled }"
+    class="fixed top-0 z-10 flex w-full items-center justify-between px-4 transition-all lg:px-10 lg:py-2 bg-gradient-to-b from-neutral-900/50 to-transparent"
+    :class="{ 'bg-neutral-900': isScrolled }"
   >
     <div class="flex items-center space-x-2 md:space-x-10">
       <NuxtImg
         src="/logo.svg"
-        width="80"
+        width="65"
         class="cursor-pointer object-contain"
         alt="Nexa Logo"
       />
@@ -35,9 +39,10 @@ useEventListener("scroll", () => (isScrolled.value = window.scrollY > 0));
         <li v-for="item in items" :key="item.name">
           <NuxtLink
             :to="item.link"
-            class="cursor-pointer text-sm font-light text-[#e5e5e5] transition duration-200 hover:text-[#b3b3b3]"
-            >{{ item.name }}</NuxtLink
+            class="cursor-pointer text-sm font-light text-neutral-200 transition duration-200 hover:text-neutral-400"
           >
+            {{ item.name }}
+          </NuxtLink>
         </li>
       </ul>
     </div>

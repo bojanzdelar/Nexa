@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useAuthStore } from "~/store/auth";
+import { useAuthStore } from "~/store";
 
 const { logIn } = useAuthStore();
 
@@ -41,7 +41,6 @@ const signIn = async () => {
       alt="Background"
       format="webp"
       quality="80"
-      loading="lazy"
     />
 
     <NuxtImg

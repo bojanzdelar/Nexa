@@ -14,4 +14,11 @@ export default defineNuxtConfig({
     "@nuxt/icon",
     "@vueuse/nuxt",
   ],
+  runtimeConfig: {
+    public: {
+      tmdbApiBaseUrl: process.env.TMDB_API_BASE_URL,
+      tmdbApiSecretKey: process.env.TMDB_API_SECRET_KEY, // temporary
+      tmdbImageBaseUrl: process.env.TMDB_IMAGE_BASE_URL,
+    },
+  },
 });

@@ -1,1 +1,4 @@
-export * from "./auth.types";
+export interface UserLogin {
+  email: string;
+  password: string;
+}
