@@ -32,7 +32,6 @@ const signIn = async () => {
   >
     <Head>
       <title>Nexa</title>
-      <link rel="icon" href="/favicon.ico" />
     </Head>
 
     <NuxtImg

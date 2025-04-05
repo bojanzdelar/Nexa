@@ -1,27 +1,41 @@
+import type { ContentResponse, Show, Credits } from "~/types";
+
 export const getTrendingShows = () => {
-  return useAPI("/trending/tv/week");
+  return useAPI<ContentResponse<Show>>("/trending/tv/week");
 };
 
 export const getTopRatedShows = () => {
-  return useAPI("/tv/top_rated");
+  return useAPI<ContentResponse<Show>>("/tv/top_rated");
 };
 
 export const getActionAndAdventureShows = () => {
-  return useAPI("/discover/tv?with_genres=10759");
+  return useAPI<ContentResponse<Show>>("/discover/tv?with_genres=10759");
 };
 
 export const getComedyShows = () => {
-  return useAPI("/discover/tv?with_genres=35");
+  return useAPI<ContentResponse<Show>>("/discover/tv?with_genres=35");
 };
 
 export const getMysteryShows = () => {
-  return useAPI("/discover/tv?with_genres=9648");
+  return useAPI<ContentResponse<Show>>("/discover/tv?with_genres=9648");
 };
 
 export const getRomanceShows = () => {
-  return useAPI("/discover/tv?with_genres=10749");
+  return useAPI<ContentResponse<Show>>("/discover/tv?with_genres=10749");
 };
 
 export const getDocumentaryShows = () => {
-  return useAPI("/discover/tv?with_genres=99");
+  return useAPI<ContentResponse<Show>>("/discover/tv?with_genres=99");
+};
+
+export const getShowDetails = (id: number) => {
+  return useAPI<Show>(`/tv/${id}`);
+};
+
+export const getShowCredits = (id: number) => {
+  return useAPI<Credits>(`/tv/${id}/credits`);
+};
+
+export const getSimilarShows = (id: number) => {
+  return useAPI<ContentResponse<Show>>(`/tv/${id}/similar`);
 };
