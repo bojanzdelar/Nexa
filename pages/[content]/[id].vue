@@ -39,8 +39,10 @@ const content = ref<Show | Movie>({} as Show);
 const cast = ref<Cast[]>([]);
 const similarContent = ref<Show[] | Movie[]>([]);
 const seasons = ref<Season[]>([]);
+const currentSeasonIndex = ref(0);
 
 const contentInfo = computed(() => getContentType(content.value));
+const currentSeason = computed(() => seasons.value[currentSeasonIndex.value]);
 
 const fetchAllSeasons = async () => {
   const show = content.value as Show;
@@ -53,6 +55,17 @@ const fetchAllSeasons = async () => {
       )
     )
   ).map((response) => response.data?.value) as Season[];
+};
+
+const changeSeason = (direction: "prev" | "next") => {
+  if (direction === "prev" && currentSeasonIndex.value > 0) {
+    currentSeasonIndex.value--;
+  } else if (
+    direction === "next" &&
+    currentSeasonIndex.value < seasons.value.length - 1
+  ) {
+    currentSeasonIndex.value++;
+  }
 };
 
 const fetchData = async () => {
@@ -78,7 +91,7 @@ if (contentType === "shows") {
       <title>{{ contentInfo.title }} - Nexa</title>
     </Head>
 
-    <HomeHeader />
+    <BrowseHeader />
     <main v-if="content" class="px-4 lg:px-16">
       <ContentBackdrop :content="content" class="opacity-75 xl:opacity-50" />
 
@@ -140,13 +153,26 @@ if (contentType === "shows") {
 
           <div
             v-if="contentInfo.isShow && seasons.length > 0"
-            class="space-y-8"
+            class="relative space-y-8"
           >
-            <ShowSeason
-              v-for="season in seasons"
-              :key="season.id"
-              :season="season"
-            />
+            <div class="absolute right-0 flex gap-2">
+              <button
+                :disabled="currentSeasonIndex === 0"
+                class="p-2 rounded-full hover:bg-neutral-700/50 transition-colors disabled:opacity-50"
+                @click="changeSeason('prev')"
+              >
+                <Icon name="heroicons:chevron-left" class="w-5 h-5" />
+              </button>
+              <button
+                :disabled="currentSeasonIndex === seasons.length - 1"
+                class="p-2 rounded-full hover:bg-neutral-700/50 transition-colors disabled:opacity-50"
+                @click="changeSeason('next')"
+              >
+                <Icon name="heroicons:chevron-right" class="w-5 h-5" />
+              </button>
+            </div>
+
+            <ShowSeason :season="currentSeason" />
           </div>
 
           <CastGroup v-if="cast.length" :cast="cast" />

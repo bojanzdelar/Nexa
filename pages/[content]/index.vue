@@ -73,9 +73,9 @@ const categoriesToRender = categoryNames.map((name, index) => ({
       </title>
     </Head>
 
-    <HomeHeader />
+    <BrowseHeader />
     <main class="pl-4 pb-24 lg:space-y-24 lg:pl-16">
-      <HomeTrending
+      <BrowseTrending
         :content="
           categoriesToRender.find(
             (category) => category.title == 'Trending Now'

@@ -22,7 +22,7 @@ const reload = () => {
       <title>Nexa</title>
     </Head>
 
-    <HomeHeader />
+    <BrowseHeader />
     <main class="flex items-center justify-center h-screen">
       <div class="text-center">
         <h1 class="text-xl md:text-3xl lg:text-5xl font-bold mb-4">

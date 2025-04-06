@@ -1,11 +1,18 @@
 import { skipHydrate } from "pinia";
-import type { UserLogin } from "~/types";
+import type { UserLogin, UserRegister } from "~/types";
 
 export const useAuthStore = defineStore("auth", () => {
   const user = useLocalStorage("user", {});
 
-  async function logIn(email: UserLogin) {
-    user.value = email;
+  async function logIn(_user: UserLogin) {
+    // make API call
+    user.value = _user;
+    return true;
+  }
+
+  async function register(user: UserRegister) {
+    // make API call
+    return true;
   }
 
   function logOut() {
@@ -15,6 +22,7 @@ export const useAuthStore = defineStore("auth", () => {
   return {
     user: skipHydrate(user),
     logIn,
+    register,
     logOut,
   };
 });
