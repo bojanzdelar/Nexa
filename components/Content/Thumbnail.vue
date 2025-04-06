@@ -14,8 +14,9 @@ const contentInfo = computed(() => getContentType(props.content));
   >
     <NuxtLink
       :to="{
-        name: contentInfo.routeName,
+        name: 'content-id',
         params: {
+          content: contentInfo.routeName,
           id: content.id,
         },
       }"

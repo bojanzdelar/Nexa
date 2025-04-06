@@ -10,7 +10,6 @@ export interface Content {
   overview: string;
   backdrop_path: string;
   poster_path: string;
-  release_date: string;
   runtime: number;
   vote_average: number;
   adult: boolean;
@@ -19,10 +18,14 @@ export interface Content {
 
 export interface Movie extends Content {
   title: string;
+  release_date: string;
 }
 
 export interface Show extends Content {
   name: string;
+  first_air_date: string;
+  last_air_date: string;
+  number_of_seasons: number;
 }
 
 export interface Genre {

@@ -1,9 +1,38 @@
 <script setup lang="ts">
-import { getMovieDetails, getMovieCredits, getSimilarMovies } from "~/services";
+import {
+  getShowDetails,
+  getShowCredits,
+  getSimilarShows,
+  getMovieDetails,
+  getMovieCredits,
+  getSimilarMovies,
+} from "~/services";
 import type { Show, Movie, Cast } from "~/types";
 
+definePageMeta({
+  validate: (route) => {
+    return ["shows", "movies"].includes(route.params.content as string);
+  },
+});
+
 const route = useRoute();
+const contentType = route.params.content as "shows" | "movies";
 const contentId = route.params.id;
+
+const detailsConfig = {
+  shows: {
+    details: getShowDetails,
+    credits: getShowCredits,
+    similar: getSimilarShows,
+  },
+  movies: {
+    details: getMovieDetails,
+    credits: getMovieCredits,
+    similar: getSimilarMovies,
+  },
+};
+
+const currentConfig = detailsConfig[contentType];
 
 const content = ref<Show | Movie>({} as Show);
 const cast = ref<Cast[]>([]);
@@ -12,13 +41,11 @@ const similarContent = ref<Show[] | Movie[]>([]);
 const contentInfo = computed(() => getContentType(content.value));
 
 const fetchData = async () => {
-  const [contentData, creditsData, similarData] = await Promise.all([
-    getMovieDetails(Number(contentId)),
-    getMovieCredits(Number(contentId)),
-    getSimilarMovies(Number(contentId)),
-  ]);
+  const [contentData, creditsData, similarData] = await Promise.all(
+    Object.values(currentConfig).map((fn) => fn(Number(contentId)))
+  );
 
-  content.value = contentData.data?.value || ({} as Show);
+  content.value = contentData.data?.value || ({} as Show | Movie);
   cast.value = creditsData.data?.value?.cast || [];
   similarContent.value = similarData.data?.value?.results || [];
 };
@@ -47,12 +74,18 @@ await fetchData();
           <div
             class="flex flex-wrap items-center gap-4 mb-6 text-md md:text-lg lg:text-xl text-shadow-md"
           >
-            <span>{{ new Date(content?.release_date).getFullYear() }}</span>
+            <span>{{ new Date(contentInfo.release).getFullYear() }}</span>
             <span>∘</span>
-            <span v-for="genre in content?.genres" :key="genre.id">
-              {{ genre.name }}
+            <div class="flex gap-2">
+              <span v-for="genre in content?.genres" :key="genre.id">
+                {{ genre.name }}
+              </span>
+            </div>
+            <span v-if="'number_of_seasons' in content">
+              {{ content?.number_of_seasons }}
+              {{ content?.number_of_seasons > 1 ? "Seasons" : "Season" }}
             </span>
-            <span class="border px-2 py-0.5 rounded">
+            <span v-else>
               {{ Math.floor(content?.runtime / 60) }}h
               {{ content?.runtime % 60 }}m
             </span>
@@ -62,21 +95,13 @@ await fetchData();
           </div>
 
           <div class="flex gap-3 mb-8">
-            <button
-              class="flex items-center gap-x-2 rounded px-5 py-1.5 text-sm font-semibold transition hover:opacity-75 md:px-8 md:py-2.5 md:text-xl bg-white text-black"
-            >
-              <Icon
-                name="heroicons:play-solid"
-                class="h-4 w-4 text-black md:h-7 md:w-7"
-              />
-              Play
-            </button>
-            <button
-              class="flex items-center gap-x-2 rounded px-5 py-1.5 text-sm font-semibold transition hover:opacity-75 md:px-8 md:py-2.5 md:text-xl bg-neutral-500/70"
-            >
-              <Icon name="heroicons:plus" class="h-5 w-5 md:h-8 md:w-8" />
-              My List
-            </button>
+            <CommonButton icon="play-solid" text="Play" />
+
+            <CommonButton
+              icon="plus"
+              text="My List"
+              class="!bg-neutral-500/70 text-white"
+            />
           </div>
         </div>
       </div>

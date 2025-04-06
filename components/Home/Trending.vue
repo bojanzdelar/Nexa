@@ -38,33 +38,22 @@ useIntervalFn(changeContent, 10000);
     </p>
 
     <div class="flex space-x-3">
-      <button
-        class="flex items-center gap-x-2 rounded px-5 py-1.5 text-sm font-semibold transition hover:opacity-75 md:px-8 md:py-2.5 md:text-xl bg-white text-black"
-      >
-        <Icon
-          name="heroicons:play-solid"
-          class="h-4 w-4 text-black md:h-7 md:w-7"
-        />
-        Play
-      </button>
+      <CommonButton icon="play-solid" text="Play" />
 
       <NuxtLink
         :to="{
-          name: currentContentInfo.routeName,
+          name: 'content-id',
           params: {
+            content: currentContentInfo.routeName,
             id: currentContent.id,
           },
         }"
       >
-        <button
-          class="flex items-center gap-x-2 rounded px-5 py-1.5 text-sm font-semibold transition hover:opacity-75 md:px-8 md:py-2.5 md:text-xl bg-neutral-500/70"
-        >
-          More Info
-          <Icon
-            name="heroicons:information-circle"
-            class="h-5 w-5 md:h-8 md:w-8"
-          />
-        </button>
+        <CommonButton
+          icon="information-circle"
+          text="More Info"
+          class="!bg-neutral-500/70 text-white"
+        />
       </NuxtLink>
     </div>
   </div>
