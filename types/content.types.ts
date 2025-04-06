@@ -11,9 +11,13 @@ export interface Content {
   backdrop_path: string;
   poster_path: string;
   runtime: number;
-  vote_average: number;
   adult: boolean;
   genres: Genre[];
+}
+
+export interface Genre {
+  id: number;
+  name: string;
 }
 
 export interface Movie extends Content {
@@ -28,7 +32,18 @@ export interface Show extends Content {
   number_of_seasons: number;
 }
 
-export interface Genre {
+export interface Season {
   id: number;
   name: string;
+  episodes: Episode[];
+}
+
+export interface Episode {
+  id: number;
+  name: string;
+  overview: string;
+  episode_number: number;
+  still_path: string | null;
+  air_date: string;
+  runtime: number;
 }

@@ -27,15 +27,13 @@ useIntervalFn(changeContent, 10000);
       {{ currentContentInfo.title }}
     </h1>
 
-    <p
-      class="max-w-xs text-md text-shadow-md md:max-w-lg md:text-lg lg:max-w-2xl lg:text-2xl hidden sm:block"
-    >
-      {{
-        currentContent.overview.length > 300
-          ? currentContent.overview.slice(0, 300) + "..."
-          : currentContent.overview
-      }}
-    </p>
+    <div class="line-clamp-6">
+      <p
+        class="text-md text-shadow-md md:max-w-lg md:text-lg lg:max-w-2xl lg:text-2xl hidden sm:block"
+      >
+        {{ currentContent.overview }}
+      </p>
+    </div>
 
     <div class="flex space-x-3">
       <CommonButton icon="play-solid" text="Play" />

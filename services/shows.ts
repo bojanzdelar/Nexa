@@ -1,4 +1,4 @@
-import type { ContentResponse, Show, Credits } from "~/types";
+import type { ContentResponse, Show, Credits, Season } from "~/types";
 
 export const getTrendingShows = () => {
   return useAPI<ContentResponse<Show>>("/trending/tv/week");
@@ -38,4 +38,8 @@ export const getShowCredits = (id: number) => {
 
 export const getSimilarShows = (id: number) => {
   return useAPI<ContentResponse<Show>>(`/tv/${id}/similar`);
+};
+
+export const getShowSeasonDetails = (showId: number, seasonNumber: number) => {
+  return useAPI<Season>(`/tv/${showId}/season/${seasonNumber}`);
 };

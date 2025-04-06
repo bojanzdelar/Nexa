@@ -6,8 +6,9 @@ import {
   getMovieDetails,
   getMovieCredits,
   getSimilarMovies,
+  getShowSeasonDetails,
 } from "~/services";
-import type { Show, Movie, Cast } from "~/types";
+import type { Show, Movie, Cast, Season } from "~/types";
 
 definePageMeta({
   validate: (route) => {
@@ -37,8 +38,22 @@ const currentConfig = detailsConfig[contentType];
 const content = ref<Show | Movie>({} as Show);
 const cast = ref<Cast[]>([]);
 const similarContent = ref<Show[] | Movie[]>([]);
+const seasons = ref<Season[]>([]);
 
 const contentInfo = computed(() => getContentType(content.value));
+
+const fetchAllSeasons = async () => {
+  const show = content.value as Show;
+  if (!show.number_of_seasons) return;
+
+  seasons.value = (
+    await Promise.all(
+      [...Array(show.number_of_seasons)].map((_, index) =>
+        getShowSeasonDetails(Number(contentId), index + 1)
+      )
+    )
+  ).map((response) => response.data?.value) as Season[];
+};
 
 const fetchData = async () => {
   const [contentData, creditsData, similarData] = await Promise.all(
@@ -51,6 +66,10 @@ const fetchData = async () => {
 };
 
 await fetchData();
+
+if (contentType === "shows") {
+  await fetchAllSeasons();
+}
 </script>
 
 <template>
@@ -75,7 +94,7 @@ await fetchData();
             class="flex flex-wrap items-center gap-4 mb-6 text-md md:text-lg lg:text-xl text-shadow-md"
           >
             <span>{{ new Date(contentInfo.release).getFullYear() }}</span>
-            <span>∘</span>
+            <span>•</span>
             <div class="flex gap-2">
               <span v-for="genre in content?.genres" :key="genre.id">
                 {{ genre.name }}
@@ -119,7 +138,18 @@ await fetchData();
             </p>
           </div>
 
-          <CastGroup :cast="cast" />
+          <div
+            v-if="contentInfo.isShow && seasons.length > 0"
+            class="space-y-8"
+          >
+            <ShowSeason
+              v-for="season in seasons"
+              :key="season.id"
+              :season="season"
+            />
+          </div>
+
+          <CastGroup v-if="cast.length" :cast="cast" />
         </div>
 
         <div class="hidden lg:block xl:w-1/4">
