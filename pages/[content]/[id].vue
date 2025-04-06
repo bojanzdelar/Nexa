@@ -127,7 +127,19 @@ if (contentType === "shows") {
           </div>
 
           <div class="flex gap-3 mb-8">
-            <CommonButton icon="play-solid" text="Play" />
+            <CommonButton
+              v-if="new Date() >= new Date(contentInfo.release)"
+              icon="play-solid"
+              text="Play"
+            />
+
+            <CommonButton
+              v-else
+              icon="x-mark-solid"
+              text="Upcoming"
+              class="!bg-white/75"
+            >
+            </CommonButton>
 
             <CommonButton
               icon="plus"

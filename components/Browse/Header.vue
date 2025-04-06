@@ -3,7 +3,7 @@ const items = [
   { name: "Home", link: "/" },
   { name: "TV Shows", link: "/shows" },
   { name: "Movies", link: "/movies" },
-  { name: "New & Popular", link: "/new-popular" },
+  { name: "New & Popular", link: "/latest" },
   { name: "My List", link: "/my-list" },
 ];
 
@@ -28,12 +28,14 @@ useEventListener("scroll", handleScroll);
     :class="{ 'bg-neutral-900': isScrolled }"
   >
     <div class="flex items-center space-x-2 md:space-x-10">
-      <NuxtImg
-        src="/logo.svg"
-        width="65"
-        class="cursor-pointer object-contain"
-        alt="Nexa Logo"
-      />
+      <NuxtLink to="/">
+        <NuxtImg
+          src="/logo.svg"
+          width="65"
+          class="cursor-pointer object-contain"
+          alt="Nexa Logo"
+        />
+      </NuxtLink>
 
       <ul class="hidden space-x-4 md:flex">
         <li v-for="item in items" :key="item.name">

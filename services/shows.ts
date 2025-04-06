@@ -8,6 +8,18 @@ export const getTopRatedShows = () => {
   return useAPI<ContentResponse<Show>>("/tv/top_rated");
 };
 
+export const getAiringTodayShows = () => {
+  return useAPI<ContentResponse<Show>>("/tv/airing_today");
+};
+
+export const getPopularShows = () => {
+  return useAPI<ContentResponse<Show>>("/tv/popular");
+};
+
+export const getUpcomingShows = () => {
+  return useAPI<ContentResponse<Show>>("/tv/on_the_air");
+};
+
 export const getActionAndAdventureShows = () => {
   return useAPI<ContentResponse<Show>>("/discover/tv?with_genres=10759");
 };

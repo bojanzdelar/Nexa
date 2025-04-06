@@ -2,17 +2,15 @@
 import type { Show, Movie } from "~/types";
 
 const props = defineProps<{
-  content: Show[] | Movie[];
+  content: Array<Show | Movie>;
 }>();
 
-const currentContent = ref<Show | Movie>(props.content[0]);
+const currentContent = ref<Show | Movie>(getRandomElement(props.content)!);
 
 const currentContentInfo = computed(() => getContentType(currentContent.value));
 
-const changeContent = () => {
-  currentContent.value =
-    props.content[Math.floor(Math.random() * props.content.length)];
-};
+const changeContent = () =>
+  (currentContent.value = getRandomElement(props.content)!);
 
 useIntervalFn(changeContent, 10000);
 </script>

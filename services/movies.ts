@@ -8,6 +8,18 @@ export const getTopRatedMovies = () => {
   return useAPI<ContentResponse<Movie>>("/movie/top_rated");
 };
 
+export const getNowPlayingMovies = () => {
+  return useAPI<ContentResponse<Movie>>("/movie/now_playing");
+};
+
+export const getPopularMovies = () => {
+  return useAPI<ContentResponse<Movie>>("/movie/popular");
+};
+
+export const getUpcomingMovies = () => {
+  return useAPI<ContentResponse<Movie>>("/movie/upcoming");
+};
+
 export const getActionMovies = () => {
   return useAPI<ContentResponse<Movie>>("/discover/movie?with_genres=28");
 };
