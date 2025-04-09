@@ -1,16 +1,20 @@
 <script setup lang="ts">
 import type { Show, Movie } from "~/types";
 
-const props = defineProps<{
-  title: string;
-  content: Show[] | Movie[];
-}>();
+const props = withDefaults(
+  defineProps<{
+    title: string;
+    content: Show[] | Movie[];
+    empty?: string;
+  }>(),
+  { empty: "There are no titles in this category." }
+);
 
 const contentWithPoster = computed(() =>
   props.content.filter((c) => c.poster_path)
 );
 
-const { row, isMoved, handleClick } = useHorizontalScroll();
+const { row, isMoved, isOverflowed, handleClick } = useHorizontalScroll();
 </script>
 
 <template>
@@ -20,7 +24,7 @@ const { row, isMoved, handleClick } = useHorizontalScroll();
     >
       {{ title }}
     </h2>
-    <div class="md:-ml-2">
+    <div v-if="content.length" class="md:-ml-2">
       <Icon
         name="heroicons:chevron-left"
         class="absolute top-0 bottom-0 left-2 z-10 m-auto h-9 w-9 cursor-pointer transition hover:scale-125"
@@ -42,8 +46,14 @@ const { row, isMoved, handleClick } = useHorizontalScroll();
       <Icon
         name="heroicons:chevron-right"
         class="absolute top-0 bottom-0 right-2 z-10 m-auto h-9 w-9 cursor-pointer transition hover:scale-125"
+        :class="{ hidden: !isOverflowed }"
         @click="handleClick('right')"
       />
+    </div>
+    <div v-else class="py-16">
+      <p class="text-neutral-500">
+        {{ empty }}
+      </p>
     </div>
   </div>
 </template>

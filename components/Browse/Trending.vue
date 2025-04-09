@@ -5,7 +5,7 @@ const props = defineProps<{
   content: Array<Show | Movie>;
 }>();
 
-const currentContent = ref<Show | Movie>(getRandomElement(props.content)!);
+const currentContent = ref<Show | Movie>(props.content[0]);
 
 const currentContentInfo = computed(() => getContentType(currentContent.value));
 

@@ -6,7 +6,7 @@ export const getContentType = (content: Show | Movie) => {
   return {
     isShow,
     isMovie: !isShow,
-    type: isShow ? "show" : "movie",
+    type: isShow ? "tv" : "movie",
     routeName: isShow ? "shows" : "movies",
     title: isShow ? (content as Show).name : (content as Movie).title,
     release: isShow

@@ -17,7 +17,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       tmdbApiBaseUrl: process.env.TMDB_API_BASE_URL,
-      tmdbApiSecretKey: process.env.TMDB_API_SECRET_KEY, // temporary
+      tmdbApiAccountId: process.env.TMDB_API_ACCOUNT_ID, // temporary
+      tmdbApiAccessToken: process.env.TMDB_API_ACCESS_TOKEN, // temporary
       tmdbImageBaseUrl: process.env.TMDB_IMAGE_BASE_URL,
     },
   },

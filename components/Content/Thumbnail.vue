@@ -1,16 +1,19 @@
 <script setup lang="ts">
+import { useMyListStore } from "~/store";
 import type { Show, Movie } from "~/types";
 
 const props = defineProps<{
   content: Show | Movie;
 }>();
 
+const { isInMyList, addToMyList, removeFromMyList } = useMyListStore();
+
 const contentInfo = computed(() => getContentType(props.content));
 </script>
 
 <template>
   <div
-    class="min-w-[160px] md:min-w-[180px] lg:min-w-[200px] cursor-pointer transition duration-200 ease-out md:hover:scale-105"
+    class="group relative w-[160px] md:w-[180px] lg:w-[200px] shrink-0 cursor-pointer transition duration-200 ease-out md:hover:scale-105"
   >
     <NuxtLink
       :to="{
@@ -28,5 +31,16 @@ const contentInfo = computed(() => getContentType(props.content));
         format="webp"
       />
     </NuxtLink>
+
+    <button
+      class="absolute top-2 right-2 p-1 pl-3 pb-3 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200"
+    >
+      <span v-if="isInMyList(content)" @click="removeFromMyList(content)">
+        <Icon name="heroicons:x-mark-solid" class="h-6 w-6 lg:h-9 lg:w-9" />
+      </span>
+      <span v-else @click="addToMyList(content)">
+        <Icon name="heroicons:plus-solid" class="h-6 w-6 lg:h-9 lg:w-9" />
+      </span>
+    </button>
   </div>
 </template>

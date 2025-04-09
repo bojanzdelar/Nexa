@@ -8,6 +8,7 @@ import {
   getSimilarMovies,
   getShowSeasonDetails,
 } from "~/services";
+import { useMyListStore } from "~/store";
 import type { Show, Movie, Cast, Season } from "~/types";
 
 definePageMeta({
@@ -34,6 +35,10 @@ const detailsConfig = {
 };
 
 const currentConfig = detailsConfig[contentType];
+
+const myListStore = useMyListStore();
+const { listsLoaded } = storeToRefs(myListStore);
+const { isInMyList, addToMyList, removeFromMyList } = myListStore;
 
 const content = ref<Show | Movie>({} as Show);
 const cast = ref<Cast[]>([]);
@@ -141,11 +146,23 @@ if (contentType === "shows") {
             >
             </CommonButton>
 
-            <CommonButton
-              icon="plus"
-              text="My List"
-              class="!bg-neutral-500/70 text-white"
-            />
+            <ClientOnly v-if="listsLoaded">
+              <CommonButton
+                v-if="!isInMyList(content)"
+                icon="plus-solid"
+                text="Add to My List"
+                class="!bg-neutral-500/70 text-white"
+                @click="addToMyList(content)"
+              />
+
+              <CommonButton
+                v-else
+                icon="check-solid"
+                text="Remove from My List"
+                class="!bg-neutral-500/70 text-white"
+                @click="removeFromMyList(content)"
+              />
+            </ClientOnly>
           </div>
         </div>
       </div>
@@ -187,7 +204,7 @@ if (contentType === "shows") {
             <ShowSeason :season="currentSeason" />
           </div>
 
-          <CastGroup v-if="cast.length" :cast="cast" />
+          <CastGroup :cast="cast" />
         </div>
 
         <div class="hidden lg:block xl:w-1/4">

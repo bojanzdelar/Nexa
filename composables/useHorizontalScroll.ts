@@ -1,6 +1,9 @@
 export const useHorizontalScroll = () => {
   const row = ref<HTMLElement | null>(null);
   const isMoved = ref(false);
+  const isOverflowed = ref(false);
+
+  onMounted(() => checkOverflow());
 
   const handleClick = (direction: string) => {
     if (!row.value) return;
@@ -17,9 +20,18 @@ export const useHorizontalScroll = () => {
     row.value.scrollTo({ left: scrollTo, behavior: "smooth" });
   };
 
+  const checkOverflow = () => {
+    if (!row.value) return;
+
+    isOverflowed.value = row.value.scrollWidth > row.value.clientWidth;
+  };
+
+  useEventListener("resize", checkOverflow);
+
   return {
     row,
     isMoved,
+    isOverflowed,
     handleClick,
   };
 };

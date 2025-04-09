@@ -1,57 +1,57 @@
 import type { ContentResponse, Show, Credits, Season } from "~/types";
 
 export const getTrendingShows = () => {
-  return useAPI<ContentResponse<Show>>("/trending/tv/week");
+  return useApiForSsr<ContentResponse<Show>>("/trending/tv/week");
 };
 
 export const getTopRatedShows = () => {
-  return useAPI<ContentResponse<Show>>("/tv/top_rated");
+  return useApiForSsr<ContentResponse<Show>>("/tv/top_rated");
 };
 
 export const getAiringTodayShows = () => {
-  return useAPI<ContentResponse<Show>>("/tv/airing_today");
+  return useApiForSsr<ContentResponse<Show>>("/tv/airing_today");
 };
 
 export const getPopularShows = () => {
-  return useAPI<ContentResponse<Show>>("/tv/popular");
+  return useApiForSsr<ContentResponse<Show>>("/tv/popular");
 };
 
 export const getUpcomingShows = () => {
-  return useAPI<ContentResponse<Show>>("/tv/on_the_air");
+  return useApiForSsr<ContentResponse<Show>>("/tv/on_the_air");
 };
 
 export const getActionAndAdventureShows = () => {
-  return useAPI<ContentResponse<Show>>("/discover/tv?with_genres=10759");
+  return useApiForSsr<ContentResponse<Show>>("/discover/tv?with_genres=10759");
 };
 
 export const getComedyShows = () => {
-  return useAPI<ContentResponse<Show>>("/discover/tv?with_genres=35");
+  return useApiForSsr<ContentResponse<Show>>("/discover/tv?with_genres=35");
 };
 
 export const getMysteryShows = () => {
-  return useAPI<ContentResponse<Show>>("/discover/tv?with_genres=9648");
+  return useApiForSsr<ContentResponse<Show>>("/discover/tv?with_genres=9648");
 };
 
 export const getRomanceShows = () => {
-  return useAPI<ContentResponse<Show>>("/discover/tv?with_genres=10749");
+  return useApiForSsr<ContentResponse<Show>>("/discover/tv?with_genres=10749");
 };
 
 export const getDocumentaryShows = () => {
-  return useAPI<ContentResponse<Show>>("/discover/tv?with_genres=99");
+  return useApiForSsr<ContentResponse<Show>>("/discover/tv?with_genres=99");
 };
 
 export const getShowDetails = (id: number) => {
-  return useAPI<Show>(`/tv/${id}`);
+  return useApiForSsr<Show>(`/tv/${id}`);
 };
 
 export const getShowCredits = (id: number) => {
-  return useAPI<Credits>(`/tv/${id}/credits`);
+  return useApiForSsr<Credits>(`/tv/${id}/credits`);
 };
 
 export const getSimilarShows = (id: number) => {
-  return useAPI<ContentResponse<Show>>(`/tv/${id}/similar`);
+  return useApiForSsr<ContentResponse<Show>>(`/tv/${id}/similar`);
 };
 
 export const getShowSeasonDetails = (showId: number, seasonNumber: number) => {
-  return useAPI<Season>(`/tv/${showId}/season/${seasonNumber}`);
+  return useApiForSsr<Season>(`/tv/${showId}/season/${seasonNumber}`);
 };

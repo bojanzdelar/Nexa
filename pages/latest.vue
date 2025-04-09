@@ -30,11 +30,11 @@ const [
 <template>
   <div>
     <Head>
-      <title>Home - Nexa</title>
+      <title>New & Popular - Nexa</title>
     </Head>
 
     <BrowseHeader />
-    <main class="pl-4 lg:pl-16 pt-24 md:pt-36 pb-24">
+    <main class="pl-4 lg:pl-16 pt-24 md:pt-32 pb-24">
       <section class="space-y-5 md:space-y-10">
         <ContentGroup title="Airing Today Shows" :content="airingTodayShows" />
         <ContentGroup title="Now Playing Movies" :content="nowPlayingMovies" />
