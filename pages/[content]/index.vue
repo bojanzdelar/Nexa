@@ -83,9 +83,10 @@ const categoriesToRender = categoryNames.map((name, index) => ({
         "
       />
       <section class="space-y-5 md:space-y-10">
-        <ContentGroup
+        <CommonGroup
           v-for="category in categoriesToRender"
           :key="category.key"
+          type="content"
           :title="category.title"
           :content="category.content"
         />

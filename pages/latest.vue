@@ -36,12 +36,36 @@ const [
     <BrowseHeader />
     <main class="pl-4 lg:pl-16 pt-24 md:pt-32 pb-24">
       <section class="space-y-5 md:space-y-10">
-        <ContentGroup title="Airing Today Shows" :content="airingTodayShows" />
-        <ContentGroup title="Now Playing Movies" :content="nowPlayingMovies" />
-        <ContentGroup title="Popular Shows" :content="popularShows" />
-        <ContentGroup title="Popular Movies" :content="popularMovies" />
-        <ContentGroup title="Upcoming Shows" :content="upcomingShows" />
-        <ContentGroup title="Upcoming Movies" :content="upcomingMovies" />
+        <CommonGroup
+          type="content"
+          title="Airing Today Shows"
+          :content="airingTodayShows"
+        />
+        <CommonGroup
+          type="content"
+          title="Now Playing Movies"
+          :content="nowPlayingMovies"
+        />
+        <CommonGroup
+          type="content"
+          title="Popular Shows"
+          :content="popularShows"
+        />
+        <CommonGroup
+          type="content"
+          title="Popular Movies"
+          :content="popularMovies"
+        />
+        <CommonGroup
+          type="content"
+          title="Upcoming Shows"
+          :content="upcomingShows"
+        />
+        <CommonGroup
+          type="content"
+          title="Upcoming Movies"
+          :content="upcomingMovies"
+        />
       </section>
     </main>
   </div>

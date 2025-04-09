@@ -204,7 +204,7 @@ if (contentType === "shows") {
             <ShowSeason :season="currentSeason" />
           </div>
 
-          <CastGroup :cast="cast" />
+          <CommonGroup type="cast" title="Cast" :content="cast" />
         </div>
 
         <div class="hidden lg:block xl:w-1/4">
@@ -218,7 +218,8 @@ if (contentType === "shows") {
         </div>
       </div>
 
-      <ContentGroup
+      <CommonGroup
+        type="content"
         title="More Like This"
         :content="similarContent"
         class="my-16"
