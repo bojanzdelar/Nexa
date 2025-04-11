@@ -23,8 +23,6 @@ export const useMyListStore = defineStore("myList", () => {
     myShows.value = shows.results || [];
     myMovies.value = movies.results || [];
     listsLoaded.value = true;
-
-    console.log(myShows.value);
   };
 
   const isInMyList = (content: Show | Movie) => {

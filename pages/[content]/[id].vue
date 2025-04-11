@@ -95,8 +95,6 @@ if (contentType === "shows") {
     <Head>
       <title>{{ contentInfo.title }} - Nexa</title>
     </Head>
-
-    <BrowseHeader />
     <main v-if="content" class="px-4 lg:px-16">
       <ContentBackdrop :content="content" class="opacity-75 xl:opacity-50" />
 

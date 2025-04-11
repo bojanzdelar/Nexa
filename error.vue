@@ -17,12 +17,7 @@ const reload = () => {
 </script>
 
 <template>
-  <div>
-    <Head>
-      <title>Nexa</title>
-    </Head>
-
-    <BrowseHeader />
+  <NuxtLayout>
     <main class="flex items-center justify-center h-screen">
       <div class="text-center">
         <h1 class="text-xl md:text-3xl lg:text-5xl font-bold mb-4">
@@ -52,5 +47,5 @@ const reload = () => {
         </div>
       </div>
     </main>
-  </div>
+  </NuxtLayout>
 </template>

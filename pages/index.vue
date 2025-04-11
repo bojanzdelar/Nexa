@@ -12,9 +12,8 @@ const [trendingShows, trendingMovies] = (
       <title>Home - Nexa</title>
     </Head>
 
-    <BrowseHeader />
     <main class="pl-4 pb-24 lg:space-y-24 lg:pl-16">
-      <BrowseTrending :content="[...trendingShows, ...trendingMovies]" />
+      <ContentTrending :content="[...trendingShows, ...trendingMovies]" />
       <section class="space-y-5 md:space-y-10">
         <CommonGroup
           type="content"
