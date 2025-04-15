@@ -9,7 +9,7 @@ const [trendingShows, trendingMovies] = (
 <template>
   <div>
     <Head>
-      <title>Home - Nexa</title>
+      <Title>Home - Nexa</Title>
     </Head>
 
     <main class="pl-4 pb-24 lg:space-y-24 lg:pl-16">

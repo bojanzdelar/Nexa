@@ -68,9 +68,9 @@ const categoriesToRender = categoryNames.map((name, index) => ({
 <template>
   <div>
     <Head>
-      <title>
+      <Title>
         {{ contentType === "shows" ? "TV Shows" : "Movies" }} - Nexa
-      </title>
+      </Title>
     </Head>
 
     <main class="pl-4 pb-24 lg:space-y-24 lg:pl-16">

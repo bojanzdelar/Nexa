@@ -55,3 +55,12 @@ export const getSimilarShows = (id: number) => {
 export const getShowSeasonDetails = (showId: number, seasonNumber: number) => {
   return useApiForSsr<Season>(`/tv/${showId}/season/${seasonNumber}`);
 };
+
+export const searchShows = async (query: string, page: number = 1) => {
+  return useApi<ContentResponse<Show>>("/search/tv", {
+    query: {
+      query,
+      page,
+    },
+  });
+};

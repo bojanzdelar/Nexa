@@ -30,7 +30,7 @@ const [
 <template>
   <div>
     <Head>
-      <title>New & Popular - Nexa</title>
+      <Title>New & Popular - Nexa</Title>
     </Head>
 
     <main class="pl-4 lg:pl-16 pt-24 md:pt-32 pb-24">

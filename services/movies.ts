@@ -53,3 +53,12 @@ export const getMovieCredits = (id: number) => {
 export const getSimilarMovies = (id: number) => {
   return useApiForSsr<ContentResponse<Movie>>(`/movie/${id}/similar`);
 };
+
+export const searchMovies = async (query: string, page: number = 1) => {
+  return useApi<ContentResponse<Movie>>("/search/movie", {
+    query: {
+      query,
+      page,
+    },
+  });
+};
