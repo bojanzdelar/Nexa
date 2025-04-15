@@ -136,7 +136,7 @@ onMounted(() => {
     </Head>
 
     <main class="px-4 lg:px-16 pt-24 md:pt-32 pb-24">
-      <section class="space-y-5 md:space-y-10 mx-auto container">
+      <section class="space-y-5 md:space-y-10 mx-auto">
         <div class="flex justify-between">
           <h2 class="text-2xl font-semibold text-neutral-200 text-shadow-md">
             Browse
