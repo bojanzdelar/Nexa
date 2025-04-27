@@ -75,7 +75,7 @@ useEventListener("scroll", handleScroll);
         <li v-for="item in itemsExplore" :key="item.name">
           <NuxtLink
             :to="item.link"
-            class="cursor-pointer text-neutral-200 transition duration-200 hover:text-neutral-400"
+            class="cursor-pointer text-neutral-200 transition hover:text-neutral-400"
           >
             {{ item.name }}
           </NuxtLink>
@@ -129,7 +129,7 @@ useEventListener("scroll", handleScroll);
   <div
     v-if="isMobileMenuOpen"
     ref="mobileMenu"
-    class="fixed top-0 left-0 h-full w-64 bg-neutral-900 z-50 shadow-lg transform transition-transform duration-300 ease-in-out"
+    class="fixed top-0 left-0 h-full w-64 bg-neutral-900 z-50 shadow-lg"
   >
     <div
       class="flex justify-between items-center px-2.5 py-4 border-b border-neutral-800"
@@ -150,7 +150,7 @@ useEventListener("scroll", handleScroll);
       <li v-for="item in itemsExplore" :key="item.name" class="px-4 py-2">
         <NuxtLink
           :to="item.link"
-          class="block text-neutral-200 transition duration-200 hover:text-neutral-400"
+          class="block text-neutral-200 transition hover:text-neutral-400"
           @click="isMobileMenuOpen = false"
         >
           {{ item.name }}
@@ -160,7 +160,7 @@ useEventListener("scroll", handleScroll);
 
       <li v-if="isAuthenticated" class="px-4 py-2">
         <button
-          class="block w-full text-left text-neutral-200 transition duration-200 hover:text-neutral-400"
+          class="block w-full text-left text-neutral-200 transition hover:text-neutral-400"
           @click="
             logOut();
             isMobileMenuOpen = false;
@@ -173,7 +173,7 @@ useEventListener("scroll", handleScroll);
         <li class="px-4 py-2">
           <NuxtLink
             to="/login"
-            class="block text-neutral-200 transition duration-200 hover:text-neutral-400"
+            class="block text-neutral-200 transition hover:text-neutral-400"
             @click="isMobileMenuOpen = false"
           >
             Sign in
@@ -182,7 +182,7 @@ useEventListener("scroll", handleScroll);
         <li class="px-4 py-2">
           <NuxtLink
             to="/register"
-            class="block text-neutral-200 transition duration-200 hover:text-neutral-400"
+            class="block text-neutral-200 transition hover:text-neutral-400"
             @click="isMobileMenuOpen = false"
           >
             Sign up

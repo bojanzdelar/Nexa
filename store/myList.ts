@@ -8,7 +8,7 @@ import type { Show, Movie } from "~/types";
 
 export const useMyListStore = defineStore("myList", () => {
   const config = useRuntimeConfig();
-  const accountId = config.public.tmdbApiAccountId;
+  const accountId = Number(config.public.tmdbApiAccountId);
 
   const myShows = ref<Show[]>([]);
   const myMovies = ref<Movie[]>([]);
@@ -17,8 +17,8 @@ export const useMyListStore = defineStore("myList", () => {
   onMounted(() => fetchMyList());
 
   const fetchMyList = async () => {
-    const shows = await getMyShows(Number(accountId));
-    const movies = await getMyMovies(Number(accountId));
+    const shows = await getMyShows(accountId, false);
+    const movies = await getMyMovies(accountId, false);
 
     myShows.value = shows.results || [];
     myMovies.value = movies.results || [];
@@ -34,7 +34,7 @@ export const useMyListStore = defineStore("myList", () => {
 
   const addToMyList = async (content: Show | Movie) => {
     if (isInMyList(content)) return;
-    await createMyListItem(Number(accountId), content);
+    await createMyListItem(accountId, content, false);
 
     if (getContentType(content).isShow) {
       myShows.value.push(content as Show);
@@ -44,7 +44,7 @@ export const useMyListStore = defineStore("myList", () => {
   };
 
   const removeFromMyList = async (content: Show | Movie) => {
-    await deleteMyListItem(Number(accountId), content);
+    await deleteMyListItem(accountId, content, false);
 
     if (getContentType(content).isShow) {
       myShows.value = myShows.value.filter((item) => item.id !== content.id);

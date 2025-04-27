@@ -1,17 +1,23 @@
 import type { ContentResponse, Show, Movie } from "~/types";
 
-export const getMyShows = (accountId: number) => {
-  return useApi<ContentResponse<Show>>(`/account/${accountId}/watchlist/tv`);
+export const getMyShows = (accountId: number, ssr: boolean = true) => {
+  return useApi(ssr)<ContentResponse<Show>>(
+    `/account/${accountId}/watchlist/tv`
+  );
 };
 
-export const getMyMovies = (accountId: number) => {
-  return useApi<ContentResponse<Movie>>(
+export const getMyMovies = (accountId: number, ssr: boolean = true) => {
+  return useApi(ssr)<ContentResponse<Movie>>(
     `/account/${accountId}/watchlist/movies`
   );
 };
 
-export const createMyListItem = (accountId: number, content: Show | Movie) => {
-  return useApi<object>(`/account/${accountId}/watchlist`, {
+export const createMyListItem = (
+  accountId: number,
+  content: Show | Movie,
+  ssr: boolean = true
+) => {
+  return useApi(ssr)<object>(`/account/${accountId}/watchlist`, {
     method: "POST",
     body: {
       media_type: getContentType(content).type,
@@ -21,8 +27,12 @@ export const createMyListItem = (accountId: number, content: Show | Movie) => {
   });
 };
 
-export const deleteMyListItem = (accountId: number, content: Show | Movie) => {
-  return useApi<object>(`/account/${accountId}/watchlist`, {
+export const deleteMyListItem = (
+  accountId: number,
+  content: Show | Movie,
+  ssr: boolean = true
+) => {
+  return useApi(ssr)<object>(`/account/${accountId}/watchlist`, {
     method: "POST",
     body: {
       media_type: getContentType(content).type,

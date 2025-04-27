@@ -34,7 +34,17 @@ useIntervalFn(changeContent, 10000);
     </div>
 
     <div class="flex space-x-3">
-      <CommonButton icon="play-solid" text="Play" />
+      <NuxtLink
+        :to="{
+          name: 'watch-content-id',
+          params: {
+            content: currentContentInfo.type,
+            id: currentContent.id,
+          },
+        }"
+      >
+        <CommonButton icon="play-solid" text="Play" />
+      </NuxtLink>
 
       <NuxtLink
         :to="{

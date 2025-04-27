@@ -7,7 +7,14 @@ export const useApiForSsr = async <T>(
 ) => {
   const defaultOptions = useApiDefaults();
   const mergedOptions = defu(options, defaultOptions);
+
   // useFetch is combination of useAsyncData and $fetch, just a syntatic sugar
   // useAsyncData should be used with SSR to avoid fetching same data twice
-  return useFetch(url, mergedOptions);
+  const { data } = await useFetch(url, mergedOptions);
+
+  if (!data.value) {
+    throw new Error("Something went wrong while fetching data!");
+  }
+
+  return data.value;
 };

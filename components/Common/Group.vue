@@ -56,7 +56,7 @@ useEventListener("resize", checkOverflow);
 <template>
   <div class="relative space-y-2">
     <h2
-      class="text-lg font-semibold text-neutral-200 md:text-2xl text-shadow-md cursor-pointer transition duration-200 hover:text-white"
+      class="text-lg font-semibold text-neutral-200 md:text-2xl text-shadow-md cursor-pointer transition hover:text-white"
     >
       {{ title }}
     </h2>

@@ -18,8 +18,11 @@ definePageMeta({
 });
 
 const route = useRoute();
+const router = useRouter();
+
 const contentType = route.params.content as "shows" | "movies";
-const contentId = route.params.id;
+const contentId = Number(route.params.id);
+const seasonQuery = route.query.s ? Number(route.query.s) : 1;
 
 const detailsConfig = {
   shows: {
@@ -53,13 +56,17 @@ const fetchAllSeasons = async () => {
   const show = content.value as Show;
   if (!show.number_of_seasons) return;
 
-  seasons.value = (
-    await Promise.all(
-      [...Array(show.number_of_seasons)].map((_, index) =>
-        getShowSeasonDetails(Number(contentId), index + 1)
-      )
+  seasons.value = await Promise.all(
+    [...Array(show.number_of_seasons)].map((_, index) =>
+      getShowSeasonDetails(contentId, index + 1)
     )
-  ).map((response) => response.data?.value) as Season[];
+  );
+
+  if (seasonQuery && seasonQuery <= seasons.value.length) {
+    currentSeasonIndex.value = seasonQuery - 1;
+  }
+
+  updateSeasonInUrl();
 };
 
 const changeSeason = (direction: "prev" | "next") => {
@@ -71,16 +78,27 @@ const changeSeason = (direction: "prev" | "next") => {
   ) {
     currentSeasonIndex.value++;
   }
+
+  updateSeasonInUrl();
+};
+
+const updateSeasonInUrl = () => {
+  router.replace({
+    query: {
+      ...route.query,
+      s: currentSeasonIndex.value + 1,
+    },
+  });
 };
 
 const fetchData = async () => {
   const [contentData, creditsData, similarData] = await Promise.all(
-    Object.values(currentConfig).map((fn) => fn(Number(contentId)))
+    Object.values(currentConfig).map((fn) => fn(contentId))
   );
 
-  content.value = contentData.data?.value || ({} as Show | Movie);
-  cast.value = creditsData.data?.value?.cast || [];
-  similarContent.value = similarData.data?.value?.results || [];
+  content.value = contentData || ({} as Show | Movie);
+  cast.value = creditsData?.cast || [];
+  similarContent.value = similarData?.results || [];
 };
 
 await fetchData();
@@ -131,11 +149,18 @@ if (contentType === "shows") {
           </div>
 
           <div class="flex gap-3 mb-8">
-            <CommonButton
+            <NuxtLink
               v-if="new Date() >= new Date(contentInfo.release)"
-              icon="play-solid"
-              text="Play"
-            />
+              :to="{
+                name: 'watch-content-id',
+                params: {
+                  content: contentInfo.type,
+                  id: content.id,
+                },
+              }"
+            >
+              <CommonButton icon="play-solid" text="Play" />
+            </NuxtLink>
 
             <CommonButton
               v-else
@@ -200,7 +225,7 @@ if (contentType === "shows") {
               </button>
             </div>
 
-            <ShowSeason :season="currentSeason" />
+            <ShowSeason :show="content as Show" :season="currentSeason" />
           </div>
 
           <CommonGroup type="cast" title="Cast" :content="cast" />

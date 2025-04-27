@@ -1,61 +1,65 @@
 import type { ContentResponse, Movie, Credits } from "~/types";
 
-export const getTrendingMovies = () => {
-  return useApiForSsr<ContentResponse<Movie>>("/trending/movie/week");
+export const getTrendingMovies = (ssr: boolean = true) => {
+  return useApi(ssr)<ContentResponse<Movie>>("/trending/movie/week");
 };
 
-export const getTopRatedMovies = () => {
-  return useApiForSsr<ContentResponse<Movie>>("/movie/top_rated");
+export const getTopRatedMovies = (ssr: boolean = true) => {
+  return useApi(ssr)<ContentResponse<Movie>>("/movie/top_rated");
 };
 
-export const getNowPlayingMovies = () => {
-  return useApiForSsr<ContentResponse<Movie>>("/movie/now_playing");
+export const getNowPlayingMovies = (ssr: boolean = true) => {
+  return useApi(ssr)<ContentResponse<Movie>>("/movie/now_playing");
 };
 
-export const getPopularMovies = () => {
-  return useApiForSsr<ContentResponse<Movie>>("/movie/popular");
+export const getPopularMovies = (ssr: boolean = true) => {
+  return useApi(ssr)<ContentResponse<Movie>>("/movie/popular");
 };
 
-export const getUpcomingMovies = () => {
-  return useApiForSsr<ContentResponse<Movie>>("/movie/upcoming");
+export const getUpcomingMovies = (ssr: boolean = true) => {
+  return useApi(ssr)<ContentResponse<Movie>>("/movie/upcoming");
 };
 
-export const getActionMovies = () => {
-  return useApiForSsr<ContentResponse<Movie>>("/discover/movie?with_genres=28");
+export const getActionMovies = (ssr: boolean = true) => {
+  return useApi(ssr)<ContentResponse<Movie>>("/discover/movie?with_genres=28");
 };
 
-export const getComedyMovies = () => {
-  return useApiForSsr<ContentResponse<Movie>>("/discover/movie?with_genres=35");
+export const getComedyMovies = (ssr: boolean = true) => {
+  return useApi(ssr)<ContentResponse<Movie>>("/discover/movie?with_genres=35");
 };
 
-export const getHorrorMovies = () => {
-  return useApiForSsr<ContentResponse<Movie>>("/discover/movie?with_genres=27");
+export const getHorrorMovies = (ssr: boolean = true) => {
+  return useApi(ssr)<ContentResponse<Movie>>("/discover/movie?with_genres=27");
 };
 
-export const getRomanceMovies = () => {
-  return useApiForSsr<ContentResponse<Movie>>(
+export const getRomanceMovies = (ssr: boolean = true) => {
+  return useApi(ssr)<ContentResponse<Movie>>(
     "/discover/movie?with_genres=10749"
   );
 };
 
-export const getDocumentaryMovies = () => {
-  return useApiForSsr<ContentResponse<Movie>>("/discover/movie?with_genres=99");
+export const getDocumentaryMovies = (ssr: boolean = true) => {
+  return useApi(ssr)<ContentResponse<Movie>>("/discover/movie?with_genres=99");
 };
 
-export const getMovieDetails = (id: number) => {
-  return useApiForSsr<Movie>(`/movie/${id}`);
+export const getMovieDetails = (id: number, ssr: boolean = true) => {
+  return useApi(ssr)<Movie>(`/movie/${id}`);
 };
 
-export const getMovieCredits = (id: number) => {
-  return useApiForSsr<Credits>(`/movie/${id}/credits`);
+export const getMovieCredits = (id: number, ssr: boolean = true) => {
+  return useApi(ssr)<Credits>(`/movie/${id}/credits`);
 };
 
-export const getSimilarMovies = (id: number) => {
-  return useApiForSsr<ContentResponse<Movie>>(`/movie/${id}/similar`);
+export const getSimilarMovies = (id: number, ssr: boolean = true) => {
+  return useApi(ssr)<ContentResponse<Movie>>(`/movie/${id}/similar`);
 };
 
-export const searchMovies = async (query: string, page: number = 1) => {
-  return useApi<ContentResponse<Movie>>("/search/movie", {
+export const searchMovies = (
+  query: string,
+  page: number = 1,
+  ssr: boolean = true
+) => {
+  return useApi(ssr)<ContentResponse<Movie>>("/search/movie", {
     query: {
       query,
       page,

@@ -3,7 +3,7 @@ import { getTrendingShows, getTrendingMovies } from "~/services";
 
 const [trendingShows, trendingMovies] = (
   await Promise.all([getTrendingShows(), getTrendingMovies()])
-).map((response) => response.data.value?.results || []);
+).map((response) => response?.results || []);
 </script>
 
 <template>

@@ -30,11 +30,13 @@ export interface Show extends Content {
   first_air_date: string;
   last_air_date: string;
   number_of_seasons: number;
+  seasons: Season[];
 }
 
 export interface Season {
   id: number;
   name: string;
+  season_number: number;
   episodes: Episode[];
 }
 
@@ -46,4 +48,15 @@ export interface Episode {
   still_path: string | null;
   air_date: string;
   runtime: number;
+}
+
+export interface Subtitle {
+  code: string;
+  name: string;
+}
+
+export interface SubtitleCue {
+  start: number;
+  end: number;
+  text: string;
 }

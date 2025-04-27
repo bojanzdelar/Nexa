@@ -55,7 +55,7 @@ const categoryData = await Promise.all(
 );
 
 const categoriesContent = categoryData.map(
-  (response) => response.data.value?.results || []
+  (response) => response?.results || []
 );
 
 const categoriesToRender = categoryNames.map((name, index) => ({

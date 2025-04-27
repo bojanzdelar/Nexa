@@ -50,8 +50,8 @@ const performSearch = async (query: string, page: number = 1) => {
 
   const response =
     contentType.value === "tv"
-      ? await searchShows(query, page)
-      : await searchMovies(query, page);
+      ? await searchShows(query, page, false)
+      : await searchMovies(query, page, false);
 
   const results = response.results || [];
 
@@ -136,7 +136,7 @@ onMounted(() => {
     </Head>
 
     <main class="px-4 lg:px-16 pt-24 md:pt-32 pb-24">
-      <section class="space-y-5 md:space-y-10 mx-auto">
+      <section class="space-y-5 md:space-y-10 mx-auto container">
         <div class="flex justify-between">
           <h2 class="text-2xl font-semibold text-neutral-200 text-shadow-md">
             Browse

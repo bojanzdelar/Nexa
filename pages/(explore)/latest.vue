@@ -24,7 +24,7 @@ const [
     getUpcomingShows(),
     getUpcomingMovies(),
   ])
-).map((response) => response.data.value?.results || []);
+).map((response) => response?.results || []);
 </script>
 
 <template>
