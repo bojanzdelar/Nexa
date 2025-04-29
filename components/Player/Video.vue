@@ -25,10 +25,12 @@ const playbackSpeed = ref(1);
 const volume = ref(1);
 const isMuted = ref(false);
 const isFullscreen = ref(false);
+const videoAspectRatio = ref(0);
 
 const subtitle = ref<Subtitle | null>(null);
 const subtitleCues = ref<SubtitleCue[]>([]);
 const subtitleText = ref<string>("");
+const subtitleBottomPosition = ref(0);
 
 const controlsVisible = ref(true);
 const controlsTimeout = ref<number | null>(null);
@@ -71,7 +73,10 @@ const onVideoLoaded = () => {
   if (!videoPlayer.value) return;
 
   duration.value = videoPlayer.value.duration;
+  videoAspectRatio.value =
+    videoPlayer.value.videoWidth / videoPlayer.value.videoHeight;
   loadSubtitles();
+  calculateSubtitlePosition();
 };
 
 const togglePlay = () => {
@@ -140,6 +145,10 @@ const changePlaybackSpeed = (speed: number) => {
   videoPlayer.value.playbackRate = speed;
 };
 
+const changeSubtitle = (_subtitle: Subtitle | null) => {
+  subtitle.value = _subtitle;
+};
+
 const loadSubtitles = async () => {
   if (!subtitle.value) return;
 
@@ -175,8 +184,16 @@ const parseTimeCode = (timeCode: string): number => {
   return seconds;
 };
 
-const changeSubtitle = (_subtitle: Subtitle | null) => {
-  subtitle.value = _subtitle;
+const calculateSubtitlePosition = () => {
+  const [screenWidth, screenHeight] = [window.innerWidth, window.innerHeight];
+  const currentVideoHeight = screenWidth / videoAspectRatio.value;
+
+  if (screenHeight < currentVideoHeight) {
+    subtitleBottomPosition.value = 0;
+    return;
+  }
+
+  subtitleBottomPosition.value = (screenHeight - currentVideoHeight) / 2;
 };
 
 const toggleFullscreen = () => {
@@ -219,6 +236,9 @@ const handleKeypress = (event: KeyboardEvent) => {
       break;
     case "f":
       toggleFullscreen();
+      break;
+    case "escape":
+      isFullscreen.value = false;
       break;
   }
 
@@ -276,11 +296,12 @@ onClickOutside(
 onClickOutside(subtitlesMenu, () => (isSubtitlesMenuOpen.value = false));
 
 useEventListener("keydown", handleKeypress);
+useEventListener("resize", calculateSubtitlePosition);
 </script>
 
 <template>
   <div
-    class="relative w-screen h-screen bg-black flex items-center justify-center"
+    class="relative flex items-center justify-center w-screen h-screen bg-black"
     @mousemove="showControls"
   >
     <video
@@ -288,7 +309,7 @@ useEventListener("keydown", handleKeypress);
       class="w-full h-full"
       autoplay
       @timeupdate="updateProgress"
-      @loadedmetadata="onVideoLoaded"
+      @canplay="onVideoLoaded"
     >
       <source :src="contentSource" type="video/mp4" />
       Your browser does not support the video tag.
@@ -296,13 +317,18 @@ useEventListener("keydown", handleKeypress);
 
     <div
       v-if="subtitleText"
-      class="absolute left-1/2 -translate-x-1/2 text-center text-white rounded bg-black/50 px-4 py-2 max-w-[80%] text-xl md:text-2xl lg:text-3xl xl:text-4xl"
-      :class="{
-        'bottom-24 lg:bottom-32 xl:bottom-40': controlsVisible,
-        'bottom-8 lg:bottom-12 xl:bottom-16': !controlsVisible,
-      }"
+      class="absolute left-1/2 -translate-x-1/2 text-center px-4 py-2 max-w-[80%] text-xl md:text-2xl lg:text-3xl xl:text-4xl"
+      :style="{ bottom: `${subtitleBottomPosition}px` }"
     >
-      {{ subtitleText }}
+      <div
+        class="relative bottom-8 lg:bottom-12 xl:bottom-16"
+        :class="{
+          'bottom-24 lg:bottom-32 xl:bottom-40':
+            controlsVisible && !subtitleBottomPosition,
+        }"
+      >
+        {{ subtitleText }}
+      </div>
     </div>
 
     <div
