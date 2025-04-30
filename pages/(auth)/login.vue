@@ -5,6 +5,8 @@ definePageMeta({
   layout: "auth",
 });
 
+const router = useRouter();
+
 const { logIn } = useAuthStore();
 
 const form = ref({
@@ -27,6 +29,8 @@ const signIn = async () => {
   if (errors.value.email || errors.value.password) return;
 
   await logIn({ email: form.value.email, password: form.value.password });
+
+  router.push("/");
 };
 </script>
 

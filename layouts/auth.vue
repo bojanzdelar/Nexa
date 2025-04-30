@@ -11,12 +11,13 @@
         quality="80"
       />
 
-      <NuxtImg
-        src="/logo.svg"
-        class="absolute left-4 top-4 cursor-pointer object-contain md:left-10 md:top-6"
-        width="100"
-        alt="Nexa Logo"
-      />
+      <NuxtLink to="/">
+        <NuxtImg
+          src="/logo.svg"
+          class="absolute left-4 top-4 cursor-pointer object-contain md:left-10 md:top-6"
+          width="100"
+          alt="Nexa Logo"
+      /></NuxtLink>
 
       <slot />
     </div>

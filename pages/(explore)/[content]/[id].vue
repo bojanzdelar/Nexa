@@ -8,7 +8,7 @@ import {
   getSimilarMovies,
   getShowSeasonDetails,
 } from "~/services";
-import { useMyListStore } from "~/store";
+import { useAuthStore, useMyListStore } from "~/store";
 import type { Show, Movie, Cast, Season } from "~/types";
 
 definePageMeta({
@@ -38,6 +38,9 @@ const detailsConfig = {
 };
 
 const currentConfig = detailsConfig[contentType];
+
+const authStore = useAuthStore();
+const { isAuthenticated } = storeToRefs(authStore);
 
 const myListStore = useMyListStore();
 const { listsLoaded } = storeToRefs(myListStore);
@@ -170,7 +173,7 @@ if (contentType === "shows") {
             >
             </CommonButton>
 
-            <ClientOnly v-if="listsLoaded">
+            <ClientOnly v-if="isAuthenticated && listsLoaded">
               <CommonButton
                 v-if="!isInMyList(content)"
                 icon="plus-solid"

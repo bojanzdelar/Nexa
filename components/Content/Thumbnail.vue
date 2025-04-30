@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { useMyListStore } from "~/store";
+import { useAuthStore, useMyListStore } from "~/store";
 import type { Show, Movie } from "~/types";
 
 const props = defineProps<{
   content: Show | Movie;
 }>();
+
+const authStore = useAuthStore();
+const { isAuthenticated } = storeToRefs(authStore);
 
 const { isInMyList, addToMyList, removeFromMyList } = useMyListStore();
 
@@ -33,6 +36,7 @@ const contentInfo = computed(() => getContentType(props.content));
     </NuxtLink>
 
     <button
+      v-if="isAuthenticated"
       class="absolute top-2 right-2 p-1 pl-3 pb-3 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity"
     >
       <span v-if="isInMyList(content)" @click="removeFromMyList(content)">

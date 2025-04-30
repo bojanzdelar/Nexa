@@ -23,6 +23,12 @@ export default defineNuxtConfig({
     "@nuxt/icon",
     "@vueuse/nuxt",
   ],
+  routeRules: {
+    "/login": { ssr: false },
+    "/register": { ssr: false },
+    "/my-list": { ssr: false },
+    "/watch/**": { ssr: false },
+  },
   runtimeConfig: {
     public: {
       tmdbApiBaseUrl: process.env.TMDB_API_BASE_URL,

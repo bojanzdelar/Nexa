@@ -5,6 +5,8 @@ definePageMeta({
   layout: "auth",
 });
 
+const router = useRouter();
+
 const { register } = useAuthStore();
 
 const form = ref({
@@ -48,6 +50,8 @@ const signUp = async () => {
     password: form.value.password,
     name: form.value.name,
   });
+
+  router.push("/login");
 };
 </script>
 
