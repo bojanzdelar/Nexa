@@ -1,0 +1,60 @@
+package com.nexa.catalog.controller;
+
+import com.nexa.catalog.constants.DynamoKeys;
+import com.nexa.catalog.dto.CategoryItemDto;
+import com.nexa.catalog.dto.MovieDto;
+import com.nexa.catalog.dto.PagedResponse;
+import com.nexa.catalog.service.CategoryService;
+import com.nexa.catalog.service.TitleService;
+import com.nexa.catalog.util.PaginationUtil;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/movies")
+public class MovieController {
+
+  private final TitleService titleService;
+  private final CategoryService categoryService;
+
+  public MovieController(TitleService titleService, CategoryService categoryService) {
+    this.titleService = titleService;
+    this.categoryService = categoryService;
+  }
+
+  @GetMapping("/{id}")
+  public ResponseEntity<MovieDto> getMovie(@PathVariable Long id) {
+    MovieDto movie = titleService.getMovieById(id);
+    return movie == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(movie);
+  }
+
+  @GetMapping("/trending")
+  public PagedResponse<CategoryItemDto> trending(
+      @RequestParam(defaultValue = "20") int limit, @RequestParam(required = false) String cursor) {
+    return category(DynamoKeys.MOVIE_TRENDING, limit, cursor);
+  }
+
+  @GetMapping("/top-rated")
+  public PagedResponse<CategoryItemDto> topRated(
+      @RequestParam(defaultValue = "20") int limit, @RequestParam(required = false) String cursor) {
+    return category(DynamoKeys.MOVIE_TOP_RATED, limit, cursor);
+  }
+
+  @GetMapping("/latest")
+  public PagedResponse<CategoryItemDto> latest(
+      @RequestParam(defaultValue = "20") int limit, @RequestParam(required = false) String cursor) {
+    return category(DynamoKeys.MOVIE_LATEST, limit, cursor);
+  }
+
+  @GetMapping("/genres/{genreId}")
+  public PagedResponse<CategoryItemDto> byGenre(
+      @PathVariable int genreId,
+      @RequestParam(defaultValue = "20") int limit,
+      @RequestParam(required = false) String cursor) {
+    return category(DynamoKeys.movieGenre(genreId), limit, cursor);
+  }
+
+  private PagedResponse<CategoryItemDto> category(String pk, int limit, String cursor) {
+    return categoryService.getCategory(pk, PaginationUtil.clampLimit(limit), cursor);
+  }
+}
