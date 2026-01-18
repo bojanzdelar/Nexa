@@ -1,74 +1,54 @@
-import type { ContentResponse, Show, Credits, Season } from "~/types";
+import type { TitlesReponse, Show } from "~/types";
 
 export const getTrendingShows = (ssr: boolean = true) => {
-  return useApi(ssr)<ContentResponse<Show>>("/trending/tv/week");
+  return useApi(ssr)<TitlesReponse<Show>>("/tv/trending");
 };
 
 export const getTopRatedShows = (ssr: boolean = true) => {
-  return useApi(ssr)<ContentResponse<Show>>("/tv/top_rated");
+  return useApi(ssr)<TitlesReponse<Show>>("/tv/top-rated");
 };
 
 export const getAiringTodayShows = (ssr: boolean = true) => {
-  return useApi(ssr)<ContentResponse<Show>>("/tv/airing_today");
+  return useApi(ssr)<TitlesReponse<Show>>("/tv/latest");
 };
 
-export const getPopularShows = (ssr: boolean = true) => {
-  return useApi(ssr)<ContentResponse<Show>>("/tv/popular");
+export const getDramaShows = (ssr: boolean = true) => {
+  return useApi(ssr)<TitlesReponse<Show>>("/tv/genres/18");
 };
 
-export const getUpcomingShows = (ssr: boolean = true) => {
-  return useApi(ssr)<ContentResponse<Show>>("/tv/on_the_air");
-};
-
-export const getActionAndAdventureShows = (ssr: boolean = true) => {
-  return useApi(ssr)<ContentResponse<Show>>("/discover/tv?with_genres=10759");
+export const getSciFiFantasyShows = (ssr: boolean = true) => {
+  return useApi(ssr)<TitlesReponse<Show>>("/tv/genres/10765");
 };
 
 export const getComedyShows = (ssr: boolean = true) => {
-  return useApi(ssr)<ContentResponse<Show>>("/discover/tv?with_genres=35");
+  return useApi(ssr)<TitlesReponse<Show>>("/tv/genres/35");
+};
+
+export const getCrimeShows = (ssr: boolean = true) => {
+  return useApi(ssr)<TitlesReponse<Show>>("/tv/genres/80");
 };
 
 export const getMysteryShows = (ssr: boolean = true) => {
-  return useApi(ssr)<ContentResponse<Show>>("/discover/tv?with_genres=9648");
+  return useApi(ssr)<TitlesReponse<Show>>("/tv/genres/9648");
 };
 
-export const getRomanceShows = (ssr: boolean = true) => {
-  return useApi(ssr)<ContentResponse<Show>>("/discover/tv?with_genres=10749");
-};
-
-export const getDocumentaryShows = (ssr: boolean = true) => {
-  return useApi(ssr)<ContentResponse<Show>>("/discover/tv?with_genres=99");
+export const getActionAndAdventureShows = (ssr: boolean = true) => {
+  return useApi(ssr)<TitlesReponse<Show>>("/tv/genres/10759");
 };
 
 export const getShowDetails = (id: number, ssr: boolean = true) => {
   return useApi(ssr)<Show>(`/tv/${id}`);
 };
 
-export const getShowCredits = (id: number, ssr: boolean = true) => {
-  return useApi(ssr)<Credits>(`/tv/${id}/credits`);
-};
-
-export const getSimilarShows = (id: number, ssr: boolean = true) => {
-  return useApi(ssr)<ContentResponse<Show>>(`/tv/${id}/similar`);
-};
-
-export const getShowSeasonDetails = (
-  showId: number,
-  seasonNumber: number,
-  ssr: boolean = true
-) => {
-  return useApi(ssr)<Season>(`/tv/${showId}/season/${seasonNumber}`);
-};
-
-export const searchShows = (
-  query: string,
-  page: number = 1,
-  ssr: boolean = true
-) => {
-  return useApi(ssr)<ContentResponse<Show>>("/search/tv", {
-    query: {
-      query,
-      page,
-    },
-  });
-};
+// export const searchShows = (
+//   query: string,
+//   page: number = 1,
+//   ssr: boolean = true
+// ) => {
+//   return useApi(ssr)<TitlesReponse<Show>>("/tv/search", {
+//     query: {
+//       query,
+//       page,
+//     },
+//   });
+// };

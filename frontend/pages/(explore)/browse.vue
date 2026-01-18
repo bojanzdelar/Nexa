@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import type { Show, Movie } from "~/types";
-import { searchShows, searchMovies } from "~/services";
+//import { searchShows, searchMovies } from "~/services";
 
 const route = useRoute();
 const router = useRouter();
 
 const searchQuery = ref((route.query.q as string) || "");
-const contentType = ref<"tv" | "movie">(
+const titleType = ref<"tv" | "movie">(
   (route.query.type as "tv" | "movie") || "tv"
 );
 
@@ -20,7 +20,7 @@ const isLoadingMore = ref(false);
 const loadMoreTrigger = ref<HTMLElement | null>(null);
 
 const resultsWithPoster = computed(() =>
-  searchResults.value.filter((item) => item.poster_path)
+  searchResults.value.filter((item) => item.posterPath)
 );
 
 const hasResults = computed(() => searchResults.value.length > 0);
@@ -28,11 +28,11 @@ const hasQuery = computed(() => searchQuery.value.trim().length > 0);
 const showEmptyState = computed(
   () => hasQuery.value && !hasResults.value && !isLoading.value
 );
-const hasMoreContent = computed(() => currentPage.value < totalPages.value);
+const hasMoreTitles = computed(() => currentPage.value < totalPages.value);
 
 const updateUrlParams = () => {
   const query: { type: "tv" | "movie"; q?: string } = {
-    type: contentType.value,
+    type: titleType.value,
   };
 
   if (searchQuery.value.trim()) {
@@ -48,10 +48,11 @@ const performSearch = async (query: string, page: number = 1) => {
     return;
   }
 
-  const response =
-    contentType.value === "tv"
-      ? await searchShows(query, page, false)
-      : await searchMovies(query, page, false);
+  // const response =
+  //   titleType.value === "tv"
+  //     ? await searchShows(query, page, false)
+  //     : await searchMovies(query, page, false);
+  const response = { results: [], totalPages: 0 };
 
   const results = response.results || [];
 
@@ -61,7 +62,7 @@ const performSearch = async (query: string, page: number = 1) => {
     searchResults.value = [...searchResults.value, ...results];
   }
 
-  totalPages.value = response.total_pages || 0;
+  totalPages.value = response.totalPages || 0;
   currentPage.value = page;
   isLoading.value = false;
   isLoadingMore.value = false;
@@ -86,7 +87,7 @@ watch(searchQuery, (newValue) => {
   }, 500);
 });
 
-watch(contentType, () => {
+watch(titleType, () => {
   window.scrollTo(0, 0);
 
   updateUrlParams();
@@ -101,7 +102,7 @@ const clearSearch = () => {
 };
 
 const loadMoreResults = () => {
-  if (isLoadingMore.value || !hasMoreContent.value || !hasQuery.value) return;
+  if (isLoadingMore.value || !hasMoreTitles.value || !hasQuery.value) return;
 
   isLoadingMore.value = true;
   const nextPage = currentPage.value + 1;
@@ -109,7 +110,7 @@ const loadMoreResults = () => {
 };
 
 const handleScroll = () => {
-  if (!loadMoreTrigger.value || isLoadingMore.value || !hasMoreContent.value)
+  if (!loadMoreTrigger.value || isLoadingMore.value || !hasMoreTitles.value)
     return;
 
   const rect = loadMoreTrigger.value.getBoundingClientRect();
@@ -151,11 +152,11 @@ onMounted(() => {
               :key="type.id"
               class="px-4 py-2 rounded-md text-sm"
               :class="
-                contentType === type.id
+                titleType === type.id
                   ? 'bg-neutral-700 text-white'
                   : 'text-neutral-400 hover:text-white'
               "
-              @click="contentType = type.id as 'tv' | 'movie'"
+              @click="titleType = type.id as 'tv' | 'movie'"
             >
               {{ type.label }}
             </button>
@@ -173,7 +174,7 @@ onMounted(() => {
             v-model="searchQuery"
             type="text"
             :placeholder="`Search for ${
-              contentType === 'tv' ? 'TV shows' : 'movies'
+              titleType === 'tv' ? 'TV shows' : 'movies'
             }...`"
             class="w-full py-4 px-3 bg-transparent text-white focus:outline-none"
           />
@@ -206,7 +207,7 @@ onMounted(() => {
           </h3>
           <p class="text-neutral-400">
             We couldn't find anything matching "{{ searchQuery }}" in
-            {{ contentType === "tv" ? "TV shows" : "movies" }}. <br />Try
+            {{ titleType === "tv" ? "TV shows" : "movies" }}. <br />Try
             different keywords or check for typos.
           </p>
         </div>
@@ -219,20 +220,20 @@ onMounted(() => {
           <h3
             class="text-xl font-semibold text-neutral-200 mb-2 text-shadow-md"
           >
-            Search for {{ contentType === "tv" ? "TV shows" : "movies" }}
+            Search for {{ titleType === "tv" ? "TV shows" : "movies" }}
           </h3>
           <p class="text-neutral-400">
             Find your favorite
-            {{ contentType === "tv" ? "TV shows" : "movies" }}.
+            {{ titleType === "tv" ? "TV shows" : "movies" }}.
           </p>
         </div>
 
         <div v-else-if="hasResults" class="space-y-8">
           <div class="flex flex-wrap justify-center gap-4">
-            <ContentThumbnail
+            <TitleThumbnail
               v-for="item in resultsWithPoster"
               :key="item.id"
-              :content="item"
+              :title="item"
             />
           </div>
 
@@ -242,7 +243,7 @@ onMounted(() => {
               name="heroicons:arrow-path"
               class="h-6 w-6 text-neutral-400 animate-spin"
             />
-            <p v-else-if="hasMoreContent" class="text-neutral-400 text-sm">
+            <p v-else-if="hasMoreTitles" class="text-neutral-400 text-sm">
               Scroll for more results
             </p>
             <p v-else class="text-neutral-400 text-sm">End of results</p>

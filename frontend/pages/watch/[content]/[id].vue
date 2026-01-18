@@ -1,9 +1,5 @@
 <script setup lang="ts">
-import {
-  getShowDetails,
-  getMovieDetails,
-  getShowSeasonDetails,
-} from "~/services";
+import { getShowDetails, getMovieDetails } from "~/services";
 import type { Show, Movie, Season, Episode } from "~/types";
 
 definePageMeta({
@@ -19,20 +15,20 @@ const router = useRouter();
 // FIXME: temporary
 const videoSource = "/sample-video.mp4";
 
-const contentType = route.params.content as "tv" | "movie";
-const contentId = Number(route.params.id);
+const titleType = route.params.content as "tv" | "movie";
+const titleId = Number(route.params.id);
 
-const contentData = ref<Show | Movie>({} as Show);
+const titleData = ref<Show | Movie>({} as Show);
 const seasonData = ref<Season | null>(null);
 const episodeData = ref<Episode | null>(null);
 const seasonNumber = ref<number | null>(null);
 const episodeNumber = ref<number | null>(null);
 
-const contentInfo = computed(() => getContentType(contentData.value));
+const titleRouteName = computed(() => getTitleRouteName(titleData.value));
 
 const nextEpisode = computed(() => {
   if (
-    contentType !== "tv" ||
+    titleType !== "tv" ||
     !seasonData.value ||
     !seasonNumber.value ||
     !episodeNumber.value
@@ -43,15 +39,15 @@ const nextEpisode = computed(() => {
   const nextEpisodeNumber = episodeNumber.value + 1;
 
   const hasNextEpisodeInSeason = episodes.some(
-    (ep: Episode) => ep.episode_number === nextEpisodeNumber
+    (ep: Episode) => ep.episodeNumber === nextEpisodeNumber
   );
 
   if (hasNextEpisodeInSeason)
     return { season: seasonNumber.value, episode: nextEpisodeNumber };
 
   const nextSeasonNumber = seasonNumber.value + 1;
-  const hasNextSeason = (contentData.value as Show).seasons.some(
-    (season: Season) => season.season_number === nextSeasonNumber
+  const hasNextSeason = (titleData.value as Show).seasons.some(
+    (season: Season) => season.seasonNumber === nextSeasonNumber
   );
 
   if (hasNextSeason) return { season: nextSeasonNumber, episode: 1 };
@@ -60,7 +56,7 @@ const nextEpisode = computed(() => {
 });
 
 const parseQueryParams = () => {
-  if (contentType !== "tv") return;
+  if (titleType !== "tv") return;
 
   const { s: season, e: episode } = route.query;
   const hasValidQuery = season && episode;
@@ -74,19 +70,19 @@ const parseQueryParams = () => {
 };
 
 const fetchData = async () => {
-  if (!contentType || !contentId) return;
+  if (!titleType || !titleId) return;
 
-  contentData.value =
-    contentType === "tv"
-      ? await getShowDetails(contentId, false)
-      : await getMovieDetails(contentId, false);
+  titleData.value =
+    titleType === "tv"
+      ? await getShowDetails(titleId, false)
+      : await getMovieDetails(titleId, false);
 
   await fetchSeasonAndEpisode();
 };
 
 const fetchSeasonAndEpisode = async () => {
   if (
-    contentType !== "tv" ||
+    titleType !== "tv" ||
     seasonNumber.value === null ||
     episodeNumber.value === null
   ) {
@@ -97,21 +93,22 @@ const fetchSeasonAndEpisode = async () => {
     seasonData.value === null ||
     seasonNumber.value !== Number(route.query.s)
   ) {
-    const season = await getShowSeasonDetails(
-      contentId,
-      seasonNumber.value,
-      false
+    const season = (titleData.value as Show).seasons.find(
+      (season: Season) => season.seasonNumber == seasonNumber.value
     );
+
+    if (!season) return;
+
     const currentDate = new Date();
     season.episodes = season.episodes.filter(
-      (episode: Episode) => currentDate >= new Date(episode.air_date)
+      (episode: Episode) => currentDate >= new Date(episode.airDate)
     );
     seasonData.value = season;
   }
 
   episodeData.value =
     seasonData.value?.episodes.find(
-      (episode: Episode) => episode.episode_number == episodeNumber.value
+      (episode: Episode) => episode.episodeNumber == episodeNumber.value
     ) || ({} as Episode);
 };
 
@@ -119,8 +116,8 @@ const viewDetails = () => {
   router.push({
     name: "content-id",
     params: {
-      content: contentInfo.value.routeName,
-      id: contentId,
+      content: titleRouteName.value,
+      id: titleId,
     },
     ...(seasonNumber.value !== null && {
       query: {
@@ -154,11 +151,11 @@ onMounted(() => {
 
 <template>
   <PlayerVideo
-    :content-type="contentType"
-    :content-id="contentId"
-    :content-title="contentInfo.title ? contentInfo.title : null"
-    :episode-title="episodeData ? episodeData.name : null"
-    :content-source="videoSource"
+    :title-type="titleType"
+    :title-id="titleId"
+    :title-name="titleData.name ? titleData.name : null"
+    :episode-name="episodeData ? episodeData.name : null"
+    :title-source="videoSource"
     :has-next-episode="nextEpisode != null"
     @view-details="viewDetails"
     @next-episode="goToNextEpisode"

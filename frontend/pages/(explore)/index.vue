@@ -13,16 +13,16 @@ const [trendingShows, trendingMovies] = (
     </Head>
 
     <main class="pl-4 pb-24 lg:space-y-24 lg:pl-16">
-      <ContentTrending :content="[...trendingShows, ...trendingMovies]" />
+      <TitleFeatured :titles="[...trendingShows, ...trendingMovies]" />
       <section class="space-y-5 md:space-y-10">
         <CommonGroup
-          type="content"
-          title="Trending Shows"
+          type="titles"
+          name="Trending Shows"
           :content="trendingShows"
         />
         <CommonGroup
-          type="content"
-          title="Trending Movies"
+          type="titles"
+          name="Trending Movies"
           :content="trendingMovies"
         />
       </section>

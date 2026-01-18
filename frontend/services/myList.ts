@@ -1,27 +1,25 @@
-import type { ContentResponse, Show, Movie } from "~/types";
+import type { Title, TitlesReponse, Show, Movie } from "~/types";
 
 export const getMyShows = (accountId: number, ssr: boolean = true) => {
-  return useApi(ssr)<ContentResponse<Show>>(
-    `/account/${accountId}/watchlist/tv`
-  );
+  return useApi(ssr)<TitlesReponse<Show>>(`/account/${accountId}/watchlist/tv`);
 };
 
 export const getMyMovies = (accountId: number, ssr: boolean = true) => {
-  return useApi(ssr)<ContentResponse<Movie>>(
+  return useApi(ssr)<TitlesReponse<Movie>>(
     `/account/${accountId}/watchlist/movies`
   );
 };
 
 export const createMyListItem = (
   accountId: number,
-  content: Show | Movie,
+  title: Title,
   ssr: boolean = true
 ) => {
   return useApi(ssr)<object>(`/account/${accountId}/watchlist`, {
     method: "POST",
     body: {
-      media_type: getContentType(content).type,
-      media_id: content.id,
+      media_type: title.type,
+      media_id: title.id,
       watchlist: true,
     },
   });
@@ -29,14 +27,14 @@ export const createMyListItem = (
 
 export const deleteMyListItem = (
   accountId: number,
-  content: Show | Movie,
+  title: Title,
   ssr: boolean = true
 ) => {
   return useApi(ssr)<object>(`/account/${accountId}/watchlist`, {
     method: "POST",
     body: {
-      media_type: getContentType(content).type,
-      media_id: content.id,
+      media_type: title.type,
+      media_id: title.id,
       watchlist: false,
     },
   });

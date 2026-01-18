@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { useAuthStore, useMyListStore } from "~/store";
-import type { Show, Movie } from "~/types";
+import type { Title } from "~/types";
 
 const props = defineProps<{
-  content: Show | Movie;
+  title: Title;
 }>();
 
 const authStore = useAuthStore();
@@ -11,7 +11,7 @@ const { isAuthenticated } = storeToRefs(authStore);
 
 const { isInMyList, addToMyList, removeFromMyList } = useMyListStore();
 
-const contentInfo = computed(() => getContentType(props.content));
+const titleRouteName = computed(() => getTitleRouteName(props.title));
 </script>
 
 <template>
@@ -22,15 +22,15 @@ const contentInfo = computed(() => getContentType(props.content));
       :to="{
         name: 'content-id',
         params: {
-          content: contentInfo.routeName,
-          id: content.id,
+          content: titleRouteName,
+          id: title.id,
         },
       }"
     >
       <NuxtImg
-        :src="`https://image.tmdb.org/t/p/w300${content.poster_path}`"
+        :src="`https://image.tmdb.org/t/p/w300${title.posterPath}`"
         class="rounded-sm md:rounded opacity-75 hover:opacity-100 transition-opacity"
-        :alt="contentInfo.title"
+        :alt="title.name"
         format="webp"
       />
     </NuxtLink>
@@ -39,10 +39,10 @@ const contentInfo = computed(() => getContentType(props.content));
       v-if="isAuthenticated"
       class="absolute top-2 right-2 p-1 pl-3 pb-3 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity"
     >
-      <span v-if="isInMyList(content)" @click="removeFromMyList(content)">
+      <span v-if="isInMyList(title)" @click="removeFromMyList(title)">
         <Icon name="heroicons:x-mark-solid" class="h-6 w-6 lg:h-9 lg:w-9" />
       </span>
-      <span v-else @click="addToMyList(content)">
+      <span v-else @click="addToMyList(title)">
         <Icon name="heroicons:plus-solid" class="h-6 w-6 lg:h-9 lg:w-9" />
       </span>
     </button>

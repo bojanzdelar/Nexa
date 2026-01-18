@@ -1,68 +1,54 @@
-import type { ContentResponse, Movie, Credits } from "~/types";
+import type { TitlesReponse, Movie } from "~/types";
 
 export const getTrendingMovies = (ssr: boolean = true) => {
-  return useApi(ssr)<ContentResponse<Movie>>("/trending/movie/week");
+  return useApi(ssr)<TitlesReponse<Movie>>("/movies/trending");
 };
 
 export const getTopRatedMovies = (ssr: boolean = true) => {
-  return useApi(ssr)<ContentResponse<Movie>>("/movie/top_rated");
+  return useApi(ssr)<TitlesReponse<Movie>>("/movies/top-rated");
 };
 
 export const getNowPlayingMovies = (ssr: boolean = true) => {
-  return useApi(ssr)<ContentResponse<Movie>>("/movie/now_playing");
-};
-
-export const getPopularMovies = (ssr: boolean = true) => {
-  return useApi(ssr)<ContentResponse<Movie>>("/movie/popular");
-};
-
-export const getUpcomingMovies = (ssr: boolean = true) => {
-  return useApi(ssr)<ContentResponse<Movie>>("/movie/upcoming");
+  return useApi(ssr)<TitlesReponse<Movie>>("/movies/latest");
 };
 
 export const getActionMovies = (ssr: boolean = true) => {
-  return useApi(ssr)<ContentResponse<Movie>>("/discover/movie?with_genres=28");
+  return useApi(ssr)<TitlesReponse<Movie>>("/movies/genres/28");
 };
 
 export const getComedyMovies = (ssr: boolean = true) => {
-  return useApi(ssr)<ContentResponse<Movie>>("/discover/movie?with_genres=35");
+  return useApi(ssr)<TitlesReponse<Movie>>("/movies/genres/35");
 };
 
-export const getHorrorMovies = (ssr: boolean = true) => {
-  return useApi(ssr)<ContentResponse<Movie>>("/discover/movie?with_genres=27");
+export const getDramaMovies = (ssr: boolean = true) => {
+  return useApi(ssr)<TitlesReponse<Movie>>("/movies/genres/18");
 };
 
-export const getRomanceMovies = (ssr: boolean = true) => {
-  return useApi(ssr)<ContentResponse<Movie>>(
-    "/discover/movie?with_genres=10749"
-  );
+export const getThrillerMovies = (ssr: boolean = true) => {
+  return useApi(ssr)<TitlesReponse<Movie>>("/movies/genres/53");
 };
 
-export const getDocumentaryMovies = (ssr: boolean = true) => {
-  return useApi(ssr)<ContentResponse<Movie>>("/discover/movie?with_genres=99");
+export const getScienceFictionMovies = (ssr: boolean = true) => {
+  return useApi(ssr)<TitlesReponse<Movie>>("/movies/genres/878");
+};
+
+export const getAdventureMovies = (ssr: boolean = true) => {
+  return useApi(ssr)<TitlesReponse<Movie>>("/movies/genres/12");
 };
 
 export const getMovieDetails = (id: number, ssr: boolean = true) => {
-  return useApi(ssr)<Movie>(`/movie/${id}`);
+  return useApi(ssr)<Movie>(`/movies/${id}`);
 };
 
-export const getMovieCredits = (id: number, ssr: boolean = true) => {
-  return useApi(ssr)<Credits>(`/movie/${id}/credits`);
-};
-
-export const getSimilarMovies = (id: number, ssr: boolean = true) => {
-  return useApi(ssr)<ContentResponse<Movie>>(`/movie/${id}/similar`);
-};
-
-export const searchMovies = (
-  query: string,
-  page: number = 1,
-  ssr: boolean = true
-) => {
-  return useApi(ssr)<ContentResponse<Movie>>("/search/movie", {
-    query: {
-      query,
-      page,
-    },
-  });
-};
+// export const searchMovies = (
+//   query: string,
+//   page: number = 1,
+//   ssr: boolean = true
+// ) => {
+//   return useApi(ssr)<TitlesReponse<Movie>>("/movies/search", {
+//     query: {
+//       query,
+//       page,
+//     },
+//   });
+// };

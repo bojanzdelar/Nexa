@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { Cast, Show, Movie } from "~/types";
+import type { Title, Cast } from "~/types";
 
 const props = defineProps<{
-  type: "cast" | "content";
-  title: string;
-  content: (Show | Movie | Cast)[];
+  type: "cast" | "titles";
+  name: string;
+  content: (Title | Cast)[];
   empty?: string;
 }>();
 
@@ -14,9 +14,9 @@ const isOverflowed = ref(false);
 
 const filteredContent = computed(() => {
   if (props.type === "cast") {
-    return (props.content as Cast[]).filter((c) => c.profile_path);
+    return (props.content as Cast[]).filter((c) => c.profilePath);
   } else {
-    return (props.content as (Show | Movie)[]).filter((c) => c.poster_path);
+    return (props.content as Title[]).filter((c) => c.posterPath);
   }
 });
 
@@ -24,7 +24,7 @@ const emptyMessage = computed(() => {
   return (
     props.empty ||
     (props.type === "cast"
-      ? "No cast is found for this content."
+      ? "No cast is found for this title."
       : "There are no titles in this category.")
   );
 });
@@ -58,7 +58,7 @@ useEventListener("resize", checkOverflow);
     <h2
       class="text-lg font-semibold text-neutral-200 md:text-2xl text-shadow-md cursor-pointer transition hover:text-white"
     >
-      {{ title }}
+      {{ name }}
     </h2>
     <div v-if="content.length" class="md:-ml-2">
       <Icon
@@ -79,10 +79,10 @@ useEventListener("resize", checkOverflow);
           />
         </template>
         <template v-else>
-          <ContentThumbnail
-            v-for="c in filteredContent"
-            :key="c.id"
-            :content="c as (Show | Movie)"
+          <TitleThumbnail
+            v-for="title in filteredContent"
+            :key="title.id"
+            :title="title as Title"
           />
         </template>
       </div>

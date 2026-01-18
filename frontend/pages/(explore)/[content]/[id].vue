@@ -1,15 +1,7 @@
 <script setup lang="ts">
-import {
-  getShowDetails,
-  getShowCredits,
-  getSimilarShows,
-  getMovieDetails,
-  getMovieCredits,
-  getSimilarMovies,
-  getShowSeasonDetails,
-} from "~/services";
+import { getShowDetails, getMovieDetails } from "~/services";
 import { useAuthStore, useMyListStore } from "~/store";
-import type { Show, Movie, Cast, Season } from "~/types";
+import type { Title, Show, Movie, Cast, Season } from "~/types";
 
 definePageMeta({
   validate: (route) => {
@@ -20,24 +12,9 @@ definePageMeta({
 const route = useRoute();
 const router = useRouter();
 
-const contentType = route.params.content as "shows" | "movies";
-const contentId = Number(route.params.id);
+const titleType = route.params.content as "shows" | "movies";
+const titleId = Number(route.params.id);
 const seasonQuery = route.query.s ? Number(route.query.s) : 1;
-
-const detailsConfig = {
-  shows: {
-    details: getShowDetails,
-    credits: getShowCredits,
-    similar: getSimilarShows,
-  },
-  movies: {
-    details: getMovieDetails,
-    credits: getMovieCredits,
-    similar: getSimilarMovies,
-  },
-};
-
-const currentConfig = detailsConfig[contentType];
 
 const authStore = useAuthStore();
 const { isAuthenticated } = storeToRefs(authStore);
@@ -46,31 +23,14 @@ const myListStore = useMyListStore();
 const { listsLoaded } = storeToRefs(myListStore);
 const { isInMyList, addToMyList, removeFromMyList } = myListStore;
 
-const content = ref<Show | Movie>({} as Show);
+const title = ref<Show | Movie>({} as Show);
 const cast = ref<Cast[]>([]);
-const similarContent = ref<Show[] | Movie[]>([]);
+const recommendedTitles = ref<Title[]>([]);
 const seasons = ref<Season[]>([]);
 const currentSeasonIndex = ref(0);
 
-const contentInfo = computed(() => getContentType(content.value));
+const titleRelease = computed(() => getTitleRelease(title.value));
 const currentSeason = computed(() => seasons.value[currentSeasonIndex.value]);
-
-const fetchAllSeasons = async () => {
-  const show = content.value as Show;
-  if (!show.number_of_seasons) return;
-
-  seasons.value = await Promise.all(
-    [...Array(show.number_of_seasons)].map((_, index) =>
-      getShowSeasonDetails(contentId, index + 1)
-    )
-  );
-
-  if (seasonQuery && seasonQuery <= seasons.value.length) {
-    currentSeasonIndex.value = seasonQuery - 1;
-  }
-
-  updateSeasonInUrl();
-};
 
 const changeSeason = (direction: "prev" | "next") => {
   if (direction === "prev" && currentSeasonIndex.value > 0) {
@@ -95,70 +55,78 @@ const updateSeasonInUrl = () => {
 };
 
 const fetchData = async () => {
-  const [contentData, creditsData, similarData] = await Promise.all(
-    Object.values(currentConfig).map((fn) => fn(contentId))
-  );
+  const titleData =
+    titleType === "shows"
+      ? await getShowDetails(titleId)
+      : await getMovieDetails(titleId);
 
-  content.value = contentData || ({} as Show | Movie);
-  cast.value = creditsData?.cast || [];
-  similarContent.value = similarData?.results || [];
+  title.value = titleData || ({} as Show | Movie);
+  cast.value = title.value.cast;
+  recommendedTitles.value = title.value.recommendations;
+
+  if (titleType === "shows") {
+    seasons.value = (title.value as Show).seasons.filter(
+      (season: Season) => season.seasonNumber != 0
+    );
+
+    if (seasonQuery && seasonQuery <= seasons.value.length) {
+      currentSeasonIndex.value = seasonQuery - 1;
+    }
+
+    updateSeasonInUrl();
+  }
 };
 
 await fetchData();
-
-if (contentType === "shows") {
-  await fetchAllSeasons();
-}
 </script>
 
 <template>
   <div>
     <Head>
-      <Title>{{ contentInfo.title }} - Nexa</Title>
+      <Title>{{ title.name }} - Nexa</Title>
     </Head>
 
-    <main v-if="content" class="px-4 lg:px-16">
-      <ContentBackdrop :content="content" class="opacity-75 xl:opacity-50" />
+    <main v-if="title" class="px-4 lg:px-16">
+      <TitleBackdrop :title="title" class="opacity-75 xl:opacity-50" />
 
       <div class="relative h-[60vh] md:h-[75vh]">
         <div class="absolute bottom-8 md:bottom-15 lg:bottom-20">
           <h1
             class="text-2xl md:text-4xl lg:text-7xl font-bold mb-4 text-shadow-md"
           >
-            {{ contentInfo.title }}
+            {{ title.name }}
           </h1>
 
           <div
             class="flex flex-wrap items-center gap-4 mb-6 text-md md:text-lg lg:text-xl text-shadow-md"
           >
-            <span>{{ new Date(contentInfo.release).getFullYear() }}</span>
+            <span>{{ new Date(titleRelease).getFullYear() }}</span>
             <span>•</span>
             <div class="flex gap-2">
-              <span v-for="genre in content?.genres" :key="genre.id">
+              <span v-for="genre in title?.genres" :key="genre.id">
                 {{ genre.name }}
               </span>
             </div>
-            <span v-if="'number_of_seasons' in content">
-              {{ content?.number_of_seasons }}
-              {{ content?.number_of_seasons > 1 ? "Seasons" : "Season" }}
+            <span v-if="'numberOfSeasons' in title">
+              {{ title?.numberOfSeasons }}
+              {{ title?.numberOfSeasons > 1 ? "Seasons" : "Season" }}
             </span>
             <span v-else>
-              {{ Math.floor(content?.runtime / 60) }}h
-              {{ content?.runtime % 60 }}m
+              {{ Math.floor(title?.runtime / 60) }}h {{ title?.runtime % 60 }}m
             </span>
-            <span v-if="content?.adult" class="border px-2 py-0.5 rounded">
+            <span v-if="title?.adult" class="border px-2 py-0.5 rounded">
               18+
             </span>
           </div>
 
           <div class="flex gap-3 mb-8">
             <NuxtLink
-              v-if="new Date() >= new Date(contentInfo.release)"
+              v-if="new Date() >= new Date(titleRelease)"
               :to="{
                 name: 'watch-content-id',
                 params: {
-                  content: contentInfo.type,
-                  id: content.id,
+                  content: title.type,
+                  id: title.id,
                 },
               }"
             >
@@ -175,11 +143,11 @@ if (contentType === "shows") {
 
             <ClientOnly v-if="isAuthenticated && listsLoaded">
               <CommonButton
-                v-if="!isInMyList(content)"
+                v-if="!isInMyList(title)"
                 icon="plus-solid"
                 text="Add to My List"
                 class="!bg-neutral-500/70 text-white"
-                @click="addToMyList(content)"
+                @click="addToMyList(title)"
               />
 
               <CommonButton
@@ -187,7 +155,7 @@ if (contentType === "shows") {
                 icon="check-solid"
                 text="Remove from My List"
                 class="!bg-neutral-500/70 text-white"
-                @click="removeFromMyList(content)"
+                @click="removeFromMyList(title)"
               />
             </ClientOnly>
           </div>
@@ -203,12 +171,12 @@ if (contentType === "shows") {
             <p
               class="text-neutral-300 max-w-3xl leading-relaxed text-lg md:text-xl"
             >
-              {{ content.overview || "No overview available." }}
+              {{ title.overview || "No overview available." }}
             </p>
           </div>
 
           <div
-            v-if="contentInfo.isShow && seasons.length > 0"
+            v-if="title.type === 'tv' && seasons.length > 0"
             class="relative space-y-8"
           >
             <div class="absolute right-0 flex gap-2">
@@ -228,17 +196,17 @@ if (contentType === "shows") {
               </button>
             </div>
 
-            <ShowSeason :show="content as Show" :season="currentSeason" />
+            <ShowSeason :show="title as Show" :season="currentSeason" />
           </div>
 
-          <CommonGroup type="cast" title="Cast" :content="cast" />
+          <CommonGroup type="cast" name="Cast" :content="cast" />
         </div>
 
         <div class="hidden lg:block xl:w-1/4">
           <div class="sticky top-28">
             <NuxtImg
-              :src="`https://image.tmdb.org/t/p/w500${content?.poster_path}`"
-              :alt="contentInfo.title"
+              :src="`https://image.tmdb.org/t/p/w500${title?.posterPath}`"
+              :alt="title.name"
               class="rounded shadow-lg"
             />
           </div>
@@ -246,9 +214,10 @@ if (contentType === "shows") {
       </div>
 
       <CommonGroup
-        type="content"
-        title="More Like This"
-        :content="similarContent"
+        type="titles"
+        name="Recommendations"
+        :content="recommendedTitles"
+        empty="We don't have enough data to provide recommendations based on this title."
         class="my-16"
       />
     </main>

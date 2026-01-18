@@ -1,69 +1,29 @@
 <script setup lang="ts">
-import {
-  getAiringTodayShows,
-  getNowPlayingMovies,
-  getPopularShows,
-  getPopularMovies,
-  getUpcomingShows,
-  getUpcomingMovies,
-} from "~/services";
+import { getAiringTodayShows, getNowPlayingMovies } from "~/services";
 
-const [
-  airingTodayShows,
-  nowPlayingMovies,
-  popularShows,
-  popularMovies,
-  upcomingShows,
-  upcomingMovies,
-] = (
-  await Promise.all([
-    getAiringTodayShows(),
-    getNowPlayingMovies(),
-    getPopularShows(),
-    getPopularMovies(),
-    getUpcomingShows(),
-    getUpcomingMovies(),
-  ])
+const [airingTodayShows, nowPlayingMovies] = (
+  await Promise.all([getAiringTodayShows(), getNowPlayingMovies()])
 ).map((response) => response?.results || []);
 </script>
 
 <template>
   <div>
     <Head>
-      <Title>New & Popular - Nexa</Title>
+      <Title>Latest - Nexa</Title>
     </Head>
 
-    <main class="pl-4 lg:pl-16 pt-24 md:pt-32 pb-24">
+    <main class="pl-4 pb-24 lg:space-y-24 lg:pl-16">
+      <TitleFeatured :titles="[...airingTodayShows, ...nowPlayingMovies]" />
       <section class="space-y-5 md:space-y-10">
         <CommonGroup
-          type="content"
-          title="Airing Today Shows"
+          type="titles"
+          name="Airing Today Shows"
           :content="airingTodayShows"
         />
         <CommonGroup
-          type="content"
-          title="Now Playing Movies"
+          type="titles"
+          name="Now Playing Movies"
           :content="nowPlayingMovies"
-        />
-        <CommonGroup
-          type="content"
-          title="Popular Shows"
-          :content="popularShows"
-        />
-        <CommonGroup
-          type="content"
-          title="Popular Movies"
-          :content="popularMovies"
-        />
-        <CommonGroup
-          type="content"
-          title="Upcoming Shows"
-          :content="upcomingShows"
-        />
-        <CommonGroup
-          type="content"
-          title="Upcoming Movies"
-          :content="upcomingMovies"
         />
       </section>
     </main>

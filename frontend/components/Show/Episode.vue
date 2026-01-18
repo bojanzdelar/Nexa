@@ -12,8 +12,8 @@ defineProps<{
       <div class="w-1/3">
         <div class="relative">
           <NuxtImg
-            v-if="episode.still_path"
-            :src="`https://image.tmdb.org/t/p/w300${episode.still_path}`"
+            v-if="episode.stillPath"
+            :src="`https://image.tmdb.org/t/p/w300${episode.stillPath}`"
             :alt="episode.name"
             class="rounded w-full"
           />
@@ -31,11 +31,11 @@ defineProps<{
       <div class="w-2/3 space-y-2">
         <h4 class="font-semibold">{{ episode.name }}</h4>
         <div class="flex items-center gap-2 text-sm text-neutral-400">
-          <span>Episode {{ episode.episode_number }}</span>
+          <span>Episode {{ episode.episodeNumber }}</span>
           <span>•</span>
           <span>{{ episode.runtime }} min</span>
           <span>•</span>
-          <span>{{ new Date(episode.air_date).getFullYear() }}</span>
+          <span>{{ new Date(episode.airDate).getFullYear() }}</span>
         </div>
         <p class="text-sm text-neutral-300 line-clamp-3">
           {{ episode.overview || "No overview available." }}

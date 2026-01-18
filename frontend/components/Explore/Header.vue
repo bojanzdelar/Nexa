@@ -5,7 +5,7 @@ const itemsExplore = [
   { name: "Home", link: "/" },
   { name: "TV Shows", link: "/shows" },
   { name: "Movies", link: "/movies" },
-  { name: "New & Popular", link: "/latest" },
+  { name: "Latest", link: "/latest" },
   { name: "My List", link: "/my-list" },
   { name: "Browse", link: "/browse" },
 ];

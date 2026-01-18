@@ -4,7 +4,7 @@ import {
   createMyListItem,
   deleteMyListItem,
 } from "~/services";
-import type { Show, Movie } from "~/types";
+import type { Title, Show, Movie } from "~/types";
 
 export const useMyListStore = defineStore("myList", () => {
   const config = useRuntimeConfig();
@@ -25,31 +25,31 @@ export const useMyListStore = defineStore("myList", () => {
     listsLoaded.value = true;
   };
 
-  const isInMyList = (content: Show | Movie) => {
-    if (getContentType(content).isShow) {
-      return myShows.value.some((item) => item.id === content.id);
+  const isInMyList = (title: Title) => {
+    if (title.type === "tv") {
+      return myShows.value.some((item) => item.id === title.id);
     }
-    return myMovies.value.some((item) => item.id === content.id);
+    return myMovies.value.some((item) => item.id === title.id);
   };
 
-  const addToMyList = async (content: Show | Movie) => {
-    if (isInMyList(content)) return;
-    await createMyListItem(accountId, content, false);
+  const addToMyList = async (title: Title) => {
+    if (isInMyList(title)) return;
+    await createMyListItem(accountId, title, false);
 
-    if (getContentType(content).isShow) {
-      myShows.value.push(content as Show);
+    if (title.type === "tv") {
+      myShows.value.push(title as Show);
     } else {
-      myMovies.value.push(content as Movie);
+      myMovies.value.push(title as Movie);
     }
   };
 
-  const removeFromMyList = async (content: Show | Movie) => {
-    await deleteMyListItem(accountId, content, false);
+  const removeFromMyList = async (title: Title) => {
+    await deleteMyListItem(accountId, title, false);
 
-    if (getContentType(content).isShow) {
-      myShows.value = myShows.value.filter((item) => item.id !== content.id);
+    if (title.type === "tv") {
+      myShows.value = myShows.value.filter((item) => item.id !== title.id);
     } else {
-      myMovies.value = myMovies.value.filter((item) => item.id !== content.id);
+      myMovies.value = myMovies.value.filter((item) => item.id !== title.id);
     }
   };
 

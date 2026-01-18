@@ -2,34 +2,38 @@
 import type { Show, Movie } from "~/types";
 
 const props = defineProps<{
-  content: Array<Show | Movie>;
+  titles: Array<Show | Movie>;
 }>();
 
-const currentContent = ref<Show | Movie>(props.content[0]);
+const currentTitle = ref<Show | Movie>(props.titles[0]);
 
-const currentContentInfo = computed(() => getContentType(currentContent.value));
+const currentTitleRouteName = computed(() =>
+  getTitleRouteName(currentTitle.value)
+);
 
-const changeContent = () =>
-  (currentContent.value = getRandomElement(props.content)!);
+const changeTitle = () =>
+  (currentTitle.value = getRandomElement(props.titles)!);
 
-useIntervalFn(changeContent, 10000);
+changeTitle();
+
+useIntervalFn(changeTitle, 10000);
 </script>
 
 <template>
   <div
     class="flex flex-col space-y-2 py-16 md:space-y-4 h-[60vh] md:h-[75vh] justify-end lg:pb-12"
   >
-    <ContentBackdrop :content="currentContent" class="opacity-75" />
+    <TitleBackdrop :title="currentTitle" class="opacity-75" />
 
     <h1 class="text-2xl text-shadow-md font-bold md:text-4xl lg:text-7xl">
-      {{ currentContentInfo.title }}
+      {{ currentTitle.name }}
     </h1>
 
     <div class="line-clamp-6">
       <p
         class="text-md text-shadow-md md:max-w-lg md:text-lg lg:max-w-2xl lg:text-2xl hidden sm:block"
       >
-        {{ currentContent.overview }}
+        {{ currentTitle.tagline }}
       </p>
     </div>
 
@@ -38,8 +42,8 @@ useIntervalFn(changeContent, 10000);
         :to="{
           name: 'watch-content-id',
           params: {
-            content: currentContentInfo.type,
-            id: currentContent.id,
+            content: currentTitle.type,
+            id: currentTitle.id,
           },
         }"
       >
@@ -50,8 +54,8 @@ useIntervalFn(changeContent, 10000);
         :to="{
           name: 'content-id',
           params: {
-            content: currentContentInfo.routeName,
-            id: currentContent.id,
+            content: currentTitleRouteName,
+            id: currentTitle.id,
           },
         }"
       >

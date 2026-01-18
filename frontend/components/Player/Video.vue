@@ -2,11 +2,11 @@
 import type { Subtitle, SubtitleCue } from "~/types";
 
 const props = defineProps<{
-  contentType: "tv" | "movie";
-  contentId: number;
-  contentTitle: string | null;
-  episodeTitle: string | null;
-  contentSource: string;
+  titleType: "tv" | "movie";
+  titleId: number;
+  titleName: string | null;
+  episodeName: string | null;
+  titleSource: string;
   hasNextEpisode: boolean;
 }>();
 
@@ -47,7 +47,7 @@ const isAnyMenuOpen = computed(() => {
 });
 
 watch(
-  () => props.episodeTitle,
+  () => props.episodeName,
   () => {
     if (videoPlayer.value) {
       videoPlayer.value.currentTime = 0;
@@ -311,7 +311,7 @@ useEventListener("resize", calculateSubtitlePosition);
       @timeupdate="updateProgress"
       @canplay="onVideoLoaded"
     >
-      <source :src="contentSource" type="video/mp4" />
+      <source :src="titleSource" type="video/mp4" />
       Your browser does not support the video tag.
     </video>
 
@@ -431,15 +431,15 @@ useEventListener("resize", calculateSubtitlePosition);
           <div
             class="absolute text-sm lg:text-base xl:text-xl left-1/2 -translate-x-1/2 bottom-5 space-x-2 text-center"
           >
-            <div class="font-semibold">{{ contentTitle }}</div>
-            <div v-if="episodeTitle" class="font-normal">
-              {{ episodeTitle }}
+            <div class="font-semibold">{{ titleName }}</div>
+            <div v-if="episodeName" class="font-normal">
+              {{ episodeName }}
             </div>
           </div>
 
           <div class="flex items-center space-x-4">
             <Icon
-              v-if="contentType === 'tv' && hasNextEpisode"
+              v-if="titleType === 'tv' && hasNextEpisode"
               name="heroicons:forward-solid"
               class="cursor-pointer w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 m-1 lg:m-2"
               @click="emit('nextEpisode')"

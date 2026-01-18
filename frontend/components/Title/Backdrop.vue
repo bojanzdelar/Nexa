@@ -3,11 +3,9 @@ import type { Show, Movie } from "~/types";
 
 const config = useRuntimeConfig();
 
-const props = defineProps<{
-  content: Show | Movie;
+defineProps<{
+  title: Show | Movie;
 }>();
-
-const contentInfo = computed(() => getContentType(props.content));
 </script>
 
 <template>
@@ -15,9 +13,9 @@ const contentInfo = computed(() => getContentType(props.content));
     class="absolute top-0 left-0 -z-10 h-[40vh] sm:h-[65vh] lg:h-[95vh] w-screen"
   >
     <NuxtImg
-      :src="`${config.public.tmdbImageBaseUrl}/${content.backdrop_path}`"
+      :src="`${config.public.tmdbImageBaseUrl}/${title.backdropPath}`"
       class="w-full h-full object-cover object-center"
-      :alt="contentInfo.title"
+      :alt="title.name"
     />
 
     <div

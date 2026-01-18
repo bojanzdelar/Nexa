@@ -2,18 +2,20 @@
 import {
   getTrendingShows,
   getTopRatedShows,
-  getActionAndAdventureShows,
+  getDramaShows,
+  getSciFiFantasyShows,
   getComedyShows,
+  getCrimeShows,
   getMysteryShows,
-  getRomanceShows,
-  getDocumentaryShows,
+  getActionAndAdventureShows,
   getTrendingMovies,
   getTopRatedMovies,
   getActionMovies,
   getComedyMovies,
-  getHorrorMovies,
-  getRomanceMovies,
-  getDocumentaryMovies,
+  getDramaMovies,
+  getThrillerMovies,
+  getScienceFictionMovies,
+  getAdventureMovies,
 } from "~/services";
 
 definePageMeta({
@@ -23,30 +25,32 @@ definePageMeta({
 });
 
 const route = useRoute();
-const contentType = route.params.content as "shows" | "movies";
+const titleType = route.params.content as "shows" | "movies";
 
 const categoryConfigs = {
   shows: {
     "Trending Now": getTrendingShows,
     "Top Rated": getTopRatedShows,
-    "Action & Adventure": getActionAndAdventureShows,
+    Drama: getDramaShows,
+    "Sci-Fi & Fantasy": getSciFiFantasyShows,
     Comedy: getComedyShows,
+    Crime: getCrimeShows,
     Mystery: getMysteryShows,
-    Romance: getRomanceShows,
-    Documentary: getDocumentaryShows,
+    "Action & Adventure": getActionAndAdventureShows,
   },
   movies: {
     "Trending Now": getTrendingMovies,
     "Top Rated": getTopRatedMovies,
     Action: getActionMovies,
     Comedy: getComedyMovies,
-    Horror: getHorrorMovies,
-    Romance: getRomanceMovies,
-    Documentary: getDocumentaryMovies,
+    Drama: getDramaMovies,
+    Thriller: getThrillerMovies,
+    "Science Fiction": getScienceFictionMovies,
+    Adventure: getAdventureMovies,
   },
 };
 
-const currentConfig = categoryConfigs[contentType];
+const currentConfig = categoryConfigs[titleType];
 
 const categoryNames = Object.keys(currentConfig);
 
@@ -54,14 +58,12 @@ const categoryData = await Promise.all(
   Object.values(currentConfig).map((fn) => fn())
 );
 
-const categoriesContent = categoryData.map(
-  (response) => response?.results || []
-);
+const categoryTitles = categoryData.map((response) => response?.results || []);
 
 const categoriesToRender = categoryNames.map((name, index) => ({
-  title: name,
-  content: categoriesContent[index],
-  key: `${contentType}-${name.toLowerCase().replace(/\s+/g, "-")}`,
+  name,
+  titles: categoryTitles[index],
+  key: `${titleType}-${name.toLowerCase().replace(/\s+/g, "-")}`,
 }));
 </script>
 
@@ -69,25 +71,24 @@ const categoriesToRender = categoryNames.map((name, index) => ({
   <div>
     <Head>
       <Title>
-        {{ contentType === "shows" ? "TV Shows" : "Movies" }} - Nexa
+        {{ titleType === "shows" ? "TV Shows" : "Movies" }} - Nexa
       </Title>
     </Head>
 
     <main class="pl-4 pb-24 lg:space-y-24 lg:pl-16">
-      <ContentTrending
-        :content="
-          categoriesToRender.find(
-            (category) => category.title == 'Trending Now'
-          )?.content
+      <TitleFeatured
+        :titles="
+          categoriesToRender.find((category) => category.name == 'Trending Now')
+            ?.titles
         "
       />
       <section class="space-y-5 md:space-y-10">
         <CommonGroup
           v-for="category in categoriesToRender"
           :key="category.key"
-          type="content"
-          :title="category.title"
-          :content="category.content"
+          type="titles"
+          :name="category.name"
+          :content="category.titles"
         />
       </section>
     </main>
