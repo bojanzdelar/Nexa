@@ -10,6 +10,7 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbImmut
 @Builder
 @DynamoDbImmutable(builder = Recommendation.RecommendationBuilder.class)
 public class Recommendation {
+
   Long id;
   String type;
   String title;

@@ -10,6 +10,7 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbImmut
 @Builder
 @DynamoDbImmutable(builder = Episode.EpisodeBuilder.class)
 public class Episode {
+
   @Getter(onMethod_ = @DynamoDbAttribute("episode_number"))
   Integer episodeNumber;
 

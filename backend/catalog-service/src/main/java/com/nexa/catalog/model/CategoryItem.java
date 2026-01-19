@@ -9,6 +9,7 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.*;
 @Builder
 @DynamoDbImmutable(builder = CategoryItem.CategoryItemBuilder.class)
 public class CategoryItem {
+
   @Getter(onMethod_ = {@DynamoDbPartitionKey, @DynamoDbAttribute("PK")})
   String pk;
 

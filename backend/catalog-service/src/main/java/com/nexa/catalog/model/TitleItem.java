@@ -10,6 +10,7 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.*;
 @Builder
 @DynamoDbImmutable(builder = TitleItem.TitleItemBuilder.class)
 public class TitleItem {
+
   @Getter(onMethod_ = {@DynamoDbPartitionKey, @DynamoDbAttribute("PK")})
   String pk;
 

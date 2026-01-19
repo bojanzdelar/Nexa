@@ -7,20 +7,17 @@ import com.nexa.catalog.dto.TvShowDto;
 import com.nexa.catalog.service.CategoryService;
 import com.nexa.catalog.service.TitleService;
 import com.nexa.catalog.util.PaginationUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/tv")
+@RequiredArgsConstructor
 public class TvController {
 
   private final TitleService titleService;
   private final CategoryService categoryService;
-
-  public TvController(TitleService titleService, CategoryService categoryService) {
-    this.titleService = titleService;
-    this.categoryService = categoryService;
-  }
 
   @GetMapping("/{id}")
   public ResponseEntity<TvShowDto> getTvShow(@PathVariable Long id) {

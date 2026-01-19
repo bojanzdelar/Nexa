@@ -11,6 +11,7 @@ import org.mapstruct.NullValueMappingStrategy;
     componentModel = "spring",
     nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)
 public interface TitleItemMapper {
+
   @Mapping(target = "name", source = "meta.title")
   @Mapping(target = "originalName", source = "meta.originalTitle")
   @Mapping(target = "cast", source = "cast")

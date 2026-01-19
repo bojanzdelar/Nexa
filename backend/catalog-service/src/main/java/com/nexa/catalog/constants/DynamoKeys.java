@@ -1,6 +1,7 @@
 package com.nexa.catalog.constants;
 
 public final class DynamoKeys {
+
   public static final String SK_META = "META";
   public static final String SK_CREDITS = "CREDITS";
   public static final String SK_RECOMMENDATIONS = "RECOMMENDATIONS";

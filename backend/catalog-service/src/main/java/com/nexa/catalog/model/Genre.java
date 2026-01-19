@@ -8,6 +8,7 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbImmut
 @Builder
 @DynamoDbImmutable(builder = Genre.GenreBuilder.class)
 public class Genre {
+
   Integer id;
   String name;
 }

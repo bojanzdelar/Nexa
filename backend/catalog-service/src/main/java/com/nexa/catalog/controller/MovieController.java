@@ -7,20 +7,17 @@ import com.nexa.catalog.dto.PagedResponse;
 import com.nexa.catalog.service.CategoryService;
 import com.nexa.catalog.service.TitleService;
 import com.nexa.catalog.util.PaginationUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/movies")
+@RequiredArgsConstructor
 public class MovieController {
 
   private final TitleService titleService;
   private final CategoryService categoryService;
-
-  public MovieController(TitleService titleService, CategoryService categoryService) {
-    this.titleService = titleService;
-    this.categoryService = categoryService;
-  }
 
   @GetMapping("/{id}")
   public ResponseEntity<MovieDto> getMovie(@PathVariable Long id) {

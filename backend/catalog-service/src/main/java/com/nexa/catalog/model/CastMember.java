@@ -10,6 +10,7 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbImmut
 @Builder
 @DynamoDbImmutable(builder = CastMember.CastMemberBuilder.class)
 public class CastMember {
+
   Long id;
   String name;
   String character;

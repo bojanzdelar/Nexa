@@ -1,6 +1,7 @@
 package com.nexa.catalog.util;
 
 public class PaginationUtil {
+
   private PaginationUtil() {}
 
   public static int clampLimit(int limit) {

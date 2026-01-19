@@ -6,18 +6,15 @@ import com.nexa.catalog.mapper.TitleItemMapper;
 import com.nexa.catalog.model.*;
 import com.nexa.catalog.repository.TitleRepository;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class TitleService {
 
   private final TitleRepository repository;
   private final TitleItemMapper mapper;
-
-  public TitleService(TitleRepository repository, TitleItemMapper mapper) {
-    this.repository = repository;
-    this.mapper = mapper;
-  }
 
   public MovieDto getMovieById(Long id) {
     String pk = DynamoKeys.movieTitle(id);
