@@ -1,9 +1,11 @@
 spring:
   application:
     name: catalog-service
+  jackson:
+    default-property-inclusion: non_null
 
 server:
-  port: 8081
+  port: 8080
 
 aws:
   region: eu-central-1

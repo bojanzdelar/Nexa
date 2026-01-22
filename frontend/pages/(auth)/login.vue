@@ -19,7 +19,29 @@ const errors = ref({
   password: false,
 });
 
+const serverError = ref<string | null>(null);
+
+const isLoading = ref(false);
+
+const getErrorMessage = (err: unknown) => {
+  const e = err as { name?: string; message?: string };
+
+  if (e?.name === "UserNotFoundException")
+    return "No account found with this email.";
+  if (e?.name === "NotAuthorizedException")
+    return "Incorrect email or password.";
+  if (
+    e?.name === "TooManyRequestsException" ||
+    e?.name === "LimitExceededException"
+  )
+    return "Too many attempts. Please try again later.";
+
+  return e?.message ?? "Something went wrong. Please try again.";
+};
+
 const signIn = async () => {
+  serverError.value = null;
+
   errors.value.email = !form.value.email;
   errors.value.password =
     !form.value.password ||
@@ -28,9 +50,26 @@ const signIn = async () => {
 
   if (errors.value.email || errors.value.password) return;
 
-  await logIn({ email: form.value.email, password: form.value.password });
+  try {
+    isLoading.value = true;
 
-  router.push("/");
+    await logIn({ email: form.value.email, password: form.value.password });
+
+    router.push("/");
+  } catch (err) {
+    const e = err as { name?: string };
+
+    if (e?.name === "UserNotConfirmedException") {
+      router.push(
+        `/confirm-email?email=${encodeURIComponent(form.value.email)}`,
+      );
+      return;
+    }
+
+    serverError.value = getErrorMessage(err);
+  } finally {
+    isLoading.value = false;
+  }
 };
 </script>
 
@@ -40,6 +79,13 @@ const signIn = async () => {
     @submit.prevent="signIn"
   >
     <h1 class="text-4xl font-semibold">Sign In</h1>
+
+    <p
+      v-if="serverError"
+      class="rounded bg-malachite/20 px-4 py-3 text-sm text-malachite"
+    >
+      {{ serverError }}
+    </p>
 
     <div class="space-y-4">
       <label class="inline-block w-full">
@@ -71,9 +117,10 @@ const signIn = async () => {
 
     <button
       type="submit"
-      class="w-full rounded bg-malachite py-3 font-semibold"
+      class="w-full rounded bg-malachite py-3 font-semibold disabled:opacity-60"
+      :disabled="isLoading"
     >
-      Sign In
+      {{ isLoading ? "Signing in..." : "Sign In" }}
     </button>
 
     <div class="text-neutral-500">

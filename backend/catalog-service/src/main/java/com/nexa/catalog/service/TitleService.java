@@ -2,6 +2,7 @@ package com.nexa.catalog.service;
 
 import com.nexa.catalog.constants.DynamoKeys;
 import com.nexa.catalog.dto.*;
+import com.nexa.catalog.exception.NotFoundException;
 import com.nexa.catalog.mapper.TitleItemMapper;
 import com.nexa.catalog.model.*;
 import com.nexa.catalog.repository.TitleRepository;
@@ -20,7 +21,7 @@ public class TitleService {
     String pk = DynamoKeys.movieTitle(id);
 
     TitleItem meta = repository.getItem(pk, DynamoKeys.SK_META);
-    if (meta == null) return null;
+    if (meta == null) throw new NotFoundException("Movie not found");
 
     TitleItem credits = repository.getItem(pk, DynamoKeys.SK_CREDITS);
     TitleItem recommendations = repository.getItem(pk, DynamoKeys.SK_RECOMMENDATIONS);
@@ -32,7 +33,7 @@ public class TitleService {
     String pk = DynamoKeys.tvTitle(id);
 
     TitleItem meta = repository.getItem(pk, DynamoKeys.SK_META);
-    if (meta == null) return null;
+    if (meta == null) throw new NotFoundException("TV show not found");
 
     TitleItem credits = repository.getItem(pk, DynamoKeys.SK_CREDITS);
     TitleItem recommendations = repository.getItem(pk, DynamoKeys.SK_RECOMMENDATIONS);

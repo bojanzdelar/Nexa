@@ -21,8 +21,7 @@ public class MovieController {
 
   @GetMapping("/{id}")
   public ResponseEntity<MovieDto> getMovie(@PathVariable Long id) {
-    MovieDto movie = titleService.getMovieById(id);
-    return movie == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(movie);
+    return ResponseEntity.ok(titleService.getMovieById(id));
   }
 
   @GetMapping("/trending")

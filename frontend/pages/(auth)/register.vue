@@ -6,52 +6,86 @@ definePageMeta({
 });
 
 const router = useRouter();
-
 const { register } = useAuthStore();
 
 const form = ref({
   email: "",
   password: "",
   confirmPassword: "",
-  name: "",
+  firstName: "",
+  lastName: "",
 });
 
 const errors = ref({
   email: false,
   password: false,
   confirmPassword: false,
-  name: false,
+  firstName: false,
+  lastName: false,
 });
 
+const serverError = ref<string | null>(null);
+
+const isLoading = ref(false);
+
+const getErrorMessage = (err: unknown) => {
+  const e = err as { name?: string; message?: string };
+
+  if (e?.name === "UsernameExistsException")
+    return "An account with this email already exists.";
+  if (e?.name === "InvalidPasswordException")
+    return "Password does not meet requirements.";
+  if (e?.name === "InvalidParameterException")
+    return "Invalid input. Please check your data.";
+  if (e?.name === "TooManyRequestsException")
+    return "Too many attempts. Please try again later.";
+
+  return e?.message ?? "Something went wrong. Please try again.";
+};
+
 const signUp = async () => {
+  serverError.value = null;
+
   errors.value.email = !form.value.email;
 
   errors.value.password =
     !form.value.password ||
-    form.value.password.length < 4 ||
+    form.value.password.length < 8 ||
     form.value.password.length > 60;
 
   errors.value.confirmPassword =
     !form.value.confirmPassword ||
     form.value.password !== form.value.confirmPassword;
 
-  errors.value.name = !form.value.name;
+  errors.value.firstName = !form.value.firstName;
+  errors.value.lastName = !form.value.lastName;
 
   if (
     errors.value.email ||
     errors.value.password ||
     errors.value.confirmPassword ||
-    errors.value.name
-  )
+    errors.value.firstName ||
+    errors.value.lastName
+  ) {
     return;
+  }
 
-  await register({
-    email: form.value.email,
-    password: form.value.password,
-    name: form.value.name,
-  });
+  try {
+    isLoading.value = true;
 
-  router.push("/login");
+    await register({
+      email: form.value.email,
+      password: form.value.password,
+      firstName: form.value.firstName,
+      lastName: form.value.lastName,
+    });
+
+    router.push(`/confirm-email?email=${encodeURIComponent(form.value.email)}`);
+  } catch (err) {
+    serverError.value = getErrorMessage(err);
+  } finally {
+    isLoading.value = false;
+  }
 };
 </script>
 
@@ -61,17 +95,39 @@ const signUp = async () => {
     @submit.prevent="signUp"
   >
     <h1 class="text-4xl font-semibold">Sign Up</h1>
+
+    <p
+      v-if="serverError"
+      class="rounded bg-malachite/20 px-4 py-3 text-sm text-malachite"
+    >
+      {{ serverError }}
+    </p>
+
     <div class="space-y-4">
       <label class="inline-block w-full">
         <input
-          v-model="form.name"
+          v-model="form.firstName"
           type="text"
-          placeholder="Name"
+          placeholder="First name"
           class="w-full rounded bg-neutral-800 px-5 py-3 placeholder-neutral-500 outline-none focus:bg-neutral-700"
         />
+        <p
+          v-if="errors.firstName"
+          class="p-1 text-sm font-light text-malachite"
+        >
+          Please enter your first name.
+        </p>
+      </label>
 
-        <p v-if="errors.name" class="p-1 text-sm font-light text-malachite">
-          Please enter your name.
+      <label class="inline-block w-full">
+        <input
+          v-model="form.lastName"
+          type="text"
+          placeholder="Last name"
+          class="w-full rounded bg-neutral-800 px-5 py-3 placeholder-neutral-500 outline-none focus:bg-neutral-700"
+        />
+        <p v-if="errors.lastName" class="p-1 text-sm font-light text-malachite">
+          Please enter your last name.
         </p>
       </label>
 
@@ -82,7 +138,6 @@ const signUp = async () => {
           placeholder="Email"
           class="w-full rounded bg-neutral-800 px-5 py-3 placeholder-neutral-500 outline-none focus:bg-neutral-700"
         />
-
         <p v-if="errors.email" class="p-1 text-sm font-light text-malachite">
           Please enter a valid email.
         </p>
@@ -95,9 +150,8 @@ const signUp = async () => {
           placeholder="Password"
           class="w-full rounded bg-neutral-800 px-5 py-3 placeholder-neutral-500 outline-none focus:bg-neutral-700"
         />
-
         <p v-if="errors.password" class="p-1 text-sm font-light text-malachite">
-          Your password must contain between 4 and 60 characters.
+          Your password must contain between 8 and 60 characters.
         </p>
       </label>
 
@@ -108,7 +162,6 @@ const signUp = async () => {
           placeholder="Confirm Password"
           class="w-full rounded bg-neutral-800 px-5 py-3 placeholder-neutral-500 outline-none focus:bg-neutral-700"
         />
-
         <p
           v-if="errors.confirmPassword"
           class="p-1 text-sm font-light text-malachite"
@@ -120,9 +173,10 @@ const signUp = async () => {
 
     <button
       type="submit"
-      class="w-full rounded bg-malachite py-3 font-semibold"
+      class="w-full rounded bg-malachite py-3 font-semibold disabled:opacity-60"
+      :disabled="isLoading"
     >
-      Sign Up
+      {{ isLoading ? "Signing up..." : "Sign Up" }}
     </button>
 
     <div class="text-neutral-500">

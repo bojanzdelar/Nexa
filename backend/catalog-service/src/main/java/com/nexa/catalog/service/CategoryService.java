@@ -2,6 +2,7 @@ package com.nexa.catalog.service;
 
 import com.nexa.catalog.dto.CategoryItemDto;
 import com.nexa.catalog.dto.PagedResponse;
+import com.nexa.catalog.exception.NotFoundException;
 import com.nexa.catalog.mapper.CategoryItemMapper;
 import com.nexa.catalog.model.CategoryItem;
 import com.nexa.catalog.repository.CategoryRepository;
@@ -24,6 +25,10 @@ public class CategoryService {
     Map<String, AttributeValue> startKey = CursorUtil.decodeCursor(cursor);
 
     Page<CategoryItem> page = repository.queryCategory(pk, limit, startKey);
+
+    if ((cursor == null || cursor.isBlank()) && page.items().isEmpty()) {
+      throw new NotFoundException("Category not found");
+    }
 
     List<CategoryItemDto> items = page.items().stream().map(mapper::toDto).toList();
 

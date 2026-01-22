@@ -2,6 +2,7 @@ package com.nexa.catalog.util;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nexa.catalog.exception.BadRequestException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
@@ -14,12 +15,10 @@ public class CursorUtil {
 
   private CursorUtil() {}
 
-  /** Encodes DynamoDB LastEvaluatedKey (Map<String, AttributeValue>) to a Base64 JSON cursor. */
   public static String encodeCursor(Map<String, AttributeValue> lastEvaluatedKey) {
     if (lastEvaluatedKey == null || lastEvaluatedKey.isEmpty()) return null;
 
     try {
-      // Convert AttributeValue map -> simple map of strings
       Map<String, String> simple = new HashMap<>();
       for (var entry : lastEvaluatedKey.entrySet()) {
         AttributeValue av = entry.getValue();
@@ -35,11 +34,10 @@ public class CursorUtil {
           .withoutPadding()
           .encodeToString(json.getBytes(StandardCharsets.UTF_8));
     } catch (Exception e) {
-      throw new RuntimeException("Failed to encode cursor", e);
+      throw new IllegalStateException("Failed to encode cursor", e);
     }
   }
 
-  /** Decodes Base64 JSON cursor -> DynamoDB ExclusiveStartKey map. */
   public static Map<String, AttributeValue> decodeCursor(String cursor) {
     if (cursor == null || cursor.isBlank()) return null;
 
@@ -50,7 +48,6 @@ public class CursorUtil {
       Map<String, String> simple = MAPPER.readValue(json, new TypeReference<>() {});
       Map<String, AttributeValue> key = new HashMap<>();
 
-      // Your keys are strings (PK/SK), so use .s
       if (simple.containsKey("PK")) {
         key.put("PK", AttributeValue.builder().s(simple.get("PK")).build());
       }
@@ -60,7 +57,7 @@ public class CursorUtil {
 
       return key.isEmpty() ? null : key;
     } catch (Exception e) {
-      throw new RuntimeException("Invalid cursor", e);
+      throw new BadRequestException("Invalid cursor");
     }
   }
 }

@@ -1,11 +1,11 @@
 import { defu } from "defu";
 import type { UseFetchOptions } from "#app";
 
-export const useApiForSsr = async <T>(
+export const useCatalogApiForSsr = async <T>(
   url: string,
-  options?: UseFetchOptions<T>
+  options?: UseFetchOptions<T>,
 ) => {
-  const defaultOptions = useApiDefaults();
+  const defaultOptions = useCatalogApiDefaults();
   const mergedOptions = defu(options, defaultOptions);
 
   // useFetch is combination of useAsyncData and $fetch, just a syntatic sugar

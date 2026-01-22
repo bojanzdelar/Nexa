@@ -21,8 +21,7 @@ public class TvController {
 
   @GetMapping("/{id}")
   public ResponseEntity<TvShowDto> getTvShow(@PathVariable Long id) {
-    TvShowDto tvShow = titleService.getTvShowById(id);
-    return tvShow == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(tvShow);
+    return ResponseEntity.ok(titleService.getTvShowById(id));
   }
 
   @GetMapping("/trending")
