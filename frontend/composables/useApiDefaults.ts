@@ -1,17 +1,14 @@
 import type { FetchContext, FetchResponse } from "ofetch";
 
-export const useCatalogApiDefaults = <T>() => {
-  const config = useRuntimeConfig();
-
+export const useApiDefaults = <T>(baseURL: string) => {
   return {
-    baseURL: config.public.catalogApiBaseUrl,
-
+    baseURL,
     onResponseError: ({
       response,
     }: FetchContext & { response: FetchResponse<T> }) => {
       throw {
         status: response.status,
-        message: response._data?.message || "Catalog request failed",
+        message: response._data?.message || "API request failed",
         data: response._data,
       };
     },

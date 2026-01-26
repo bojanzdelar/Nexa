@@ -1,9 +1,9 @@
 server:
-  port: 8080
+  port: 8081
 
 spring:
   application:
-    name: catalog-service
+    name: search-service
   jackson:
     default-property-inclusion: non_null
 
@@ -12,3 +12,6 @@ aws:
   dynamodb:
     table:
       name: NexaCatalog
+      sk-index: sk-index
+  opensearch:
+    endpoint: ${OPENSEARCH_ENDPOINT}

@@ -16,7 +16,7 @@ public class CategoryRepository {
 
   public CategoryRepository(
       DynamoDbEnhancedClient enhancedClient,
-      @Value("${nexa.catalog.table-name}") String tableName) {
+      @Value("${aws.dynamodb.table.name}") String tableName) {
     this.table =
         enhancedClient.table(tableName, TableSchema.fromImmutableClass(CategoryItem.class));
   }

@@ -1,6 +1,13 @@
-export interface TitlesReponse<T> {
+export interface CategoryResponse<T> {
   results: T[];
   nextCursor: string;
+}
+
+export interface SearchResponse {
+  results: Title[];
+  page: number;
+  size: number;
+  total: number;
 }
 
 export interface Title {

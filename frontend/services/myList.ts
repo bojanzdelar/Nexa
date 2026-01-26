@@ -1,13 +1,13 @@
-import type { Title, TitlesReponse, Show, Movie } from "~/types";
+import type { Title, CategoryResponse, Show, Movie } from "~/types";
 
 export const getMyShows = (accountId: number, ssr: boolean = true) => {
-  return useCatalogApi(ssr)<TitlesReponse<Show>>(
+  return useCatalogApi(ssr)<CategoryResponse<Show>>(
     `/account/${accountId}/watchlist/tv`,
   );
 };
 
 export const getMyMovies = (accountId: number, ssr: boolean = true) => {
-  return useCatalogApi(ssr)<TitlesReponse<Movie>>(
+  return useCatalogApi(ssr)<CategoryResponse<Movie>>(
     `/account/${accountId}/watchlist/movies`,
   );
 };

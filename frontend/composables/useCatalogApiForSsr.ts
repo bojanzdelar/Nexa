@@ -5,7 +5,8 @@ export const useCatalogApiForSsr = async <T>(
   url: string,
   options?: UseFetchOptions<T>,
 ) => {
-  const defaultOptions = useCatalogApiDefaults();
+  const config = useRuntimeConfig();
+  const defaultOptions = useApiDefaults(config.public.catalogApiBaseUrl);
   const mergedOptions = defu(options, defaultOptions);
 
   // useFetch is combination of useAsyncData and $fetch, just a syntatic sugar
