@@ -16,7 +16,7 @@ public class CategoryRepository {
 
   public CategoryRepository(
       DynamoDbEnhancedClient enhancedClient,
-      @Value("${aws.dynamodb.table.name}") String tableName) {
+      @Value("${aws.dynamodb.catalog.table-name}") String tableName) {
     this.table =
         enhancedClient.table(tableName, TableSchema.fromImmutableClass(CategoryItem.class));
   }

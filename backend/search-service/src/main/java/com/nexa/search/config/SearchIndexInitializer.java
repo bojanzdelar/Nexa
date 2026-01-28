@@ -1,6 +1,7 @@
 package com.nexa.search.config;
 
-import com.nexa.search.constants.SearchConstants;
+import static com.nexa.search.constants.SearchConstants.*;
+
 import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
@@ -26,12 +27,12 @@ public class SearchIndexInitializer {
   }
 
   private boolean indexExists() throws IOException {
-    return client.indices().exists(e -> e.index(SearchConstants.INDEX_TITLES)).value();
+    return client.indices().exists(e -> e.index(INDEX_TITLES)).value();
   }
 
   private CreateIndexRequest buildIndexRequest() {
     return new CreateIndexRequest.Builder()
-        .index(SearchConstants.INDEX_TITLES)
+        .index(INDEX_TITLES)
         .settings(buildSettings())
         .mappings(buildMappings())
         .build();

@@ -10,5 +10,5 @@ spring:
 aws:
   region: eu-central-1
   dynamodb:
-    table:
-      name: NexaCatalog
+    catalog:
+      table-name: NexaCatalog

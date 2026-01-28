@@ -1,6 +1,7 @@
 package com.nexa.search.service;
 
-import com.nexa.search.constants.SearchConstants;
+import static com.nexa.search.constants.SearchConstants.*;
+
 import com.nexa.search.dto.PagedResponse;
 import com.nexa.search.dto.SearchResultDto;
 import com.nexa.search.mapper.SearchResultMapper;
@@ -51,6 +52,6 @@ public class SearchService {
     var searchQuery = new Query.Builder().multiMatch(multiMatch).build();
 
     return s ->
-        s.index(SearchConstants.INDEX_TITLES).from((page - 1) * size).size(size).query(searchQuery);
+        s.index(INDEX_TITLES).from((page - 1) * size).size(size).query(searchQuery);
   }
 }

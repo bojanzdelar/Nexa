@@ -1,15 +1,8 @@
-import {
-  getMyShows,
-  getMyMovies,
-  createMyListItem,
-  deleteMyListItem,
-} from "~/services";
-import type { Title, Show, Movie } from "~/types";
+import { getMyList, createMyListItem, deleteMyListItem } from "~/services";
+import { sortByUpdatedDesc } from "~/utils/title";
+import type { TitleSummary, Show, Movie } from "~/types";
 
 export const useMyListStore = defineStore("myList", () => {
-  const config = useRuntimeConfig();
-  const accountId = Number(config.public.tmdbApiAccountId);
-
   const myShows = ref<Show[]>([]);
   const myMovies = ref<Movie[]>([]);
   const listsLoaded = ref<boolean>(false);
@@ -17,34 +10,39 @@ export const useMyListStore = defineStore("myList", () => {
   onMounted(() => fetchMyList());
 
   const fetchMyList = async () => {
-    const shows = await getMyShows(accountId, false);
-    const movies = await getMyMovies(accountId, false);
+    const titles = await getMyList();
 
-    myShows.value = shows.results || [];
-    myMovies.value = movies.results || [];
+    myShows.value = titles
+      .filter((t) => t.type === "tv")
+      .sort(sortByUpdatedDesc) as Show[];
+
+    myMovies.value = titles
+      .filter((t) => t.type === "movie")
+      .sort(sortByUpdatedDesc) as Movie[];
+
     listsLoaded.value = true;
   };
 
-  const isInMyList = (title: Title) => {
+  const isInMyList = (title: TitleSummary) => {
     if (title.type === "tv") {
       return myShows.value.some((item) => item.id === title.id);
     }
     return myMovies.value.some((item) => item.id === title.id);
   };
 
-  const addToMyList = async (title: Title) => {
+  const addToMyList = async (title: TitleSummary) => {
     if (isInMyList(title)) return;
-    await createMyListItem(accountId, title, false);
+    await createMyListItem(title);
 
     if (title.type === "tv") {
-      myShows.value.push(title as Show);
+      myShows.value.unshift(title as Show);
     } else {
-      myMovies.value.push(title as Movie);
+      myMovies.value.unshift(title as Movie);
     }
   };
 
-  const removeFromMyList = async (title: Title) => {
-    await deleteMyListItem(accountId, title, false);
+  const removeFromMyList = async (title: TitleSummary) => {
+    await deleteMyListItem(title);
 
     if (title.type === "tv") {
       myShows.value = myShows.value.filter((item) => item.id !== title.id);

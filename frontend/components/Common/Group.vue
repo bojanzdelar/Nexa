@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { Title, Cast } from "~/types";
+import type { TitleSummary, Cast } from "~/types";
 
 const props = defineProps<{
   type: "cast" | "titles";
   name: string;
-  content: (Title | Cast)[];
+  content: (TitleSummary | Cast)[];
   empty?: string;
 }>();
 
@@ -16,7 +16,7 @@ const filteredContent = computed(() => {
   if (props.type === "cast") {
     return (props.content as Cast[]).filter((c) => c.profilePath);
   } else {
-    return (props.content as Title[]).filter((c) => c.posterPath);
+    return (props.content as TitleSummary[]).filter((c) => c.posterPath);
   }
 });
 
@@ -82,7 +82,7 @@ useEventListener("resize", checkOverflow);
           <TitleThumbnail
             v-for="title in filteredContent"
             :key="title.id"
-            :title="title as Title"
+            :title="title as TitleSummary"
           />
         </template>
       </div>

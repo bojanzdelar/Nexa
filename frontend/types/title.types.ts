@@ -4,25 +4,32 @@ export interface CategoryResponse<T> {
 }
 
 export interface SearchResponse {
-  results: Title[];
+  results: TitleSummary[];
   page: number;
   size: number;
   total: number;
 }
 
-export interface Title {
+export interface TitleRef {
   id: number;
   type: string;
+  updatedAt: string;
+}
+
+export interface TitleSummary extends TitleRef {
   name: string;
+  posterPath: string;
+}
+
+export interface Title extends TitleSummary {
   tagline: string;
   overview: string;
   backdropPath: string;
-  posterPath: string;
   runtime: number;
   adult: boolean;
   genres: Genre[];
   cast: Cast[];
-  recommendations: Title[];
+  recommendations: TitleSummary[];
 }
 
 export interface Genre {

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { getShowDetails, getMovieDetails } from "~/services";
 import { useAuthStore, useMyListStore } from "~/store";
-import type { Title, Show, Movie, Cast, Season } from "~/types";
+import type { Show, Movie, TitleSummary, Cast, Season } from "~/types";
 
 definePageMeta({
   validate: (route) => {
@@ -25,7 +25,7 @@ const { isInMyList, addToMyList, removeFromMyList } = myListStore;
 
 const title = ref<Show | Movie>({} as Show);
 const cast = ref<Cast[]>([]);
-const recommendedTitles = ref<Title[]>([]);
+const recommendedTitles = ref<TitleSummary[]>([]);
 const seasons = ref<Season[]>([]);
 const currentSeasonIndex = ref(0);
 
@@ -66,7 +66,7 @@ const fetchData = async () => {
 
   if (titleType === "shows") {
     seasons.value = (title.value as Show).seasons.filter(
-      (season: Season) => season.seasonNumber != 0
+      (season: Season) => season.seasonNumber != 0,
     );
 
     if (seasonQuery && seasonQuery <= seasons.value.length) {

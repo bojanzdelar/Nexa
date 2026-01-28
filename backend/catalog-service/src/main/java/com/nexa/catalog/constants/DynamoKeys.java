@@ -2,6 +2,10 @@ package com.nexa.catalog.constants;
 
 public final class DynamoKeys {
 
+  public static final String TITLE_PREFIX = "TITLE#";
+  public static final String TV = "tv";
+  public static final String MOVIE = "movie";
+
   public static final String SK_META = "META";
   public static final String SK_CREDITS = "CREDITS";
   public static final String SK_RECOMMENDATIONS = "RECOMMENDATIONS";
@@ -17,12 +21,16 @@ public final class DynamoKeys {
 
   private DynamoKeys() {}
 
+  public static String titlePk(String type, Long id) {
+    return TITLE_PREFIX + type.toLowerCase() + "#" + id;
+  }
+
   public static String tvTitle(Long tvId) {
-    return "TITLE#tv#" + tvId;
+    return titlePk(TV, tvId);
   }
 
   public static String movieTitle(Long movieId) {
-    return "TITLE#movie#" + movieId;
+    return titlePk(MOVIE, movieId);
   }
 
   public static String tvGenre(int genreId) {

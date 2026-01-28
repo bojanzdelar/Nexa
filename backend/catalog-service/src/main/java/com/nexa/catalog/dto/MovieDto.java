@@ -18,4 +18,4 @@ public record MovieDto(
     String posterPath,
     String backdropPath,
     List<CastMemberDto> cast,
-    List<RecommendationDto> recommendations) {}
+    List<TitleSummaryDto> recommendations) {}

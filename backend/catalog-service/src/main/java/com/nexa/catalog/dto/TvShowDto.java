@@ -18,5 +18,5 @@ public record TvShowDto(
     String posterPath,
     String backdropPath,
     List<CastMemberDto> cast,
-    List<RecommendationDto> recommendations,
+    List<TitleSummaryDto> recommendations,
     List<SeasonDto> seasons) {}

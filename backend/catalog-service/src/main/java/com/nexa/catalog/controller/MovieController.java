@@ -1,6 +1,7 @@
 package com.nexa.catalog.controller;
 
-import com.nexa.catalog.constants.DynamoKeys;
+import static com.nexa.catalog.constants.DynamoKeys.*;
+
 import com.nexa.catalog.dto.CategoryItemDto;
 import com.nexa.catalog.dto.MovieDto;
 import com.nexa.catalog.dto.PagedResponse;
@@ -27,19 +28,19 @@ public class MovieController {
   @GetMapping("/trending")
   public PagedResponse<CategoryItemDto> trending(
       @RequestParam(defaultValue = "20") int limit, @RequestParam(required = false) String cursor) {
-    return category(DynamoKeys.MOVIE_TRENDING, limit, cursor);
+    return category(MOVIE_TRENDING, limit, cursor);
   }
 
   @GetMapping("/top-rated")
   public PagedResponse<CategoryItemDto> topRated(
       @RequestParam(defaultValue = "20") int limit, @RequestParam(required = false) String cursor) {
-    return category(DynamoKeys.MOVIE_TOP_RATED, limit, cursor);
+    return category(MOVIE_TOP_RATED, limit, cursor);
   }
 
   @GetMapping("/latest")
   public PagedResponse<CategoryItemDto> latest(
       @RequestParam(defaultValue = "20") int limit, @RequestParam(required = false) String cursor) {
-    return category(DynamoKeys.MOVIE_LATEST, limit, cursor);
+    return category(MOVIE_LATEST, limit, cursor);
   }
 
   @GetMapping("/genres/{genreId}")
@@ -47,7 +48,7 @@ public class MovieController {
       @PathVariable int genreId,
       @RequestParam(defaultValue = "20") int limit,
       @RequestParam(required = false) String cursor) {
-    return category(DynamoKeys.movieGenre(genreId), limit, cursor);
+    return category(movieGenre(genreId), limit, cursor);
   }
 
   private PagedResponse<CategoryItemDto> category(String pk, int limit, String cursor) {

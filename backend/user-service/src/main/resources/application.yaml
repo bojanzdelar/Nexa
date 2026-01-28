@@ -6,14 +6,14 @@ spring:
     name: user-service
   jackson:
     default-property-inclusion: non_null
-  datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-  jpa:
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        format_sql: true
-    open-in-view: false
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://cognito-idp.eu-central-1.amazonaws.com/eu-central-1_dSFWU4zIW
+
+aws:
+  region: eu-central-1
+  dynamodb:
+    users:
+      table-name: NexaUsers

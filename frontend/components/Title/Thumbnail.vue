@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { useAuthStore, useMyListStore } from "~/store";
-import type { Title } from "~/types";
+import type { TitleSummary } from "~/types";
 
 const props = defineProps<{
-  title: Title;
+  title: TitleSummary;
 }>();
 
 const authStore = useAuthStore();

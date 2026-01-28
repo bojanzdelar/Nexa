@@ -10,8 +10,8 @@ spring:
 aws:
   region: eu-central-1
   dynamodb:
-    table:
-      name: NexaCatalog
+    catalog:
+      table-name: NexaCatalog
       sk-index: sk-index
   opensearch:
-    endpoint: ${OPENSEARCH_ENDPOINT}
+    endpoint: search-nexa-search-7k3df9sl2k1.eu-central-1.es.amazonaws.com

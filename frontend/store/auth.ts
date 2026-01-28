@@ -21,6 +21,11 @@ export const useAuthStore = defineStore("auth", () => {
 
   const isAuthenticated = computed(() => !!user.value);
 
+  const getAccessToken = async (): Promise<string | null> => {
+    const session = await fetchAuthSession();
+    return session.tokens?.accessToken?.toString() ?? null;
+  };
+
   const normalizeEmail = (email: string) => email.trim().toLowerCase();
 
   const register = async (payload: UserRegisterRequest) => {
@@ -84,11 +89,12 @@ export const useAuthStore = defineStore("auth", () => {
   return {
     user: skipHydrate(user),
     isAuthenticated,
+    getAccessToken,
     register,
     confirmEmail,
     resendConfirmationCode,
     logIn,
-    logOut,
     hydrateSession,
+    logOut,
   };
 });

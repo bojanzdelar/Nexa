@@ -1,7 +1,8 @@
 package com.nexa.search.service;
 
-import com.nexa.search.constants.DynamoKeys;
-import com.nexa.search.constants.SearchConstants;
+import static com.nexa.search.constants.DynamoKeys.*;
+import static com.nexa.search.constants.SearchConstants.*;
+
 import com.nexa.search.mapper.SearchIndexMapper;
 import com.nexa.search.model.SearchDocument;
 import java.io.IOException;
@@ -26,10 +27,10 @@ public class ReindexService {
   private final DynamoDbClient dynamo;
   private final SearchIndexMapper mapper;
 
-  @Value("${aws.dynamodb.table.name}")
+  @Value("${aws.dynamodb.catalog.table-name}")
   private String catalogTableName;
 
-  @Value("${aws.dynamodb.table.sk-index}")
+  @Value("${aws.dynamodb.catalog.sk-index}")
   private String catalogTableSkIndex;
 
   public void reindex() throws IOException {
@@ -48,8 +49,7 @@ public class ReindexService {
             r.tableName(catalogTableName)
                 .indexName(catalogTableSkIndex)
                 .keyConditionExpression("SK = :meta")
-                .expressionAttributeValues(
-                    Map.of(":meta", AttributeValue.fromS(DynamoKeys.SK_META)))
+                .expressionAttributeValues(Map.of(":meta", AttributeValue.fromS(SK_META)))
                 .exclusiveStartKey(startKey));
   }
 
@@ -62,7 +62,7 @@ public class ReindexService {
   private BulkOperation buildIndexOperation(Map<String, AttributeValue> item) {
     var indexOperation =
         new IndexOperation.Builder<SearchDocument>()
-            .index(SearchConstants.INDEX_TITLES)
+            .index(INDEX_TITLES)
             .id(item.get("id").n())
             .document(mapper.itemToDocument(item))
             .build();

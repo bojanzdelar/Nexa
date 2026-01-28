@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { searchTitles } from "~/services";
-import type { Title } from "~/types";
+import type { TitleSummary } from "~/types";
 
 const route = useRoute();
 const router = useRouter();
 
 const searchQuery = ref((route.query.q as string) || "");
 
-const searchResults = ref<Title[]>([]);
+const searchResults = ref<TitleSummary[]>([]);
 const currentPage = ref(1);
 const totalPages = ref(0);
 

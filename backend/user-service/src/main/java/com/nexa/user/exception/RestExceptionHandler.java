@@ -4,6 +4,8 @@ import com.nexa.user.dto.ApiError;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -13,6 +15,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class RestExceptionHandler {
+
+  private static final Logger log = LoggerFactory.getLogger(RestExceptionHandler.class);
 
   @ExceptionHandler(ApiException.class)
   public ResponseEntity<ApiError> handleApi(ApiException exception) {
@@ -37,6 +41,7 @@ public class RestExceptionHandler {
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ApiError> handleUnknown(Exception exception) {
+    log.error("Unexpected system error", exception);
     return ResponseEntity.status(500)
         .body(
             new ApiError(

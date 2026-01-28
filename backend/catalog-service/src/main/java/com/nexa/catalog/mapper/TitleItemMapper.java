@@ -3,6 +3,7 @@ package com.nexa.catalog.mapper;
 import com.nexa.catalog.dto.*;
 import com.nexa.catalog.model.*;
 import java.util.List;
+import org.mapstruct.InheritConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.NullValueMappingStrategy;
@@ -29,12 +30,15 @@ public interface TitleItemMapper {
       List<Recommendation> recommendations,
       List<TitleItem> seasonsRaw);
 
+  @Mapping(target = "name", source = "title")
+  TitleSummaryDto toTitleDto(TitleItem title);
+
   GenreDto toGenreDto(Genre g);
 
   CastMemberDto toCastMemberDto(CastMember c);
 
-  @Mapping(target = "name", source = "title")
-  RecommendationDto toRecommendationDto(Recommendation r);
+  @InheritConfiguration(name = "toTitleDto")
+  TitleSummaryDto recommendationToTitleDto(Recommendation r);
 
   SeasonDto toSeasonDto(TitleItem seasonItem);
 
