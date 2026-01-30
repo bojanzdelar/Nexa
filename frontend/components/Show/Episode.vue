@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import type { Episode } from "~/types";
+
+const config = useRuntimeConfig();
+
 defineProps<{
   episode: Episode;
 }>();
@@ -13,7 +16,7 @@ defineProps<{
         <div class="relative">
           <NuxtImg
             v-if="episode.stillPath"
-            :src="`https://image.tmdb.org/t/p/w300${episode.stillPath}`"
+            :src="config.public.cdnBaseUrl + episode.stillPath"
             :alt="episode.name"
             class="rounded w-full"
           />

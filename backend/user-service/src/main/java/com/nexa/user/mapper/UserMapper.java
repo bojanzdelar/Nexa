@@ -17,6 +17,6 @@ public interface UserMapper {
   }
 
   default String extractType(String sk) {
-    return sk.split("#")[1].toLowerCase();
+    return sk.split("#")[1];
   }
 }

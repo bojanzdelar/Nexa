@@ -2,6 +2,8 @@
 import { useAuthStore, useMyListStore } from "~/store";
 import type { TitleSummary } from "~/types";
 
+const config = useRuntimeConfig();
+
 const props = defineProps<{
   title: TitleSummary;
 }>();
@@ -28,7 +30,7 @@ const titleRouteName = computed(() => getTitleRouteName(props.title));
       }"
     >
       <NuxtImg
-        :src="`https://image.tmdb.org/t/p/w300${title.posterPath}`"
+        :src="config.public.cdnBaseUrl + title.posterPath"
         class="rounded-sm md:rounded opacity-75 hover:opacity-100 transition-opacity"
         :alt="title.name"
         format="webp"

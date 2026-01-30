@@ -14,4 +14,4 @@ aws:
       table-name: NexaCatalog
       sk-index: sk-index
   opensearch:
-    endpoint: search-nexa-search-7k3df9sl2k1.eu-central-1.es.amazonaws.com
+    endpoint: search-nexa-search-lvqeb42upgyez75ixzxo6utlnu.eu-central-1.es.amazonaws.com

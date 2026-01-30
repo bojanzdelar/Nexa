@@ -25,14 +25,14 @@ public class WatchlistController {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void add(
       @AuthenticationPrincipal Jwt jwt, @PathVariable String type, @PathVariable String titleId) {
-    service.add(userId(jwt), type.toUpperCase(), titleId);
+    service.add(userId(jwt), type, titleId);
   }
 
   @DeleteMapping("/{type}/{titleId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void remove(
       @AuthenticationPrincipal Jwt jwt, @PathVariable String type, @PathVariable String titleId) {
-    service.remove(userId(jwt), type.toUpperCase(), titleId);
+    service.remove(userId(jwt), type, titleId);
   }
 
   private String userId(Jwt jwt) {

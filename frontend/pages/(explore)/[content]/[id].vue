@@ -9,6 +9,8 @@ definePageMeta({
   },
 });
 
+const config = useRuntimeConfig();
+
 const route = useRoute();
 const router = useRouter();
 
@@ -205,7 +207,7 @@ await fetchData();
         <div class="hidden lg:block xl:w-1/4">
           <div class="sticky top-28">
             <NuxtImg
-              :src="`https://image.tmdb.org/t/p/w500${title?.posterPath}`"
+              :src="config.public.cdnBaseUrl + title?.posterPath"
               :alt="title.name"
               class="rounded shadow-lg"
             />

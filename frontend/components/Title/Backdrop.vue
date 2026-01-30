@@ -13,7 +13,7 @@ defineProps<{
     class="absolute top-0 left-0 -z-10 h-[40vh] sm:h-[65vh] lg:h-[95vh] w-screen"
   >
     <NuxtImg
-      :src="`${config.public.tmdbImageBaseUrl}/${title.backdropPath}`"
+      :src="config.public.cdnBaseUrl + title.backdropPath"
       class="w-full h-full object-cover object-center"
       :alt="title.name"
     />
