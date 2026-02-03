@@ -1,8 +1,8 @@
 module "apigw" {
   source = "./apigw"
 
-  cognito_client_id        = var.cognito_client_id
-  cognito_user_pool_issuer = var.cognito_user_pool_issuer
+  cognito_client_id        = module.cognito.client_id
+  cognito_user_pool_issuer = module.cognito.user_pool_issuer
 
   hls_lambda_invoke_arn = module.hls_key_server.lambda_invoke_arn
 }
@@ -28,4 +28,14 @@ module "mediaconvert" {
 
   ingest_bucket_arn    = module.s3.video_ingest_bucket_arn
   processed_bucket_arn = module.s3.video_processed_bucket_arn
+}
+
+module "cognito" {
+  source = "./cognito"
+}
+
+module "opensearch" {
+  source = "./opensearch"
+
+  count = var.enable_opensearch ? 1 : 0
 }

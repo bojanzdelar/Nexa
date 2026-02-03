@@ -10,7 +10,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: https://cognito-idp.eu-central-1.amazonaws.com/eu-central-1_dSFWU4zIW
+          issuer-uri: https://cognito-idp.eu-central-1.amazonaws.com/eu-central-1_hPsBH1Y7y
 
 aws:
   region: eu-central-1
