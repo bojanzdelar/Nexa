@@ -52,7 +52,7 @@ watch(
     if (videoPlayer.value) {
       videoPlayer.value.currentTime = 0;
     }
-  }
+  },
 );
 
 watch(subtitle, () => {
@@ -63,7 +63,7 @@ watch(subtitle, () => {
 
 watch(currentTime, (time) => {
   const activeCue = subtitleCues.value.find(
-    (cue) => time >= cue.start && time <= cue.end
+    (cue) => time >= cue.start && time <= cue.end,
   );
 
   subtitleText.value = activeCue?.text || "";
@@ -153,7 +153,7 @@ const loadSubtitles = async () => {
   if (!subtitle.value) return;
 
   const vttContent = await $fetch<string>(
-    `/subtitle-${subtitle.value.code}.vtt`
+    `/subtitle-${subtitle.value.code}.vtt`,
   );
 
   subtitleCues.value = parseSubtitles(vttContent);
@@ -164,11 +164,14 @@ const parseSubtitles = (vttContent: string) => {
     .split("\n")
     .filter((line) => line != "WEBVTT")
     .filter(Boolean)
-    .reduce((acc, line) => {
-      if (line.includes("-->")) acc.push({ timeCode: line, text: [] });
-      else acc[acc.length - 1].text?.push(line);
-      return acc;
-    }, [] as { timeCode: string; text: string[] }[])
+    .reduce(
+      (acc, line) => {
+        if (line.includes("-->")) acc.push({ timeCode: line, text: [] });
+        else acc[acc.length - 1].text?.push(line);
+        return acc;
+      },
+      [] as { timeCode: string; text: string[] }[],
+    )
     .map((cue) => {
       const [start, end] = cue.timeCode
         .split("-->")
@@ -291,7 +294,7 @@ onMounted(() => {
 
 onClickOutside(
   playbackSpeedMenu,
-  () => (isPlaybackSpeedMenuOpen.value = false)
+  () => (isPlaybackSpeedMenuOpen.value = false),
 );
 onClickOutside(subtitlesMenu, () => (isSubtitlesMenuOpen.value = false));
 
@@ -432,9 +435,7 @@ useEventListener("resize", calculateSubtitlePosition);
             class="absolute text-sm lg:text-base xl:text-xl left-1/2 -translate-x-1/2 bottom-5 space-x-2 text-center"
           >
             <div class="font-semibold">{{ titleName }}</div>
-            <div v-if="episodeName" class="font-normal">
-              {{ episodeName }}
-            </div>
+            <div v-if="episodeName" class="font-normal">{{ episodeName }}</div>
           </div>
 
           <div class="flex items-center space-x-4">

@@ -39,7 +39,7 @@ const nextEpisode = computed(() => {
   const nextEpisodeNumber = episodeNumber.value + 1;
 
   const hasNextEpisodeInSeason = episodes.some(
-    (ep: Episode) => ep.episodeNumber === nextEpisodeNumber
+    (ep: Episode) => ep.episodeNumber === nextEpisodeNumber,
   );
 
   if (hasNextEpisodeInSeason)
@@ -47,7 +47,7 @@ const nextEpisode = computed(() => {
 
   const nextSeasonNumber = seasonNumber.value + 1;
   const hasNextSeason = (titleData.value as Show).seasons.some(
-    (season: Season) => season.seasonNumber === nextSeasonNumber
+    (season: Season) => season.seasonNumber === nextSeasonNumber,
   );
 
   if (hasNextSeason) return { season: nextSeasonNumber, episode: 1 };
@@ -77,10 +77,10 @@ const fetchData = async () => {
       ? await getShowDetails(titleId, false)
       : await getMovieDetails(titleId, false);
 
-  await fetchSeasonAndEpisode();
+  fetchSeasonAndEpisode();
 };
 
-const fetchSeasonAndEpisode = async () => {
+const fetchSeasonAndEpisode = () => {
   if (
     titleType !== "tv" ||
     seasonNumber.value === null ||
@@ -94,22 +94,34 @@ const fetchSeasonAndEpisode = async () => {
     seasonNumber.value !== Number(route.query.s)
   ) {
     const season = (titleData.value as Show).seasons.find(
-      (season: Season) => season.seasonNumber == seasonNumber.value
+      (season: Season) => season.seasonNumber == seasonNumber.value,
     );
 
     if (!season) return;
 
     const currentDate = new Date();
     season.episodes = season.episodes.filter(
-      (episode: Episode) => currentDate >= new Date(episode.airDate)
+      (episode: Episode) => currentDate >= new Date(episode.airDate),
     );
     seasonData.value = season;
   }
 
   episodeData.value =
     seasonData.value?.episodes.find(
-      (episode: Episode) => episode.episodeNumber == episodeNumber.value
+      (episode: Episode) => episode.episodeNumber == episodeNumber.value,
     ) || ({} as Episode);
+};
+
+const formatEpisodeName = (
+  seasonNumber: number | null,
+  episodeNumber: number | null,
+  title: string,
+): string | null => {
+  if (seasonNumber == null || episodeNumber == null) return null;
+
+  const s = String(seasonNumber).padStart(2, "0");
+  const e = String(episodeNumber).padStart(2, "0");
+  return `S${s}E${e} - ${title}`;
 };
 
 const viewDetails = () => {
@@ -127,7 +139,7 @@ const viewDetails = () => {
   });
 };
 
-const goToNextEpisode = async () => {
+const goToNextEpisode = () => {
   if (!nextEpisode.value) return;
 
   const { season: newSeason, episode: newEpisode } = nextEpisode.value;
@@ -135,7 +147,7 @@ const goToNextEpisode = async () => {
   seasonNumber.value = newSeason;
   episodeNumber.value = newEpisode;
 
-  await fetchSeasonAndEpisode();
+  fetchSeasonAndEpisode();
 
   router.push({
     path: route.path,
@@ -154,7 +166,11 @@ onMounted(() => {
     :title-type="titleType"
     :title-id="titleId"
     :title-name="titleData.name ? titleData.name : null"
-    :episode-name="episodeData ? episodeData.name : null"
+    :episode-name="
+      episodeData
+        ? formatEpisodeName(seasonNumber, episodeNumber, episodeData.name)
+        : null
+    "
     :title-source="videoSource"
     :has-next-episode="nextEpisode != null"
     @view-details="viewDetails"

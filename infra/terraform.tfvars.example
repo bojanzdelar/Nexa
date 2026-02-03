@@ -1,0 +1,8 @@
+# Copy this file to terraform.tfvars and replace values
+
+environment = "dev"
+aws_region  = "eu-central-1"
+
+# Temporary
+cognito_client_id = "xxxxxxxxxxxxxxxx"
+cognito_user_pool_issuer = "https://cognito-idp.eu-central-1.amazonaws.com/eu-central-1_ABC123"
