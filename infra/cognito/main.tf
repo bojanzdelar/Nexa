@@ -29,7 +29,7 @@ resource "aws_cognito_user_pool" "this" {
     email_sending_account  = "DEVELOPER"
     from_email_address     = "Nexa <nexa@zdelar.com>"
     reply_to_email_address = "nexa@zdelar.com"
-    source_arn             = "arn:aws:ses:eu-central-1:657845675364:identity/nexa@zdelar.com" # TODO: extract this
+    source_arn             = var.ses_source_arn
   }
 
   admin_create_user_config {

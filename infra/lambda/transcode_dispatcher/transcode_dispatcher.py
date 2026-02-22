@@ -36,7 +36,7 @@ def lambda_handler(event, context):
         logging.info(f"New upload detected: s3://{bucket}/{key}")
 
         video_id = key.rsplit('/', 1)[0]
-        destination = f"s3://{os.environ['OUTPUT_BUCKET']}/{video_id}/hls/"
+        destination = f"s3://{os.environ['OUTPUT_BUCKET']}/{video_id}/hls/video"
 
         hls_key = generate_hls_key()
         store_key(video_id, hls_key)
@@ -59,6 +59,8 @@ def lambda_handler(event, context):
                         "Type": "HLS_GROUP_SETTINGS",
                         "HlsGroupSettings": {
                             "Destination": destination,
+                            "DirectoryStructure": "SUBDIRECTORY_PER_STREAM",
+                            "SegmentsPerSubdirectory": 10000,
                             "SegmentLength": 6,
                             "MinSegmentLength": 0,
                             "Encryption": {

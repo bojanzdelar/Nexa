@@ -1,5 +1,5 @@
 output "user_pool_issuer" {
-  value = "https://cognito-idp.${data.aws_region.current.id}.amazon.aws/${aws_cognito_user_pool.this.id}"
+  value = "https://cognito-idp.${data.aws_region.current.id}.amazonaws.com/${aws_cognito_user_pool.this.id}"
 }
 
 output "client_id" {

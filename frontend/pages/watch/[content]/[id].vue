@@ -13,7 +13,8 @@ const route = useRoute();
 const router = useRouter();
 
 // FIXME: temporary
-const videoSource = "/sample-video.mp4";
+const videoSource =
+  "https://b9aaix4mcj.execute-api.eu-central-1.amazonaws.com/playlist/placeholders/video-default/video.m3u8";
 
 const titleType = route.params.content as "tv" | "movie";
 const titleId = Number(route.params.id);

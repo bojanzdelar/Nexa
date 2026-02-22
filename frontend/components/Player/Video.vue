@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Hls from "hls.js";
 import type { Subtitle, SubtitleCue } from "~/types";
 
 const props = defineProps<{
@@ -87,8 +88,6 @@ const togglePlay = () => {
   } else {
     videoPlayer.value.play();
   }
-
-  isPlaying.value = !isPlaying.value;
 
   hideControlsWithDelay();
 };
@@ -288,7 +287,27 @@ const toggleSubtitlesMenu = () => {
 };
 
 onMounted(() => {
-  isPlaying.value = !videoPlayer.value?.paused;
+  if (!videoPlayer.value) return;
+
+  const src = props.titleSource; // .m3u8 master file
+
+  if (Hls.isSupported()) {
+    const hls = new Hls({
+      enableWorker: true,
+      lowLatencyMode: false,
+    });
+
+    hls.loadSource(src);
+    hls.attachMedia(videoPlayer.value);
+
+    hls.on(Hls.Events.MANIFEST_PARSED, () => {
+      videoPlayer.value?.play();
+    });
+  } else if (videoPlayer.value.canPlayType("application/vnd.apple.mpegurl")) {
+    // Safari / iOS
+    videoPlayer.value.src = src;
+  }
+
   hideControlsWithDelay();
 });
 
@@ -300,6 +319,14 @@ onClickOutside(subtitlesMenu, () => (isSubtitlesMenuOpen.value = false));
 
 useEventListener("keydown", handleKeypress);
 useEventListener("resize", calculateSubtitlePosition);
+
+useEventListener(videoPlayer, "playing", () => {
+  isPlaying.value = true;
+});
+
+useEventListener(videoPlayer, "pause", () => {
+  isPlaying.value = false;
+});
 </script>
 
 <template>
@@ -310,13 +337,10 @@ useEventListener("resize", calculateSubtitlePosition);
     <video
       ref="videoPlayer"
       class="w-full h-full"
-      autoplay
+      playsinline
       @timeupdate="updateProgress"
       @canplay="onVideoLoaded"
-    >
-      <source :src="titleSource" type="video/mp4" />
-      Your browser does not support the video tag.
-    </video>
+    />
 
     <div
       v-if="subtitleText"
