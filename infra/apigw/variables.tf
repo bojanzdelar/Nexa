@@ -13,3 +13,11 @@ variable "hls_key_lambda_invoke_arn" {
 variable "hls_playlist_lambda_invoke_arn" {
   type = string
 }
+
+variable "domain_name" {
+  type = string
+}
+
+variable "acm_certificate_arn" {
+  type = string
+}

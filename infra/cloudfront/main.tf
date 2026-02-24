@@ -6,7 +6,9 @@ resource "aws_cloudfront_distribution" "this" {
   wait_for_deployment = true
   web_acl_id          = var.web_acl_arn
 
-  aliases = ["cdn.nexa.zdelar.com"]
+  aliases = [
+    "cdn.${var.domain_name}"
+  ]
 
   tags = {
     Name = "nexa-cdn-main"
@@ -54,7 +56,7 @@ resource "aws_cloudfront_distribution" "this" {
   }
 
   viewer_certificate {
-    acm_certificate_arn      = "arn:aws:acm:us-east-1:657845675364:certificate/e936d4d2-ddf1-4e6b-a9b7-8e75a2c2679e"
+    acm_certificate_arn      = var.acm_certificate_arn
     ssl_support_method       = "sni-only"
     minimum_protocol_version = "TLSv1.2_2021"
   }

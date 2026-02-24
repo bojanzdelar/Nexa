@@ -6,6 +6,9 @@ module "apigw" {
 
   hls_key_lambda_invoke_arn      = module.hls_key_server.lambda_invoke_arn
   hls_playlist_lambda_invoke_arn = module.hls_playlist.lambda_invoke_arn
+
+  domain_name         = var.app_domain_name
+  acm_certificate_arn = module.acm_regional.certificate_arn
 }
 
 module "cloudfront" {
@@ -27,6 +30,9 @@ module "cloudfront" {
       domain_name = module.s3.video_processed_bucket_regional_domain_name
     }
   }
+
+  domain_name         = var.app_domain_name
+  acm_certificate_arn = module.acm_global.certificate_arn
 }
 
 module "waf" {
@@ -73,7 +79,7 @@ module "hls_playlist" {
   apigw_execution_arn    = module.apigw.execution_arn
   key_endpoint           = module.apigw.api_endpoints.hls_key
   playlist_bucket        = module.s3.video_processed_bucket_name
-  cloudfront_domain_name = module.cloudfront.distribution_domain_name
+  cloudfront_domain_name = module.cloudfront.distribution_https_url
   signing_secret         = var.hls_signing_secret
 }
 
@@ -87,11 +93,52 @@ module "mediaconvert" {
 module "cognito" {
   source = "./cognito"
 
+  email_address  = var.notification_email
   ses_source_arn = module.ses.domain_identity_arn
 }
 
 module "ses" {
   source = "./ses"
+
+  domain_identity = var.email_domain_name
+}
+
+module "route53" {
+  source = "./route53"
+
+  domain_name               = var.root_domain_name
+  apigw_domain_name         = module.apigw.target_domain_name
+  apigw_hosted_zone_id      = module.apigw.hosted_zone_id
+  cloudfront_domain_name    = module.cloudfront.distribution_domain_name
+  cloudfront_hosted_zone_id = module.cloudfront.distribution_hosted_zone_id
+  ses_region                = var.aws_region
+  ses_domain_dkim           = module.ses.domain_dkim
+  acm_domain_validation_options = concat(
+    tolist(module.acm_global.domain_validation_options),
+    tolist(module.acm_regional.domain_validation_options)
+  )
+}
+
+module "acm_global" {
+  source = "./acm"
+
+  providers = {
+    aws = aws.us_east_1
+  }
+
+  domain_name = var.app_domain_name
+  subject_alternative_names = [
+    "*.${var.app_domain_name}"
+  ]
+}
+
+module "acm_regional" {
+  source = "./acm"
+
+  domain_name = var.app_domain_name
+  subject_alternative_names = [
+    "*.${var.app_domain_name}"
+  ]
 }
 
 module "opensearch" {

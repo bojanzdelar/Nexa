@@ -27,8 +27,8 @@ resource "aws_cognito_user_pool" "this" {
 
   email_configuration {
     email_sending_account  = "DEVELOPER"
-    from_email_address     = "Nexa <nexa@zdelar.com>"
-    reply_to_email_address = "nexa@zdelar.com"
+    from_email_address     = "Nexa <${var.email_address}>"
+    reply_to_email_address = var.email_address
     source_arn             = var.ses_source_arn
   }
 
