@@ -2,17 +2,13 @@
 import type { Subtitle } from "~/types";
 
 defineProps<{
+  items: Subtitle[];
   current: Subtitle | null;
 }>();
 
 const emit = defineEmits<{
   (e: "change", subtitle: Subtitle | null): void;
 }>();
-
-const subtitles: Subtitle[] = [
-  { code: "en", name: "English" },
-  { code: "sr", name: "Serbian" },
-];
 </script>
 
 <template>
@@ -39,13 +35,13 @@ const subtitles: Subtitle[] = [
       </button>
 
       <button
-        v-for="subtitle in subtitles"
+        v-for="subtitle in items"
         :key="subtitle.code"
         class="text-neutral-300 text-sm lg:text-base xl:text-lg px-5 py-3 rounded hover:bg-white/10 text-left flex justify-between"
         :class="{ '!text-white': current?.code === subtitle.code }"
         @click="emit('change', subtitle)"
       >
-        <span>{{ subtitle.name }}</span>
+        <span>{{ subtitle.label }}</span>
         <Icon
           v-if="current?.code === subtitle.code"
           name="heroicons:check-solid"

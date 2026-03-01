@@ -2,7 +2,6 @@ data "aws_iam_policy_document" "cloudfront_read" {
   count = var.allow_cloudfront_access ? 1 : 0
 
   statement {
-    sid     = "AllowCloudFrontOACRead"
     actions = ["s3:GetObject"]
 
     resources = ["${aws_s3_bucket.this.arn}/*"]

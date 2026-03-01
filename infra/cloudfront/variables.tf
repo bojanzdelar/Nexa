@@ -2,6 +2,10 @@ variable "web_acl_arn" {
   type = string
 }
 
+variable "public_key_value" {
+  type = string
+}
+
 variable "origins" {
   type = map(object({
     id          = string

@@ -7,7 +7,7 @@ resource "aws_apigatewayv2_integration" "hls_key_integration" {
 
 resource "aws_apigatewayv2_route" "hls_key_route" {
   api_id    = aws_apigatewayv2_api.platform_api.id
-  route_key = "GET /hls-key/{type}/{id}"
+  route_key = "GET /hls-key/{proxy+}"
   target    = "integrations/${aws_apigatewayv2_integration.hls_key_integration.id}"
 }
 
@@ -20,6 +20,6 @@ resource "aws_apigatewayv2_integration" "hls_playlist_integration" {
 
 resource "aws_apigatewayv2_route" "playlist_route" {
   api_id    = aws_apigatewayv2_api.platform_api.id
-  route_key = "GET /playlist/{type}/{id}/{filename}"
+  route_key = "GET /playlist/{proxy+}"
   target    = "integrations/${aws_apigatewayv2_integration.hls_playlist_integration.id}"
 }

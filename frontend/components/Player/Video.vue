@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import Hls from "hls.js";
-import type { Subtitle, SubtitleCue } from "~/types";
+import { loadAvailableSubtitles, loadSubtitle } from "~/services";
+import type { TitleSummary, Subtitle, SubtitleCue } from "~/types";
 
 const props = defineProps<{
-  titleType: "tv" | "movie";
-  titleId: number;
-  titleName: string | null;
+  title: TitleSummary;
   episodeName: string | null;
+  season: number | null;
+  episode: number | null;
   titleSource: string;
   hasNextEpisode: boolean;
 }>();
@@ -15,10 +16,13 @@ const emit = defineEmits<{
   (e: "viewDetails" | "nextEpisode"): void;
 }>();
 
+let hls: Hls | null = null;
+
 const videoPlayer = ref<HTMLVideoElement | null>(null);
 const playbackSpeedMenu = useTemplateRef<HTMLElement>("playbackSpeedMenu");
 const subtitlesMenu = useTemplateRef<HTMLElement>("subtitlesMenu");
 
+const isBuffering = ref(false);
 const isPlaying = ref(false);
 const currentTime = ref(0);
 const duration = ref(0);
@@ -28,6 +32,7 @@ const isMuted = ref(false);
 const isFullscreen = ref(false);
 const videoAspectRatio = ref(0);
 
+const availableSubtitles = ref<Subtitle[]>([]);
 const subtitle = ref<Subtitle | null>(null);
 const subtitleCues = ref<SubtitleCue[]>([]);
 const subtitleText = ref<string>("");
@@ -56,10 +61,14 @@ watch(
   },
 );
 
-watch(subtitle, () => {
+watch(subtitle, async (s) => {
   subtitleCues.value = [];
   subtitleText.value = "";
-  loadSubtitles();
+
+  if (!s) return;
+
+  const vtt = await loadSubtitle(s);
+  subtitleCues.value = parseSubtitles(vtt);
 });
 
 watch(currentTime, (time) => {
@@ -70,13 +79,17 @@ watch(currentTime, (time) => {
   subtitleText.value = activeCue?.text || "";
 });
 
-const onVideoLoaded = () => {
+const onVideoLoaded = async () => {
   if (!videoPlayer.value) return;
 
   duration.value = videoPlayer.value.duration;
   videoAspectRatio.value =
     videoPlayer.value.videoWidth / videoPlayer.value.videoHeight;
-  loadSubtitles();
+  availableSubtitles.value = await loadAvailableSubtitles(
+    props.title,
+    props.season ?? undefined,
+    props.episode ?? undefined,
+  );
   calculateSubtitlePosition();
 };
 
@@ -146,44 +159,6 @@ const changePlaybackSpeed = (speed: number) => {
 
 const changeSubtitle = (_subtitle: Subtitle | null) => {
   subtitle.value = _subtitle;
-};
-
-const loadSubtitles = async () => {
-  if (!subtitle.value) return;
-
-  const vttContent = await $fetch<string>(
-    `/subtitle-${subtitle.value.code}.vtt`,
-  );
-
-  subtitleCues.value = parseSubtitles(vttContent);
-};
-
-const parseSubtitles = (vttContent: string) => {
-  return vttContent
-    .split("\n")
-    .filter((line) => line != "WEBVTT")
-    .filter(Boolean)
-    .reduce(
-      (acc, line) => {
-        if (line.includes("-->")) acc.push({ timeCode: line, text: [] });
-        else acc[acc.length - 1].text?.push(line);
-        return acc;
-      },
-      [] as { timeCode: string; text: string[] }[],
-    )
-    .map((cue) => {
-      const [start, end] = cue.timeCode
-        .split("-->")
-        .map((time) => parseTimeCode(time.trim()));
-      return { start, end, text: cue.text.join("\n") };
-    });
-};
-
-const parseTimeCode = (timeCode: string): number => {
-  const [hours, minutes, secondsPart] = timeCode.split(":");
-  const seconds =
-    parseInt(hours) * 3600 + parseInt(minutes) * 60 + parseFloat(secondsPart);
-  return seconds;
 };
 
 const calculateSubtitlePosition = () => {
@@ -292,7 +267,7 @@ onMounted(() => {
   const src = props.titleSource; // .m3u8 master file
 
   if (Hls.isSupported()) {
-    const hls = new Hls({
+    hls = new Hls({
       enableWorker: true,
       lowLatencyMode: false,
     });
@@ -311,6 +286,13 @@ onMounted(() => {
   hideControlsWithDelay();
 });
 
+onBeforeUnmount(() => {
+  if (hls) {
+    hls.destroy();
+    hls = null;
+  }
+});
+
 onClickOutside(
   playbackSpeedMenu,
   () => (isPlaybackSpeedMenuOpen.value = false),
@@ -320,7 +302,16 @@ onClickOutside(subtitlesMenu, () => (isSubtitlesMenuOpen.value = false));
 useEventListener("keydown", handleKeypress);
 useEventListener("resize", calculateSubtitlePosition);
 
+useEventListener(videoPlayer, "waiting", () => {
+  isBuffering.value = true;
+});
+
+useEventListener(videoPlayer, "canplay", () => {
+  isBuffering.value = false;
+});
+
 useEventListener(videoPlayer, "playing", () => {
+  isBuffering.value = false;
   isPlaying.value = true;
 });
 
@@ -343,12 +334,21 @@ useEventListener(videoPlayer, "pause", () => {
     />
 
     <div
+      v-if="isBuffering"
+      class="absolute inset-0 flex items-center justify-center pointer-events-none"
+    >
+      <div
+        class="w-10 h-10 lg:w-14 lg:h-14 border-4 border-white/30 border-t-white rounded-full animate-spin"
+      />
+    </div>
+
+    <div
       v-if="subtitleText"
       class="absolute left-1/2 -translate-x-1/2 text-center px-4 py-2 max-w-[80%] text-xl md:text-2xl lg:text-3xl xl:text-4xl"
       :style="{ bottom: `${subtitleBottomPosition}px` }"
     >
       <div
-        class="relative bottom-8 lg:bottom-12 xl:bottom-16"
+        class="relative bottom-8 lg:bottom-12 xl:bottom-16 drop-shadow-[0_2px_3px_rgba(0,0,0,0.85)]"
         :class="{
           'bottom-24 lg:bottom-32 xl:bottom-40':
             controlsVisible && !subtitleBottomPosition,
@@ -458,13 +458,13 @@ useEventListener(videoPlayer, "pause", () => {
           <div
             class="absolute text-sm lg:text-base xl:text-xl left-1/2 -translate-x-1/2 bottom-5 space-x-2 text-center"
           >
-            <div class="font-semibold">{{ titleName }}</div>
+            <div class="font-semibold">{{ title.name }}</div>
             <div v-if="episodeName" class="font-normal">{{ episodeName }}</div>
           </div>
 
           <div class="flex items-center space-x-4">
             <Icon
-              v-if="titleType === 'tv' && hasNextEpisode"
+              v-if="title.type === 'tv' && hasNextEpisode"
               name="heroicons:forward-solid"
               class="cursor-pointer w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 m-1 lg:m-2"
               @click="emit('nextEpisode')"
@@ -492,6 +492,7 @@ useEventListener(videoPlayer, "pause", () => {
 
               <PlayerSubtitles
                 v-if="isSubtitlesMenuOpen"
+                :items="availableSubtitles"
                 :current="subtitle"
                 @change="changeSubtitle"
               />

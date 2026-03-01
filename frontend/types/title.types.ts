@@ -64,7 +64,8 @@ export interface Episode {
 
 export interface Subtitle {
   code: string;
-  name: string;
+  label: string;
+  key: string;
 }
 
 export interface SubtitleCue {

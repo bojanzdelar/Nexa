@@ -16,7 +16,7 @@ resource "aws_lambda_function" "hls_key" {
 
   environment {
     variables = {
-      SIGNING_SECRET = var.signing_secret
+      SIGNING_SECRET_NAME = var.signing_secret_name
     }
   }
 }

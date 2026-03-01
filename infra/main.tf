@@ -4,8 +4,9 @@ module "apigw" {
   cognito_client_id        = module.cognito.client_id
   cognito_user_pool_issuer = module.cognito.user_pool_issuer
 
-  hls_key_lambda_invoke_arn      = module.hls_key_server.lambda_invoke_arn
-  hls_playlist_lambda_invoke_arn = module.hls_playlist.lambda_invoke_arn
+  hls_key_lambda_invoke_arn            = module.hls_key_server.lambda_invoke_arn
+  hls_playlist_lambda_invoke_arn       = module.hls_playlist.lambda_invoke_arn
+  subtitles_manifest_lambda_invoke_arn = module.subtitles_manifest.lambda_invoke_arn
 
   domain_name         = var.app_domain_name
   acm_certificate_arn = module.acm_regional.certificate_arn
@@ -14,7 +15,8 @@ module "apigw" {
 module "cloudfront" {
   source = "./cloudfront"
 
-  web_acl_arn = module.waf.web_acl_arn
+  web_acl_arn      = module.waf.web_acl_arn
+  public_key_value = module.ssm.cloudfront_public_key_value
 
   origins = {
     content_public = {
@@ -69,7 +71,7 @@ module "hls_key_server" {
   source = "./lambda/hls_key_server"
 
   apigw_execution_arn = module.apigw.execution_arn
-  signing_secret      = var.hls_signing_secret
+  signing_secret_name = module.ssm.hls_signing_secret_name
 }
 
 
@@ -80,7 +82,17 @@ module "hls_playlist" {
   key_endpoint           = module.apigw.api_endpoints.hls_key
   playlist_bucket        = module.s3.video_processed_bucket_name
   cloudfront_domain_name = module.cloudfront.distribution_https_url
-  signing_secret         = var.hls_signing_secret
+  signing_secret_name    = module.ssm.hls_signing_secret_name
+}
+
+module "subtitles_manifest" {
+  source = "./lambda/subtitles_manifest"
+
+  apigw_execution_arn = module.apigw.execution_arn
+  subtitles_bucket    = module.s3.content_protected_bucket_name
+  cloudfront_url      = module.cloudfront.distribution_https_url
+  public_key_id       = module.cloudfront.media_public_key_id
+  private_key_name    = module.ssm.cloudfront_private_key_name
 }
 
 module "mediaconvert" {
@@ -101,6 +113,10 @@ module "ses" {
   source = "./ses"
 
   domain_identity = var.email_domain_name
+}
+
+module "ssm" {
+  source = "./ssm"
 }
 
 module "route53" {

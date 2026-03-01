@@ -9,17 +9,21 @@ import hashlib
 logging.basicConfig(level=logging.INFO)
 
 ssm = boto3.client("ssm")
-SECRET = os.environ["SIGNING_SECRET"].encode()
+param = ssm.get_parameter(
+    Name=os.environ["SIGNING_SECRET_NAME"],
+    WithDecryption=True
+)
+SECRET = param["Parameter"]["Value"].encode()
 
 
-def validate_signed_url(content_type, content_id, exp, sig):
-    if not content_type or not content_id or not exp or not sig:
+def validate_signed_url(scope: str, exp: str, sig: str) -> bool:
+    if not scope or not exp or not sig:
         return False
 
     if time.time() > int(exp):
         return False
 
-    payload = f"{content_type}:{content_id}:{exp}"
+    payload = f"{scope}:{exp}"
 
     expected = hmac.new(
         SECRET,
@@ -30,22 +34,30 @@ def validate_signed_url(content_type, content_id, exp, sig):
     return hmac.compare_digest(expected, sig)
 
 
+def parse_scope(proxy: str) -> str:
+    parts = proxy.split("/")
+
+    if parts[0] == "shows":
+        return "/".join(parts[:4])
+
+    return "/".join(parts[:2])
+
+
 def lambda_handler(event, context):
     try:
-        path = event.get("pathParameters") or {}
+        proxy = event.get("pathParameters", {}).get("proxy", "")
         qs = event.get("queryStringParameters") or {}
 
-        content_type = path.get("type")
-        content_id = path.get("id")
+        scope = parse_scope(proxy)
 
         exp = qs.get("exp")
         sig = qs.get("sig")
 
-        if not validate_signed_url(content_type, content_id, exp, sig):
+        if not validate_signed_url(scope, exp, sig):
             return {"statusCode": 401}
 
-        param_name = f"/nexa/hls/{content_type}/{content_id}"
-        logging.info(f"Fetching HLS key for {content_type}/{content_id}")
+        param_name = f"/nexa/hls/{scope}"
+        logging.info(f"Fetching HLS key: {param_name}")
 
         response = ssm.get_parameter(
             Name=param_name,
@@ -65,15 +77,12 @@ def lambda_handler(event, context):
             "isBase64Encoded": True
         }
 
+    except ValueError:
+        return {"statusCode": 404}
+
     except ssm.exceptions.ParameterNotFound:
-        return {
-            "statusCode": 404,
-            "body": "Key not found"
-        }
+        return {"statusCode": 404}
 
     except Exception as e:
-        logging.error(f"Key retrieval failed: {e}")
-        return {
-            "statusCode": 500,
-            "body": "Key retrieval failed"
-        }
+        logging.error(f"HLS key error: {e}")
+        return {"statusCode": 500}

@@ -3,6 +3,7 @@ import os
 import time
 import logging
 import secrets
+from urllib.parse import unquote_plus
 
 
 logging.basicConfig(level=logging.INFO)
@@ -18,8 +19,8 @@ def generate_hls_key():
     return secrets.token_hex(16)  # 16 bytes AES-128
 
 
-def store_key(video_id, key_hex):
-    param_name = f"/nexa/hls/{video_id}"
+def store_key(content_path, key_hex):
+    param_name = f"/nexa/hls/{content_path}"
     ssm.put_parameter(
         Name=param_name,
         Value=key_hex,
@@ -32,14 +33,14 @@ def lambda_handler(event, context):
     try:
         record = event['Records'][0]
         bucket = record['s3']['bucket']['name']
-        key = record['s3']['object']['key']
+        key = unquote_plus(record['s3']['object']['key'])
         logging.info(f"New upload detected: s3://{bucket}/{key}")
 
-        video_id = key.rsplit('/', 1)[0]
-        destination = f"s3://{os.environ['OUTPUT_BUCKET']}/{video_id}/hls/video"
+        content_path = key.rsplit('/', 1)[0]
+        destination = f"s3://{os.environ['OUTPUT_BUCKET']}/{content_path}/hls/video"
 
         hls_key = generate_hls_key()
-        store_key(video_id, hls_key)
+        store_key(content_path, hls_key)
 
         response = mc.create_job(
             Role=os.environ["MEDIACONVERT_ROLE"],
@@ -68,7 +69,7 @@ def lambda_handler(event, context):
                                 "EncryptionMethod": "AES128",
                                 "StaticKeyProvider": {
                                     "StaticKeyValue": hls_key,
-                                    "Url": f"{os.environ['HLS_KEY_API_BASE']}/{video_id}",
+                                    "Url": f"{os.environ['HLS_KEY_API_BASE']}/{content_path}",
                                     "KeyFormat": "identity",
                                     "KeyFormatVersions": "1"
                                 }

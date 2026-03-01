@@ -9,12 +9,22 @@ definePageMeta({
   },
 });
 
+const config = useRuntimeConfig();
+
 const route = useRoute();
 const router = useRouter();
 
-// FIXME: temporary
-const videoSource =
-  "https://api.nexa.zdelar.com/playlist/placeholders/video-default/video.m3u8";
+const videoSource = computed(() => {
+  if (titleType === "movie") {
+    return `${config.public.apiGatewayBaseUrl}/playlist/movies/${titleId}`;
+  }
+
+  if (seasonNumber.value == null || episodeNumber.value == null) {
+    return null;
+  }
+
+  return `${config.public.apiGatewayBaseUrl}/playlist/shows/${titleId}/s${pad2(seasonNumber.value)}/e${pad2(episodeNumber.value)}`;
+});
 
 const titleType = route.params.content as "tv" | "movie";
 const titleId = Number(route.params.id);
@@ -119,10 +129,7 @@ const formatEpisodeName = (
   title: string,
 ): string | null => {
   if (seasonNumber == null || episodeNumber == null) return null;
-
-  const s = String(seasonNumber).padStart(2, "0");
-  const e = String(episodeNumber).padStart(2, "0");
-  return `S${s}E${e} - ${title}`;
+  return `S${pad2(seasonNumber)}E${pad2(episodeNumber)} - ${title}`;
 };
 
 const viewDetails = () => {
@@ -164,14 +171,16 @@ onMounted(() => {
 
 <template>
   <PlayerVideo
-    :title-type="titleType"
-    :title-id="titleId"
-    :title-name="titleData.name ? titleData.name : null"
+    v-if="videoSource"
+    :key="`${titleType}-${titleId}-${seasonNumber}-${episodeNumber}`"
+    :title="titleData"
     :episode-name="
       episodeData
         ? formatEpisodeName(seasonNumber, episodeNumber, episodeData.name)
         : null
     "
+    :season="seasonNumber"
+    :episode="episodeNumber"
     :title-source="videoSource"
     :has-next-episode="nextEpisode != null"
     @view-details="viewDetails"

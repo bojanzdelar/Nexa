@@ -8,7 +8,6 @@ locals {
       cached_methods         = ["GET", "HEAD"]
       compress               = false
       cache_policy_id        = data.aws_cloudfront_cache_policy.optimized.id
-      trusted_signers        = []
     },
     {
       path_pattern           = "/shows/*"
@@ -18,7 +17,6 @@ locals {
       cached_methods         = ["GET", "HEAD"]
       compress               = false
       cache_policy_id        = data.aws_cloudfront_cache_policy.optimized.id
-      trusted_signers        = []
     },
     {
       path_pattern           = "/placeholders/*"
@@ -28,7 +26,6 @@ locals {
       cached_methods         = ["GET", "HEAD"]
       compress               = false
       cache_policy_id        = data.aws_cloudfront_cache_policy.optimized.id
-      trusted_signers        = []
     },
     {
       path_pattern           = "/subtitles/*"
@@ -38,7 +35,7 @@ locals {
       cached_methods         = ["GET", "HEAD"]
       compress               = true
       cache_policy_id        = data.aws_cloudfront_cache_policy.optimized.id
-      trusted_signers        = []
+      trusted_key_groups     = [aws_cloudfront_key_group.media.id]
     }
   ]
 }

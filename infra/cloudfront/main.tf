@@ -45,7 +45,11 @@ resource "aws_cloudfront_distribution" "this" {
       cached_methods         = ordered_cache_behavior.value.cached_methods
       compress               = ordered_cache_behavior.value.compress
       cache_policy_id        = ordered_cache_behavior.value.cache_policy_id
-      trusted_signers        = ordered_cache_behavior.value.trusted_signers
+      trusted_key_groups = lookup(
+        ordered_cache_behavior.value,
+        "trusted_key_groups",
+        null
+      )
     }
   }
 

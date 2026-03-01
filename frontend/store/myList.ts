@@ -1,5 +1,4 @@
 import { getMyList, createMyListItem, deleteMyListItem } from "~/services";
-import { sortByUpdatedDesc } from "~/utils/title";
 import type { TitleSummary, Show, Movie } from "~/types";
 
 export const useMyListStore = defineStore("myList", () => {

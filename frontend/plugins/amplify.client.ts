@@ -13,6 +13,6 @@ export default defineNuxtPlugin(async () => {
     },
   });
 
-  const auth = useAuthStore();
-  await auth.hydrateSession().catch(() => {});
+  const authStore = useAuthStore();
+  await authStore.hydrateSession().catch(() => {});
 });

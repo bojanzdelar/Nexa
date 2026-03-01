@@ -18,7 +18,7 @@ resource "aws_lambda_function" "hls_playlist" {
       PLAYLIST_BUCKET        = var.playlist_bucket
       KEY_ENDPOINT           = var.key_endpoint
       CLOUDFRONT_DOMAIN_NAME = var.cloudfront_domain_name
-      SIGNING_SECRET         = var.signing_secret
+      SIGNING_SECRET_NAME    = var.signing_secret_name
     }
   }
 }

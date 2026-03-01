@@ -6,8 +6,8 @@ export const useApiDefaults = <T>(baseURL: string) => {
     baseURL,
 
     async onRequest({ options }: FetchContext) {
-      const auth = useAuthStore();
-      const token = await auth.getAccessToken();
+      const authStore = useAuthStore();
+      const token = await authStore.getAccessToken();
 
       if (token) {
         options.headers = new Headers(options.headers);

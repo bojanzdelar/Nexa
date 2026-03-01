@@ -46,3 +46,6 @@ terraform.rc
 # Build
 build
 dist
+
+# Layers
+python

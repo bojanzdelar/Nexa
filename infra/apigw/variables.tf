@@ -14,6 +14,10 @@ variable "hls_playlist_lambda_invoke_arn" {
   type = string
 }
 
+variable "subtitles_manifest_lambda_invoke_arn" {
+  type = string
+}
+
 variable "domain_name" {
   type = string
 }
