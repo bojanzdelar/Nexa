@@ -2,7 +2,7 @@ package com.nexa.catalog.util;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nexa.catalog.exception.BadRequestException;
+import com.nexa.exception.BadRequestException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;

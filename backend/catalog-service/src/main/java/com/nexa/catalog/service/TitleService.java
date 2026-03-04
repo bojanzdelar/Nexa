@@ -3,10 +3,10 @@ package com.nexa.catalog.service;
 import static com.nexa.catalog.constants.DynamoKeys.*;
 
 import com.nexa.catalog.api.*;
-import com.nexa.catalog.exception.NotFoundException;
 import com.nexa.catalog.mapper.TitleItemMapper;
 import com.nexa.catalog.model.*;
 import com.nexa.catalog.repository.TitleRepository;
+import com.nexa.exception.NotFoundException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

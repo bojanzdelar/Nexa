@@ -2,11 +2,11 @@ package com.nexa.catalog.service;
 
 import com.nexa.catalog.api.CategoryItemResponse;
 import com.nexa.catalog.api.PagedResponse;
-import com.nexa.catalog.exception.NotFoundException;
 import com.nexa.catalog.mapper.CategoryItemMapper;
 import com.nexa.catalog.model.CategoryItem;
 import com.nexa.catalog.repository.CategoryRepository;
 import com.nexa.catalog.util.CursorUtil;
+import com.nexa.exception.NotFoundException;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;

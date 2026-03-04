@@ -3,7 +3,7 @@ package com.nexa.search;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.nexa")
 public class SearchServiceApplication {
 
   static void main(String[] args) {
