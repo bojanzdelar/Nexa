@@ -1,56 +1,66 @@
 import { getMyList, createMyListItem, deleteMyListItem } from "~/services";
+import { useAuthStore } from "~/store";
 import type { TitleSummary, Show, Movie } from "~/types";
 
 export const useMyListStore = defineStore("myList", () => {
-  const myShows = ref<Show[]>([]);
-  const myMovies = ref<Movie[]>([]);
+  const authStore = useAuthStore();
+
+  const myList = ref<TitleSummary[]>([]);
   const listsLoaded = ref<boolean>(false);
 
-  onMounted(() => fetchMyList());
+  const myShows = computed(
+    () => myList.value.filter((t) => t.type === "tv") as Show[],
+  );
+
+  const myMovies = computed(
+    () => myList.value.filter((t) => t.type === "movie") as Movie[],
+  );
 
   const fetchMyList = async () => {
+    if (!authStore.isAuthenticated || listsLoaded.value) return;
+
     const titles = await getMyList();
 
-    myShows.value = titles
-      .filter((t) => t.type === "tv")
-      .sort(sortByUpdatedDesc) as Show[];
-
-    myMovies.value = titles
-      .filter((t) => t.type === "movie")
-      .sort(sortByUpdatedDesc) as Movie[];
-
+    myList.value = titles.sort(sortByUpdatedDesc);
     listsLoaded.value = true;
   };
 
   const isInMyList = (title: TitleSummary) => {
-    if (title.type === "tv") {
-      return myShows.value.some((item) => item.id === title.id);
-    }
-    return myMovies.value.some((item) => item.id === title.id);
+    return myList.value.some(
+      (item) => item.id === title.id && item.type === title.type,
+    );
   };
 
   const addToMyList = async (title: TitleSummary) => {
     if (isInMyList(title)) return;
-    await createMyListItem(title);
 
-    if (title.type === "tv") {
-      myShows.value.unshift(title as Show);
-    } else {
-      myMovies.value.unshift(title as Movie);
-    }
+    await createMyListItem(title);
+    myList.value.unshift(title);
   };
 
   const removeFromMyList = async (title: TitleSummary) => {
     await deleteMyListItem(title);
 
-    if (title.type === "tv") {
-      myShows.value = myShows.value.filter((item) => item.id !== title.id);
-    } else {
-      myMovies.value = myMovies.value.filter((item) => item.id !== title.id);
-    }
+    myList.value = myList.value.filter(
+      (item) => !(item.id === title.id && item.type === title.type),
+    );
   };
 
+  watch(
+    () => authStore.isAuthenticated,
+    (isAuthenticated) => {
+      if (isAuthenticated) {
+        fetchMyList();
+      } else {
+        myList.value = [];
+        listsLoaded.value = false;
+      }
+    },
+    { immediate: true },
+  );
+
   return {
+    myList,
     myShows,
     myMovies,
     listsLoaded,

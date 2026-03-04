@@ -1,6 +1,6 @@
 package com.nexa.catalog.mapper;
 
-import com.nexa.catalog.dto.CategoryItemDto;
+import com.nexa.catalog.api.CategoryItemResponse;
 import com.nexa.catalog.model.CategoryItem;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -9,5 +9,5 @@ import org.mapstruct.Mapping;
 public interface CategoryItemMapper {
 
   @Mapping(target = "name", source = "title")
-  CategoryItemDto toDto(CategoryItem item);
+  CategoryItemResponse toResponse(CategoryItem item);
 }

@@ -1,7 +1,7 @@
 package com.nexa.catalog.controller;
 
-import com.nexa.catalog.dto.BatchTitleRequest;
-import com.nexa.catalog.dto.TitleSummaryDto;
+import com.nexa.catalog.api.BatchTitleRequest;
+import com.nexa.catalog.api.TitleSummaryResponse;
 import com.nexa.catalog.service.TitleService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ public class TitleController {
   private final TitleService service;
 
   @PostMapping("/batch")
-  public List<TitleSummaryDto> getBatch(@RequestBody List<BatchTitleRequest> request) {
+  public List<TitleSummaryResponse> getBatch(@RequestBody List<BatchTitleRequest> request) {
     return service.getBatchTitles(request);
   }
 }

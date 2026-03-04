@@ -107,13 +107,13 @@ const handleScroll = () => {
   }
 };
 
-useEventListener("scroll", handleScroll);
-
 onMounted(() => {
   if (hasQuery.value) {
     performSearch(searchQuery.value, 1);
   }
 });
+
+useEventListener("scroll", handleScroll);
 </script>
 
 <template>

@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import Hls from "hls.js";
-import { loadAvailableSubtitles, loadSubtitle } from "~/services";
+import {
+  getEpisodeProgress,
+  getMovieProgress,
+  saveEpisodeProgress,
+  saveMovieProgress,
+  loadAvailableSubtitles,
+  loadSubtitle,
+} from "~/services";
 import type { TitleSummary, Subtitle, SubtitleCue } from "~/types";
 
 const props = defineProps<{
@@ -17,6 +24,7 @@ const emit = defineEmits<{
 }>();
 
 let hls: Hls | null = null;
+let lastSavedAt = 0;
 
 const videoPlayer = ref<HTMLVideoElement | null>(null);
 const playbackSpeedMenu = useTemplateRef<HTMLElement>("playbackSpeedMenu");
@@ -71,12 +79,20 @@ watch(subtitle, async (s) => {
   subtitleCues.value = parseSubtitles(vtt);
 });
 
-watch(currentTime, (time) => {
+watch(currentTime, (time, prev = time) => {
   const activeCue = subtitleCues.value.find(
     (cue) => time >= cue.start && time <= cue.end,
   );
-
   subtitleText.value = activeCue?.text || "";
+
+  if (!isPlaying.value) return;
+
+  const isSeek = Math.abs(time - prev) > 3;
+
+  if (isSeek || time - lastSavedAt >= 15) {
+    lastSavedAt = time;
+    saveProgress();
+  }
 });
 
 const onVideoLoaded = async () => {
@@ -261,6 +277,55 @@ const toggleSubtitlesMenu = () => {
   }
 };
 
+const fetchProgress = async () => {
+  let result;
+
+  if (props.title.type === "tv" && props.season && props.episode) {
+    result = await getEpisodeProgress(
+      props.title.id,
+      props.season,
+      props.episode,
+    );
+  } else {
+    result = await getMovieProgress(props.title.id);
+  }
+
+  return result?.progressSeconds ?? 0;
+};
+
+const resumeProgress = async () => {
+  if (!videoPlayer.value) return;
+
+  const progress = await fetchProgress();
+
+  if (progress > 5) {
+    videoPlayer.value.currentTime = progress;
+  }
+};
+
+const saveProgress = async () => {
+  if (!videoPlayer.value || duration.value === 0) return;
+
+  const progressSeconds = Math.floor(currentTime.value);
+  const durationSeconds = Math.floor(duration.value);
+
+  if (props.title.type === "tv" && props.season && props.episode) {
+    await saveEpisodeProgress({
+      tvId: props.title.id,
+      season: props.season,
+      episode: props.episode,
+      progressSeconds,
+      durationSeconds,
+    });
+  } else if (props.title.type === "movie") {
+    await saveMovieProgress({
+      movieId: props.title.id,
+      progressSeconds,
+      durationSeconds,
+    });
+  }
+};
+
 onMounted(() => {
   if (!videoPlayer.value) return;
 
@@ -287,6 +352,8 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+  saveProgress();
+
   if (hls) {
     hls.destroy();
     hls = null;
@@ -301,6 +368,10 @@ onClickOutside(subtitlesMenu, () => (isSubtitlesMenuOpen.value = false));
 
 useEventListener("keydown", handleKeypress);
 useEventListener("resize", calculateSubtitlePosition);
+
+useEventListener(videoPlayer, "loadedmetadata", () => {
+  resumeProgress();
+});
 
 useEventListener(videoPlayer, "waiting", () => {
   isBuffering.value = true;
@@ -317,6 +388,11 @@ useEventListener(videoPlayer, "playing", () => {
 
 useEventListener(videoPlayer, "pause", () => {
   isPlaying.value = false;
+  saveProgress();
+});
+
+useEventListener(videoPlayer, "ended", () => {
+  saveProgress();
 });
 </script>
 

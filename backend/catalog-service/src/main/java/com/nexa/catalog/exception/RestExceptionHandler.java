@@ -1,6 +1,6 @@
 package com.nexa.catalog.exception;
 
-import com.nexa.catalog.dto.ApiError;
+import com.nexa.catalog.api.ApiError;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +23,7 @@ public class RestExceptionHandler {
     int status = exception.getStatus().value();
 
     return ResponseEntity.status(status)
-            .body(new ApiError(exception.getMessage(), status, Instant.now(), null));
+        .body(new ApiError(exception.getMessage(), status, Instant.now(), null));
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -34,20 +34,20 @@ public class RestExceptionHandler {
     }
 
     return ResponseEntity.badRequest()
-            .body(
-                    new ApiError(
-                            "Validation failed", HttpStatus.BAD_REQUEST.value(), Instant.now(), errors));
+        .body(
+            new ApiError(
+                "Validation failed", HttpStatus.BAD_REQUEST.value(), Instant.now(), errors));
   }
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ApiError> handleUnknown(Exception exception) {
     log.error("Unexpected system error", exception);
     return ResponseEntity.status(500)
-            .body(
-                    new ApiError(
-                            "Internal server error",
-                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                            Instant.now(),
-                            null));
+        .body(
+            new ApiError(
+                "Internal server error",
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                Instant.now(),
+                null));
   }
 }

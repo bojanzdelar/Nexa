@@ -1,4 +1,4 @@
-package com.nexa.user.dto;
+package com.nexa.catalog.api;
 
 import java.time.Instant;
 import java.util.Map;

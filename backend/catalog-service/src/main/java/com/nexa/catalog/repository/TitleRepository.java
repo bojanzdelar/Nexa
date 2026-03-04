@@ -2,7 +2,7 @@ package com.nexa.catalog.repository;
 
 import static com.nexa.catalog.constants.DynamoKeys.*;
 
-import com.nexa.catalog.dto.BatchTitleRequest;
+import com.nexa.catalog.api.BatchTitleRequest;
 import com.nexa.catalog.model.TitleItem;
 import java.util.List;
 import java.util.stream.StreamSupport;
@@ -24,11 +24,11 @@ public class TitleRepository {
     this.table = enhancedClient.table(tableName, TableSchema.fromImmutableClass(TitleItem.class));
   }
 
-  public TitleItem getItem(String pk, String sk) {
+  public TitleItem findByPkAndSk(String pk, String sk) {
     return table.getItem(Key.builder().partitionValue(pk).sortValue(sk).build());
   }
 
-  public List<TitleItem> getBatchTitles(List<BatchTitleRequest> req) {
+  public List<TitleItem> findBatchByTitle(List<BatchTitleRequest> req) {
     if (req.isEmpty()) return List.of();
 
     var batchBuilder = ReadBatch.builder(TitleItem.class).mappedTableResource(table);
@@ -46,7 +46,7 @@ public class TitleRepository {
     return StreamSupport.stream(resultPages.resultsForTable(table).spliterator(), false).toList();
   }
 
-  public List<TitleItem> getSeasonsForShow(Long tvId) {
+  public List<TitleItem> findSeasonsByTvId(Long tvId) {
     QueryEnhancedRequest request =
         QueryEnhancedRequest.builder()
             .queryConditional(

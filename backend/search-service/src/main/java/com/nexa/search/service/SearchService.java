@@ -2,8 +2,8 @@ package com.nexa.search.service;
 
 import static com.nexa.search.constants.SearchConstants.*;
 
-import com.nexa.search.dto.PagedResponse;
-import com.nexa.search.dto.SearchResultDto;
+import com.nexa.search.api.PagedResponse;
+import com.nexa.search.api.SearchResultResponse;
 import com.nexa.search.mapper.SearchResultMapper;
 import com.nexa.search.model.SearchDocument;
 import java.io.IOException;
@@ -30,8 +30,8 @@ public class SearchService {
     SearchResponse<SearchDocument> response =
         client.search(buildSearchRequest(query, page, size), SearchDocument.class);
 
-    List<SearchResultDto> results =
-        response.hits().hits().stream().map(hit -> mapper.toDto(hit.source())).toList();
+    List<SearchResultResponse> results =
+        response.hits().hits().stream().map(hit -> mapper.toResponse(hit.source())).toList();
 
     return new PagedResponse(
         results,
@@ -51,7 +51,6 @@ public class SearchService {
 
     var searchQuery = new Query.Builder().multiMatch(multiMatch).build();
 
-    return s ->
-        s.index(INDEX_TITLES).from((page - 1) * size).size(size).query(searchQuery);
+    return s -> s.index(INDEX_TITLES).from((page - 1) * size).size(size).query(searchQuery);
   }
 }

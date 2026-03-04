@@ -1,8 +1,8 @@
-package com.nexa.catalog.dto;
+package com.nexa.catalog.api;
 
 import java.util.List;
 
-public record MovieDto(
+public record MovieResponse(
     Long id,
     String type,
     String name,
@@ -12,10 +12,10 @@ public record MovieDto(
     List<String> originCountry,
     String originalLanguage,
     String releaseDate,
-    List<GenreDto> genres,
+    List<GenreResponse> genres,
     Integer runtime,
     String overview,
     String posterPath,
     String backdropPath,
-    List<CastMemberDto> cast,
-    List<TitleSummaryDto> recommendations) {}
+    List<CastMemberResponse> cast,
+    List<TitleSummaryResponse> recommendations) {}

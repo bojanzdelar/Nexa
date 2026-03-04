@@ -1,6 +1,6 @@
 package com.nexa.user.exception;
 
-import com.nexa.user.dto.ApiError;
+import com.nexa.user.api.ApiError;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;

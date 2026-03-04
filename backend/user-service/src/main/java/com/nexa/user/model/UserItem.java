@@ -18,4 +18,7 @@ public class UserItem {
   String sk;
 
   Instant updatedAt;
+  Long progressSeconds;
+  Long durationSeconds;
+  Long expiresAt;
 }

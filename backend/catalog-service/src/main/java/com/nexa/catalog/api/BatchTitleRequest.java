@@ -1,3 +1,3 @@
-package com.nexa.catalog.dto;
+package com.nexa.catalog.api;
 
 public record BatchTitleRequest(String type, Long id) {}

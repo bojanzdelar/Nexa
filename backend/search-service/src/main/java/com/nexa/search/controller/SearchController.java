@@ -1,6 +1,6 @@
 package com.nexa.search.controller;
 
-import com.nexa.search.dto.PagedResponse;
+import com.nexa.search.api.PagedResponse;
 import com.nexa.search.service.SearchService;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;

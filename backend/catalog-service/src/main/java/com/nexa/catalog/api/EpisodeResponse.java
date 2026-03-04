@@ -1,6 +1,6 @@
-package com.nexa.catalog.dto;
+package com.nexa.catalog.api;
 
-public record EpisodeDto(
+public record EpisodeResponse(
     Integer episodeNumber,
     String name,
     String airDate,

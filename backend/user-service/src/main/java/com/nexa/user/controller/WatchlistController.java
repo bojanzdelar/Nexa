@@ -1,6 +1,6 @@
 package com.nexa.user.controller;
 
-import com.nexa.user.dto.WatchlistEntryDto;
+import com.nexa.user.api.WatchlistEntryResponse;
 import com.nexa.user.service.WatchlistService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -17,22 +17,22 @@ public class WatchlistController {
   private final WatchlistService service;
 
   @GetMapping
-  public List<WatchlistEntryDto> list(@AuthenticationPrincipal Jwt jwt) {
-    return service.list(userId(jwt));
+  public List<WatchlistEntryResponse> getWatchlist(@AuthenticationPrincipal Jwt jwt) {
+    return service.getWatchlist(userId(jwt));
   }
 
   @PutMapping("/{type}/{titleId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void add(
-      @AuthenticationPrincipal Jwt jwt, @PathVariable String type, @PathVariable String titleId) {
-    service.add(userId(jwt), type, titleId);
+  public void addToWatchlist(
+      @AuthenticationPrincipal Jwt jwt, @PathVariable String type, @PathVariable Long titleId) {
+    service.addToWatchlist(userId(jwt), type, titleId);
   }
 
   @DeleteMapping("/{type}/{titleId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void remove(
-      @AuthenticationPrincipal Jwt jwt, @PathVariable String type, @PathVariable String titleId) {
-    service.remove(userId(jwt), type, titleId);
+  public void removeFromWatchlist(
+      @AuthenticationPrincipal Jwt jwt, @PathVariable String type, @PathVariable Long titleId) {
+    service.removeFromWatchlist(userId(jwt), type, titleId);
   }
 
   private String userId(Jwt jwt) {

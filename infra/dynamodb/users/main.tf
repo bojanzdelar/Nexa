@@ -20,4 +20,9 @@ resource "aws_dynamodb_table" "nexa_users" {
     max_read_request_units  = 1000
     max_write_request_units = 1000
   }
+
+  ttl {
+    attribute_name = "expiresAt"
+    enabled        = true
+  }
 }

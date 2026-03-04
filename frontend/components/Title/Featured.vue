@@ -8,15 +8,16 @@ const props = defineProps<{
 const currentTitle = ref<Show | Movie>(props.titles[0]);
 
 const currentTitleRouteName = computed(() =>
-  getTitleRouteName(currentTitle.value)
+  getTitleRouteName(currentTitle.value),
 );
 
 const changeTitle = () =>
   (currentTitle.value = getRandomElement(props.titles)!);
 
-changeTitle();
-
-useIntervalFn(changeTitle, 10000);
+onMounted(() => {
+  changeTitle();
+  useIntervalFn(changeTitle, 10000);
+});
 </script>
 
 <template>

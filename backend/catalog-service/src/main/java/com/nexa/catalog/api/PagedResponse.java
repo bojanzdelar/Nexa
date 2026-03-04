@@ -1,4 +1,4 @@
-package com.nexa.catalog.dto;
+package com.nexa.catalog.api;
 
 import java.util.List;
 

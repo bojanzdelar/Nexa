@@ -21,7 +21,7 @@ public class CategoryRepository {
         enhancedClient.table(tableName, TableSchema.fromImmutableClass(CategoryItem.class));
   }
 
-  public Page<CategoryItem> queryCategory(
+  public Page<CategoryItem> findCategoryPage(
       String pk, int limit, Map<String, AttributeValue> exclusiveStartKey) {
     QueryEnhancedRequest.Builder builder =
         QueryEnhancedRequest.builder()

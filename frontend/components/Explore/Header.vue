@@ -24,6 +24,8 @@ const isScrolled = ref(false);
 const isMobileMenuOpen = ref(false);
 const isUserMenuOpen = ref(false);
 
+const mounted = ref(false);
+
 watch(width, (newWidth) => {
   if (newWidth >= minMobileWidth && isMobileMenuOpen.value) {
     toggleMobileMenu();
@@ -44,6 +46,8 @@ const toggleUserMenu = () => {
   isUserMenuOpen.value = !isUserMenuOpen.value;
 };
 
+onMounted(() => (mounted.value = true));
+
 onClickOutside(mobileMenu, () => (isMobileMenuOpen.value = false));
 onClickOutside(userMenu, () => (isUserMenuOpen.value = false));
 
@@ -56,7 +60,7 @@ useEventListener("scroll", handleScroll);
     :class="{ 'bg-neutral-900': isScrolled }"
   >
     <div class="flex items-center space-x-4 md:space-x-10">
-      <div v-if="width < minMobileWidth" class="flex items-center">
+      <div v-if="mounted && width < minMobileWidth" class="flex items-center">
         <Icon
           name="heroicons:bars-3"
           class="cursor-pointer h-8 w-8"

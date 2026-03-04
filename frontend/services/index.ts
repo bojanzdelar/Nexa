@@ -3,3 +3,4 @@ export * from "./movies";
 export * from "./titles";
 export * from "./subtitles";
 export * from "./myList";
+export * from "./playback";

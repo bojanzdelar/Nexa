@@ -37,16 +37,18 @@ const titleRouteName = computed(() => getTitleRouteName(props.title));
       />
     </NuxtLink>
 
-    <button
-      v-if="isAuthenticated"
-      class="absolute top-2 right-2 p-1 pl-3 pb-3 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity"
-    >
-      <span v-if="isInMyList(title)" @click="removeFromMyList(title)">
-        <Icon name="heroicons:x-mark-solid" class="h-6 w-6 lg:h-9 lg:w-9" />
-      </span>
-      <span v-else @click="addToMyList(title)">
-        <Icon name="heroicons:plus-solid" class="h-6 w-6 lg:h-9 lg:w-9" />
-      </span>
-    </button>
+    <ClientOnly>
+      <button
+        v-if="isAuthenticated"
+        class="absolute top-2 right-2 p-1 pl-3 pb-3 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity"
+      >
+        <span v-if="isInMyList(title)" @click="removeFromMyList(title)">
+          <Icon name="heroicons:x-mark-solid" class="h-6 w-6 lg:h-9 lg:w-9" />
+        </span>
+        <span v-else @click="addToMyList(title)">
+          <Icon name="heroicons:plus-solid" class="h-6 w-6 lg:h-9 lg:w-9" />
+        </span>
+      </button>
+    </ClientOnly>
   </div>
 </template>
