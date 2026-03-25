@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.nexa</groupId>
-    <artifactId>catalog-service</artifactId>
+    <artifactId>nexa-catalog-service</artifactId>
     <version>1.0.0</version>
-    <name>catalog-service</name>
-    <description>Nexa catalog service</description>
+    <name>Nexa Catalog Service</name>
+    <description>Catalog microservice for the Nexa streaming platform</description>
     <url/>
     <licenses>
         <license/>
@@ -80,7 +80,7 @@
         </dependency>
         <dependency>
             <groupId>com.nexa</groupId>
-            <artifactId>exception</artifactId>
+            <artifactId>nexa-exception</artifactId>
             <version>1.0.0</version>
         </dependency>
     </dependencies>

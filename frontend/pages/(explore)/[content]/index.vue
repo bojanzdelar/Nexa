@@ -27,6 +27,8 @@ definePageMeta({
 const route = useRoute();
 const titleType = route.params.content as "shows" | "movies";
 
+usePageTitle(titleType === "shows" ? "TV Shows" : "Movies");
+
 const categoryConfigs = {
   shows: {
     "Trending Now": getTrendingShows,
@@ -55,7 +57,7 @@ const currentConfig = categoryConfigs[titleType];
 const categoryNames = Object.keys(currentConfig);
 
 const categoryData = await Promise.all(
-  Object.values(currentConfig).map((fn) => fn())
+  Object.values(currentConfig).map((fn) => fn()),
 );
 
 const categoryTitles = categoryData.map((response) => response?.results || []);
@@ -68,29 +70,21 @@ const categoriesToRender = categoryNames.map((name, index) => ({
 </script>
 
 <template>
-  <div>
-    <Head>
-      <Title>
-        {{ titleType === "shows" ? "TV Shows" : "Movies" }} - Nexa
-      </Title>
-    </Head>
-
-    <main class="pl-4 pb-24 lg:space-y-24 lg:pl-16">
-      <TitleFeatured
-        :titles="
-          categoriesToRender.find((category) => category.name == 'Trending Now')
-            ?.titles
-        "
+  <main class="pl-4 pb-24 lg:space-y-24 lg:pl-16">
+    <TitleFeatured
+      :titles="
+        categoriesToRender.find((category) => category.name == 'Trending Now')
+          ?.titles
+      "
+    />
+    <section class="space-y-5 md:space-y-10">
+      <CommonGroup
+        v-for="category in categoriesToRender"
+        :key="category.key"
+        type="titles"
+        :name="category.name"
+        :content="category.titles"
       />
-      <section class="space-y-5 md:space-y-10">
-        <CommonGroup
-          v-for="category in categoriesToRender"
-          :key="category.key"
-          type="titles"
-          :name="category.name"
-          :content="category.titles"
-        />
-      </section>
-    </main>
-  </div>
+    </section>
+  </main>
 </template>

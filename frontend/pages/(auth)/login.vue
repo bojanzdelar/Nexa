@@ -5,6 +5,8 @@ definePageMeta({
   layout: "auth",
 });
 
+usePageTitle("Sign In");
+
 const router = useRouter();
 
 const { logIn } = useAuthStore();

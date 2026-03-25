@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="flex h-screen w-screen bg-black md:items-center md:justify-center"
+      class="flex h-[100dvh] w-screen bg-black md:items-center md:justify-center"
     >
       <NuxtImg
         src="/background.jpg"

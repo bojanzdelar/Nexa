@@ -133,7 +133,7 @@ useEventListener("scroll", handleScroll);
   <div
     v-if="isMobileMenuOpen"
     ref="mobileMenu"
-    class="fixed top-0 left-0 h-full w-64 bg-neutral-900 z-50 shadow-lg"
+    class="fixed top-0 left-0 h-full w-64 bg-neutral-900 z-30 shadow-lg"
   >
     <div
       class="flex justify-between items-center px-2.5 py-4 border-b border-neutral-800"
@@ -198,7 +198,7 @@ useEventListener("scroll", handleScroll);
 
   <div
     v-if="isMobileMenuOpen"
-    class="fixed inset-0 bg-black bg-opacity-50 z-40"
+    class="fixed inset-0 bg-black bg-opacity-50 z-20"
     @click="isMobileMenuOpen = false"
   ></div>
 </template>

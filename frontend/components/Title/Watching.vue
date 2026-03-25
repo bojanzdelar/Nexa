@@ -46,7 +46,7 @@ const removeFromContinueWatching = async () => {
     <NuxtLink :to="watchRoute">
       <NuxtImg
         :src="config.public.cdnBaseUrl + item.posterPath"
-        class="rounded-sm md:rounded opacity-75 hover:opacity-100 transition-opacity"
+        class="w-full rounded-sm md:rounded opacity-75 hover:opacity-100 transition-opacity"
         :alt="item.name"
         format="webp"
       />

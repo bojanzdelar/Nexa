@@ -3,7 +3,7 @@ package com.nexa.catalog;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication(scanBasePackages = "com.nexa")
+@SpringBootApplication
 public class CatalogServiceApplication {
 
   static void main(String[] args) {

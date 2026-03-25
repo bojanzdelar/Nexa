@@ -31,7 +31,7 @@ const titleRouteName = computed(() => getTitleRouteName(props.title));
     >
       <NuxtImg
         :src="config.public.cdnBaseUrl + title.posterPath"
-        class="rounded-sm md:rounded opacity-75 hover:opacity-100 transition-opacity"
+        class="w-full rounded-sm md:rounded opacity-75 hover:opacity-100 transition-opacity"
         :alt="title.name"
         format="webp"
       />

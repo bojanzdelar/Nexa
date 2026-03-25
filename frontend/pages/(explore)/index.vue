@@ -7,6 +7,8 @@ import {
 } from "~/services";
 import type { ContinueWatchingItem } from "~/types";
 
+usePageTitle("Home");
+
 const authStore = useAuthStore();
 
 const myListStore = useMyListStore();
@@ -26,39 +28,33 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div>
-    <Head>
-      <Title>Home - Nexa</Title>
-    </Head>
-
-    <main class="pl-4 pb-24 lg:space-y-24 lg:pl-16">
-      <TitleFeatured :titles="[...trendingShows, ...trendingMovies]" />
-      <section class="space-y-5 md:space-y-10">
-        <ClientOnly>
-          <CommonGroup
-            v-if="authStore.isAuthenticated && continueWatching?.length"
-            type="continue"
-            name="Continue Watching"
-            :content="continueWatching"
-          />
-          <CommonGroup
-            v-if="authStore.isAuthenticated && myList?.length"
-            type="titles"
-            name="My List"
-            :content="myList"
-          />
-        </ClientOnly>
+  <main class="pl-4 pb-24 lg:space-y-24 lg:pl-16">
+    <TitleFeatured :titles="[...trendingShows, ...trendingMovies]" />
+    <section class="space-y-5 md:space-y-10">
+      <ClientOnly>
         <CommonGroup
-          type="titles"
-          name="Trending Shows"
-          :content="trendingShows"
+          v-if="authStore.isAuthenticated && continueWatching?.length"
+          type="continue"
+          name="Continue Watching"
+          :content="continueWatching"
         />
         <CommonGroup
+          v-if="authStore.isAuthenticated && myList?.length"
           type="titles"
-          name="Trending Movies"
-          :content="trendingMovies"
+          name="My List"
+          :content="myList"
         />
-      </section>
-    </main>
-  </div>
+      </ClientOnly>
+      <CommonGroup
+        type="titles"
+        name="Trending Shows"
+        :content="trendingShows"
+      />
+      <CommonGroup
+        type="titles"
+        name="Trending Movies"
+        :content="trendingMovies"
+      />
+    </section>
+  </main>
 </template>

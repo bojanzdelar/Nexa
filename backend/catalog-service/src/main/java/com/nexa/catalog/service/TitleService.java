@@ -7,6 +7,7 @@ import com.nexa.catalog.mapper.TitleItemMapper;
 import com.nexa.catalog.model.*;
 import com.nexa.catalog.repository.TitleRepository;
 import com.nexa.exception.NotFoundException;
+import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,10 @@ public class TitleService {
     TitleItem credits = repository.findByPkAndSk(pk, SK_CREDITS);
     TitleItem recommendations = repository.findByPkAndSk(pk, SK_RECOMMENDATIONS);
 
-    return mapper.toMovieResponse(meta, credits.getCast(), recommendations.getResults());
+    return mapper.toMovieResponse(
+        meta,
+        credits != null ? credits.getCast() : Collections.emptyList(),
+        recommendations != null ? recommendations.getResults() : Collections.emptyList());
   }
 
   public TvShowResponse getTvShowById(Long id) {
@@ -41,7 +45,10 @@ public class TitleService {
     List<TitleItem> seasonsRaw = repository.findSeasonsByTvId(id);
 
     return mapper.toTvShowResponse(
-        meta, credits.getCast(), recommendations.getResults(), seasonsRaw);
+        meta,
+        credits != null ? credits.getCast() : Collections.emptyList(),
+        recommendations != null ? recommendations.getResults() : Collections.emptyList(),
+        seasonsRaw);
   }
 
   public List<TitleSummaryResponse> getBatchTitles(List<BatchTitleRequest> req) {

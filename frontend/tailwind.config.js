@@ -1,3 +1,6 @@
+import textShadow from "tailwindcss-textshadow";
+import scrollbarHide from "tailwind-scrollbar-hide";
+
 /** @type {import('tailwindcss').Config} */
 export default {
   theme: {
@@ -24,8 +27,5 @@ export default {
       `${__dirname}/app/spa-loading-template.html`,
     ],
   },
-  plugins: [
-    require("tailwindcss-textshadow"),
-    require("tailwind-scrollbar-hide"),
-  ],
+  plugins: [textShadow, scrollbarHide],
 };

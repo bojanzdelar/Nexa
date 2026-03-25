@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.nexa</groupId>
-    <artifactId>search-service</artifactId>
+    <artifactId>nexa-search-service</artifactId>
     <version>1.0.0</version>
-    <name>search-service</name>
-    <description>Nexa search service</description>
+    <name>Nexa Search Service</name>
+    <description>Search microservice for the Nexa streaming platform</description>
     <url/>
     <licenses>
         <license/>
@@ -88,7 +88,7 @@
         </dependency>
         <dependency>
             <groupId>com.nexa</groupId>
-            <artifactId>exception</artifactId>
+            <artifactId>nexa-exception</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>

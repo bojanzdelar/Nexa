@@ -18,7 +18,7 @@ const reload = () => {
 
 <template>
   <NuxtLayout>
-    <main class="flex items-center justify-center h-screen">
+    <main class="flex items-center justify-center h-[100dvh]">
       <div class="text-center">
         <h1 class="text-xl md:text-3xl lg:text-5xl font-bold mb-4">
           {{ error?.statusMessage }}

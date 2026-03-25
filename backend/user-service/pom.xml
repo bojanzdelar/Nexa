@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.nexa</groupId>
-    <artifactId>user-service</artifactId>
+    <artifactId>nexa-user-service</artifactId>
     <version>1.0.0</version>
-    <name>user-service</name>
-    <description>Nexa user service</description>
+    <name>Nexa User Service</name>
+    <description>User microservice for the Nexa streaming platform</description>
     <url/>
     <licenses>
         <license/>
@@ -77,7 +77,7 @@
         </dependency>
         <dependency>
             <groupId>com.nexa</groupId>
-            <artifactId>exception</artifactId>
+            <artifactId>nexa-exception</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>

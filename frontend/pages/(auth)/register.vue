@@ -5,6 +5,8 @@ definePageMeta({
   layout: "auth",
 });
 
+usePageTitle("Sign Up");
+
 const router = useRouter();
 const { register } = useAuthStore();
 

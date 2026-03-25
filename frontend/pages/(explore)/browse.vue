@@ -2,6 +2,8 @@
 import { searchTitles } from "~/services";
 import type { TitleSummary } from "~/types";
 
+usePageTitle("Browse");
+
 const route = useRoute();
 const router = useRouter();
 
@@ -117,100 +119,90 @@ useEventListener("scroll", handleScroll);
 </script>
 
 <template>
-  <div>
-    <Head>
-      <Title>Browse - Nexa</Title>
-    </Head>
+  <main class="px-4 lg:px-16 pt-24 md:pt-32 pb-24">
+    <section class="space-y-5 md:space-y-10 mx-auto container">
+      <div class="flex justify-between">
+        <h2 class="text-2xl font-semibold text-neutral-200 text-shadow-md">
+          Browse
+        </h2>
+      </div>
 
-    <main class="px-4 lg:px-16 pt-24 md:pt-32 pb-24">
-      <section class="space-y-5 md:space-y-10 mx-auto container">
-        <div class="flex justify-between">
-          <h2 class="text-2xl font-semibold text-neutral-200 text-shadow-md">
-            Browse
-          </h2>
-        </div>
-
-        <div
-          class="flex items-center bg-neutral-800/60 rounded-md border border-neutral-700"
+      <div
+        class="flex items-center bg-neutral-800/60 rounded-md border border-neutral-700"
+      >
+        <Icon
+          name="heroicons:magnifying-glass"
+          class="h-6 w-6 ml-4 text-neutral-400"
+        />
+        <input
+          v-model="searchQuery"
+          type="text"
+          placeholder="Search for titles..."
+          class="w-full py-4 px-3 bg-transparent text-white focus:outline-none"
+        />
+        <button
+          v-if="searchQuery"
+          class="mr-4 text-neutral-400 hover:text-white"
+          @click="clearSearch"
         >
-          <Icon
-            name="heroicons:magnifying-glass"
-            class="h-6 w-6 ml-4 text-neutral-400"
+          <Icon name="heroicons:x-mark" class="h-5 w-5" />
+        </button>
+      </div>
+
+      <div v-if="isLoading && !isLoadingMore" class="py-12 text-center">
+        <Icon
+          name="heroicons:arrow-path"
+          class="h-10 w-10 text-neutral-400 animate-spin"
+        />
+        <p class="mt-4 text-neutral-400">Searching...</p>
+      </div>
+
+      <div v-else-if="showEmptyState" class="py-20 text-center">
+        <Icon
+          name="heroicons:face-frown"
+          class="h-16 w-16 text-neutral-500 mx-auto mb-4"
+        />
+        <h3 class="text-xl font-semibold text-neutral-200 mb-2 text-shadow-md">
+          No results found
+        </h3>
+        <p class="text-neutral-400">
+          We couldn't find anything matching "{{ searchQuery }}". <br />
+          Try different keywords or check for typos.
+        </p>
+      </div>
+
+      <div v-else-if="!hasQuery" class="py-20 text-center">
+        <Icon
+          name="heroicons:magnifying-glass"
+          class="h-16 w-16 text-neutral-500 mx-auto mb-4"
+        />
+        <h3 class="text-xl font-semibold text-neutral-200 mb-2 text-shadow-md">
+          Search for titles
+        </h3>
+        <p class="text-neutral-400">Find your favorite shows and movies.</p>
+      </div>
+
+      <div v-else-if="hasResults" class="space-y-8">
+        <div class="flex flex-wrap justify-center gap-4">
+          <TitleThumbnail
+            v-for="item in resultsWithPoster"
+            :key="item.id"
+            :title="item"
           />
-          <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="Search for titles..."
-            class="w-full py-4 px-3 bg-transparent text-white focus:outline-none"
-          />
-          <button
-            v-if="searchQuery"
-            class="mr-4 text-neutral-400 hover:text-white"
-            @click="clearSearch"
-          >
-            <Icon name="heroicons:x-mark" class="h-5 w-5" />
-          </button>
         </div>
 
-        <div v-if="isLoading && !isLoadingMore" class="py-12 text-center">
+        <div ref="loadMoreTrigger" class="py-8 text-center">
           <Icon
+            v-if="isLoadingMore"
             name="heroicons:arrow-path"
-            class="h-10 w-10 text-neutral-400 animate-spin"
+            class="h-6 w-6 text-neutral-400 animate-spin"
           />
-          <p class="mt-4 text-neutral-400">Searching...</p>
-        </div>
-
-        <div v-else-if="showEmptyState" class="py-20 text-center">
-          <Icon
-            name="heroicons:face-frown"
-            class="h-16 w-16 text-neutral-500 mx-auto mb-4"
-          />
-          <h3
-            class="text-xl font-semibold text-neutral-200 mb-2 text-shadow-md"
-          >
-            No results found
-          </h3>
-          <p class="text-neutral-400">
-            We couldn't find anything matching "{{ searchQuery }}". <br />
-            Try different keywords or check for typos.
+          <p v-else-if="hasMoreTitles" class="text-neutral-400 text-sm">
+            Scroll for more results
           </p>
+          <p v-else class="text-neutral-400 text-sm">End of results</p>
         </div>
-
-        <div v-else-if="!hasQuery" class="py-20 text-center">
-          <Icon
-            name="heroicons:magnifying-glass"
-            class="h-16 w-16 text-neutral-500 mx-auto mb-4"
-          />
-          <h3
-            class="text-xl font-semibold text-neutral-200 mb-2 text-shadow-md"
-          >
-            Search for titles
-          </h3>
-          <p class="text-neutral-400">Find your favorite shows and movies.</p>
-        </div>
-
-        <div v-else-if="hasResults" class="space-y-8">
-          <div class="flex flex-wrap justify-center gap-4">
-            <TitleThumbnail
-              v-for="item in resultsWithPoster"
-              :key="item.id"
-              :title="item"
-            />
-          </div>
-
-          <div ref="loadMoreTrigger" class="py-8 text-center">
-            <Icon
-              v-if="isLoadingMore"
-              name="heroicons:arrow-path"
-              class="h-6 w-6 text-neutral-400 animate-spin"
-            />
-            <p v-else-if="hasMoreTitles" class="text-neutral-400 text-sm">
-              Scroll for more results
-            </p>
-            <p v-else class="text-neutral-400 text-sm">End of results</p>
-          </div>
-        </div>
-      </section>
-    </main>
-  </div>
+      </div>
+    </section>
+  </main>
 </template>

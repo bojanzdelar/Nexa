@@ -5,6 +5,8 @@ definePageMeta({
   layout: "auth",
 });
 
+usePageTitle("Confirm Email");
+
 const router = useRouter();
 const route = useRoute();
 

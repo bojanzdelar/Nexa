@@ -14,6 +14,8 @@ const config = useRuntimeConfig();
 const route = useRoute();
 const router = useRouter();
 
+const { isMobilePortrait } = useMobileOrientation();
+
 const videoSource = computed(() => {
   if (titleType === "movie") {
     return `${config.public.apiGatewayBaseUrl}/playlist/movies/${titleId}`;
@@ -36,6 +38,9 @@ const seasonNumber = ref<number | null>(null);
 const episodeNumber = ref<number | null>(null);
 
 const titleRouteName = computed(() => getTitleRouteName(titleData.value));
+const pageTitle = computed(() => titleData.value.name);
+
+usePageTitle(pageTitle);
 
 const nextEpisode = computed(() => {
   if (
@@ -170,8 +175,13 @@ onMounted(() => {
 </script>
 
 <template>
+  <CommonOrientationOverlay
+    v-if="isMobilePortrait"
+    message="Switch to landscape to watch"
+  />
+
   <PlayerVideo
-    v-if="videoSource"
+    v-else-if="videoSource"
     :key="`${titleType}-${titleId}-${seasonNumber}-${episodeNumber}`"
     :title="titleData"
     :episode-name="

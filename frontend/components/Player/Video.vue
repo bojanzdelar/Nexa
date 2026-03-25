@@ -189,15 +189,18 @@ const calculateSubtitlePosition = () => {
   subtitleBottomPosition.value = (screenHeight - currentVideoHeight) / 2;
 };
 
-const toggleFullscreen = () => {
+const toggleFullscreen = async () => {
   if (!videoPlayer.value) return;
 
   const container = videoPlayer.value.parentNode as HTMLElement;
+  const orientation = screen.orientation;
 
   if (!isFullscreen.value) {
-    container.requestFullscreen();
+    await container.requestFullscreen();
+    orientation.lock?.("landscape")?.catch(() => {});
   } else {
-    document.exitFullscreen();
+    await document.exitFullscreen();
+    orientation.unlock?.();
   }
 
   isFullscreen.value = !isFullscreen.value;
@@ -398,7 +401,7 @@ useEventListener(videoPlayer, "ended", () => {
 
 <template>
   <div
-    class="relative flex items-center justify-center w-screen h-screen bg-black"
+    class="relative flex items-center justify-center w-screen h-[100dvh] bg-black"
     @mousemove="showControls"
   >
     <video
@@ -487,7 +490,7 @@ useEventListener(videoPlayer, "ended", () => {
           </div>
         </div>
 
-        <div class="flex items-center justify-between">
+        <div class="relative flex items-center justify-between">
           <div class="flex items-center space-x-4">
             <Icon
               :name="
@@ -499,17 +502,17 @@ useEventListener(videoPlayer, "ended", () => {
 
             <Icon
               name="heroicons:arrow-uturn-left-solid"
-              class="cursor-pointer w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 m-1 lg:m-2 hover:scale-125"
+              class="hidden sm:block cursor-pointer w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 m-1 lg:m-2 hover:scale-125"
               @click="skip(-10)"
             />
 
             <Icon
               name="heroicons:arrow-uturn-right-solid"
-              class="cursor-pointer w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 m-1 lg:m-2 hover:scale-125"
+              class="hidden sm:block cursor-pointer w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 m-1 lg:m-2 hover:scale-125"
               @click="skip(10)"
             />
 
-            <div class="flex items-center">
+            <div class="hidden sm:flex items-center">
               <Icon
                 :name="
                   isMuted
@@ -525,28 +528,30 @@ useEventListener(videoPlayer, "ended", () => {
                 min="0"
                 max="1"
                 step="0.1"
-                class="w-24 ml-1 opacity-70 hover:opacity-100 accent-malachite"
+                class="w-8 md:w-12 lg:w-16 xl:w-20 ml-1 opacity-70 hover:opacity-100 accent-malachite"
                 @input="updateVolume"
               />
             </div>
           </div>
 
           <div
-            class="absolute text-sm lg:text-base xl:text-xl left-1/2 -translate-x-1/2 bottom-5 space-x-2 text-center"
+            class="absolute text-sm lg:text-base xl:text-xl left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 space-x-2 text-center"
           >
             <div class="font-semibold">{{ title.name }}</div>
-            <div v-if="episodeName" class="font-normal">{{ episodeName }}</div>
+            <div v-if="episodeName" class="hidden sm:block">
+              {{ episodeName }}
+            </div>
           </div>
 
           <div class="flex items-center space-x-4">
             <Icon
               v-if="title.type === 'tv' && hasNextEpisode"
               name="heroicons:forward-solid"
-              class="cursor-pointer w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 m-1 lg:m-2"
+              class="hidden sm:block cursor-pointer w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 m-1 lg:m-2"
               @click="emit('nextEpisode')"
             />
 
-            <div ref="playbackSpeedMenu" class="relative">
+            <div ref="playbackSpeedMenu" class="hidden sm:block relative">
               <Icon
                 name="heroicons:adjustments-horizontal-solid"
                 class="cursor-pointer w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 m-1 lg:m-2"
@@ -559,7 +564,7 @@ useEventListener(videoPlayer, "ended", () => {
               />
             </div>
 
-            <div ref="subtitlesMenu" class="relative">
+            <div ref="subtitlesMenu" class="hidden sm:block relative">
               <Icon
                 name="heroicons:chat-bubble-bottom-center-text"
                 class="cursor-pointer w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 m-1 lg:m-2"
