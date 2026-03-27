@@ -80,7 +80,7 @@ const signIn = async () => {
     class="z-10 w-full mt-24 space-y-8 rounded bg-black/75 py-10 px-6 md:mt-0 md:max-w-md md:px-14"
     @submit.prevent="signIn"
   >
-    <h1 class="text-4xl font-semibold">Sign In</h1>
+    <h1 class="text-3xl md:text-4xl font-semibold">Sign In</h1>
 
     <p
       v-if="serverError"

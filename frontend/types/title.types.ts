@@ -16,7 +16,6 @@ export interface Title extends TitleSummary {
   overview: string;
   backdropPath: string;
   runtime: number;
-  adult: boolean;
   genres: Genre[];
   cast: Cast[];
   recommendations: TitleSummary[];

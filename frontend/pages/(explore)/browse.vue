@@ -183,7 +183,7 @@ useEventListener("scroll", handleScroll);
       </div>
 
       <div v-else-if="hasResults" class="space-y-8">
-        <div class="flex flex-wrap justify-center gap-4">
+        <div class="flex flex-wrap justify-center gap-2 md:gap-4">
           <TitleThumbnail
             v-for="item in resultsWithPoster"
             :key="item.id"

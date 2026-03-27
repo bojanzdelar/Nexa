@@ -10,11 +10,11 @@ export const loadAvailableSubtitles = (
       ? `/subtitles/movies/${title.id}`
       : `/subtitles/shows/${title.id}?s=${season}&e=${episode}`;
 
-  return useApiGateway<Subtitle[]>(url);
+  return useLambdaApi<Subtitle[]>(url);
 };
 
 export const loadSubtitle = async (subtitle: Subtitle) => {
-  const { url } = await useApiGateway<{ url: string }>("/subtitles/sign", {
+  const { url } = await useLambdaApi<{ url: string }>("/subtitles/sign", {
     query: { key: subtitle.key },
   });
 

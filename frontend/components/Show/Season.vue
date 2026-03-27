@@ -9,7 +9,7 @@ const props = defineProps<{
 const releasedEpisodes = computed(() => {
   const currentDate = new Date();
   return props.season.episodes.filter(
-    (episode: Episode) => currentDate >= new Date(episode.airDate)
+    (episode: Episode) => currentDate >= new Date(episode.airDate),
   );
 });
 </script>
@@ -28,7 +28,7 @@ const releasedEpisodes = computed(() => {
       </span>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-4">
       <NuxtLink
         v-for="episode in releasedEpisodes"
         :key="episode.episodeNumber"

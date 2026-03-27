@@ -34,6 +34,25 @@ export default defineNuxtConfig({
     "/register": { ssr: false },
     "/my-list": { ssr: false },
     "/watch/**": { ssr: false },
+
+    "/api/titles/**": {
+      proxy: "http://localhost:8080/titles/**",
+    },
+    "/api/tv/**": {
+      proxy: "http://localhost:8080/tv/**",
+    },
+    "/api/movies/**": {
+      proxy: "http://localhost:8080/movies/**",
+    },
+    "/api/search": {
+      proxy: "http://localhost:8081/search",
+    },
+    "/api/search/**": {
+      proxy: "http://localhost:8081/search/**",
+    },
+    "/api/me/**": {
+      proxy: "http://localhost:8082/me/**",
+    },
   },
   pwa: {
     manifest: {
@@ -58,17 +77,22 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      cognitoUserPoolId: process.env.NUXT_PUBLIC_COGNITO_USER_POOL_ID,
-      cognitoClientId: process.env.NUXT_PUBLIC_COGNITO_CLIENT_ID,
-      // TODO: merge when gateway is created
-      catalogApiBaseUrl: process.env.NUXT_PUBLIC_CATALOG_API_BASE_URL,
-      searchApiBaseUrl: process.env.NUXT_PUBLIC_SEARCH_API_BASE_URL,
-      userApiBaseUrl: process.env.NUXT_PUBLIC_USER_API_BASE_URL,
-      apiGatewayBaseUrl: process.env.NUXT_PUBLIC_API_GATEWAY_BASE_URL,
-      cdnBaseUrl: process.env.NUXT_PUBLIC_CDN_BASE_URL,
+      auth: {
+        userPoolId: process.env.NUXT_PUBLIC_COGNITO_USER_POOL_ID,
+        clientId: process.env.NUXT_PUBLIC_COGNITO_CLIENT_ID,
+      },
+      api: {
+        serviceBaseUrl: process.env.NUXT_PUBLIC_API_SERVICE_BASE_URL,
+        lambdaBaseUrl: process.env.NUXT_PUBLIC_API_LAMBDA_BASE_URL,
+      },
+      cdn: {
+        baseUrl: process.env.NUXT_PUBLIC_CDN_BASE_URL,
+      },
     },
   },
-  devServer: {
-    host: "0.0.0.0",
+  vite: {
+    server: {
+      allowedHosts: true,
+    },
   },
 });

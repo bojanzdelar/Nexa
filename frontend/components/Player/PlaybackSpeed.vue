@@ -10,14 +10,14 @@ const emit = defineEmits<{
 
 <template>
   <div
-    class="absolute bottom-full right-0 bg-neutral-800 rounded shadow-lg w-80 sm:w-[32rem] xl:w-[48rem]"
+    class="absolute bottom-full right-0 bg-neutral-800 rounded shadow-lg w-80 lg:w-[28rem] xl:w-[36rem]"
   >
     <div
       class="text-white text-sm lg:text-base xl:text-xl px-5 py-3 font-semibold mb-2"
     >
       Playback Speed
     </div>
-    <div class="p-10">
+    <div class="p-6 lg:p-10">
       <div class="relative">
         <div
           class="absolute top-0 w-full h-0.5 bg-neutral-600 -translate-y-1/2"

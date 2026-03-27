@@ -89,7 +89,7 @@ await fetchData();
   <main v-if="title" class="px-4 lg:px-16">
     <TitleBackdrop :title="title" class="opacity-75 xl:opacity-50" />
 
-    <div class="relative h-[60vh] md:h-[75vh]">
+    <div class="relative h-[65vh] md:h-[80vh]">
       <div class="absolute bottom-8 md:bottom-15 lg:bottom-20">
         <h1
           class="text-2xl md:text-4xl lg:text-7xl font-bold mb-4 text-shadow-md"
@@ -98,24 +98,30 @@ await fetchData();
         </h1>
 
         <div
-          class="flex flex-wrap items-center gap-4 mb-6 text-md md:text-lg lg:text-xl text-shadow-md"
+          class="flex flex-wrap items-center gap-2 md:gap-4 mb-6 text-md md:text-lg lg:text-xl text-shadow-md"
         >
           <span>{{ new Date(titleRelease).getFullYear() }}</span>
           <span>•</span>
           <div class="flex gap-2">
-            <span v-for="genre in title?.genres" :key="genre.id">
+            <span v-if="title?.genres?.length > 0" class="md:hidden">
+              {{ title.genres[0].name }}
+            </span>
+
+            <span
+              v-for="genre in title?.genres"
+              :key="genre.id"
+              class="hidden md:inline"
+            >
               {{ genre.name }}
             </span>
           </div>
+          <span>•</span>
           <span v-if="'numberOfSeasons' in title">
             {{ title?.numberOfSeasons }}
             {{ title?.numberOfSeasons > 1 ? "Seasons" : "Season" }}
           </span>
           <span v-else>
             {{ Math.floor(title?.runtime / 60) }}h {{ title?.runtime % 60 }}m
-          </span>
-          <span v-if="title?.adult" class="border px-2 py-0.5 rounded">
-            18+
           </span>
         </div>
 
@@ -167,7 +173,7 @@ await fetchData();
         <div class="space-y-2">
           <h2 class="text-lg md:text-2xl font-bold text-neutral-200">About</h2>
           <p
-            class="text-neutral-300 max-w-3xl leading-relaxed text-lg md:text-xl"
+            class="text-neutral-300 max-w-3xl leading-relaxed md:text-lg lg:text-xl"
           >
             {{ title.overview || "No overview available." }}
           </p>
@@ -203,7 +209,7 @@ await fetchData();
       <div class="hidden lg:block xl:w-1/4">
         <div class="sticky top-28">
           <NuxtImg
-            :src="config.public.cdnBaseUrl + title?.posterPath"
+            :src="config.public.cdn.baseUrl + title?.posterPath"
             :alt="title.name"
             class="w-full rounded shadow-lg"
           />

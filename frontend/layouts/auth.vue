@@ -14,8 +14,7 @@
       <NuxtLink to="/">
         <NuxtImg
           src="/logo.svg"
-          class="absolute left-4 top-4 cursor-pointer object-contain md:left-10 md:top-6"
-          width="100"
+          class="absolute left-4 top-4 cursor-pointer object-contain md:left-10 md:top-6 w-20 md:w-24"
           alt="Nexa Logo"
       /></NuxtLink>
 

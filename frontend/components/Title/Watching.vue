@@ -41,11 +41,11 @@ const removeFromContinueWatching = async () => {
 
 <template>
   <div
-    class="group relative w-[160px] md:w-[180px] lg:w-[200px] shrink-0 cursor-pointer transition ease-out md:hover:scale-105"
+    class="group relative w-[150px] md:w-[180px] lg:w-[200px] shrink-0 cursor-pointer transition ease-out md:hover:scale-105"
   >
     <NuxtLink :to="watchRoute">
       <NuxtImg
-        :src="config.public.cdnBaseUrl + item.posterPath"
+        :src="config.public.cdn.baseUrl + item.posterPath"
         class="w-full rounded-sm md:rounded opacity-75 hover:opacity-100 transition-opacity"
         :alt="item.name"
         format="webp"

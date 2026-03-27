@@ -203,7 +203,7 @@ const toggleFullscreen = async () => {
     orientation.unlock?.();
   }
 
-  isFullscreen.value = !isFullscreen.value;
+  isFullscreen.value = !!document.fullscreenElement;
 };
 
 const handleKeypress = (event: KeyboardEvent) => {
@@ -234,7 +234,9 @@ const handleKeypress = (event: KeyboardEvent) => {
       toggleFullscreen();
       break;
     case "escape":
-      isFullscreen.value = false;
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      }
       break;
   }
 
@@ -371,6 +373,10 @@ onClickOutside(subtitlesMenu, () => (isSubtitlesMenuOpen.value = false));
 
 useEventListener("keydown", handleKeypress);
 useEventListener("resize", calculateSubtitlePosition);
+
+useEventListener(document, "fullscreenchange", () => {
+  isFullscreen.value = !!document.fullscreenElement;
+});
 
 useEventListener(videoPlayer, "loadedmetadata", () => {
   resumeProgress();

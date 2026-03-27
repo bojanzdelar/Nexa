@@ -11,12 +11,12 @@ defineProps<{
   <div
     class="bg-neutral-800/50 rounded-lg p-4 hover:bg-neutral-700/50 transition-colors"
   >
-    <div class="flex gap-4">
-      <div class="w-1/3">
+    <div class="flex gap-2 lg:gap-4">
+      <div class="hidden lg:block lg:w-2/5">
         <div class="relative">
           <NuxtImg
             v-if="episode.stillPath"
-            :src="config.public.cdnBaseUrl + episode.stillPath"
+            :src="config.public.cdn.baseUrl + episode.stillPath"
             :alt="episode.name"
             class="rounded w-full"
           />
@@ -31,7 +31,7 @@ defineProps<{
           </div>
         </div>
       </div>
-      <div class="w-2/3 space-y-2">
+      <div class="lg:w-3/5 space-y-2">
         <h4 class="font-semibold">{{ episode.name }}</h4>
         <div class="flex items-center gap-2 text-sm text-neutral-400">
           <span>Episode {{ episode.episodeNumber }}</span>

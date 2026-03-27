@@ -9,12 +9,12 @@ import type {
 export const getContinueWatching = async (): Promise<
   ContinueWatchingItem[]
 > => {
-  const items = await useUserApi<ContinueWatchingRef[]>(
+  const items = await useServiceApi(false)<ContinueWatchingRef[]>(
     `/me/playback/continue-watching`,
   );
   if (!items.length) return [];
 
-  const summaries = await useCatalogApi(false)<TitleSummary[]>(
+  const summaries = await useServiceApi(false)<TitleSummary[]>(
     `/titles/batch`,
     {
       method: "POST",
@@ -46,33 +46,33 @@ export const getEpisodeProgress = (
   season: number,
   episode: number,
 ) => {
-  return useUserApi<{
+  return useServiceApi(false)<{
     progressSeconds: number;
   }>(`/me/playback/tv/${tvId}/season/${season}/episode/${episode}`);
 };
 
 export const getMovieProgress = (movieId: number) => {
-  return useUserApi<{
+  return useServiceApi(false)<{
     progressSeconds: number;
   }>(`/me/playback/movie/${movieId}`);
 };
 
 export const saveEpisodeProgress = (payload: EpisodeProgressPayload) => {
-  return useUserApi("/me/playback/episode/progress", {
+  return useServiceApi(false)("/me/playback/episode/progress", {
     method: "POST",
     body: payload,
   });
 };
 
 export const saveMovieProgress = (payload: MovieProgressPayload) => {
-  return useUserApi("/me/playback/movie/progress", {
+  return useServiceApi(false)("/me/playback/movie/progress", {
     method: "POST",
     body: payload,
   });
 };
 
 export const clearTvProgress = (tvId: number) => {
-  return useUserApi(`/me/playback/tv/${tvId}`, {
+  return useServiceApi(false)(`/me/playback/tv/${tvId}`, {
     method: "DELETE",
   });
 };
@@ -82,7 +82,7 @@ export const clearEpisodeProgress = (
   season: number,
   episode: number,
 ) => {
-  return useUserApi(
+  return useServiceApi(false)(
     `/me/playback/tv/${tvId}/season/${season}/episode/${episode}`,
     {
       method: "DELETE",
@@ -91,7 +91,7 @@ export const clearEpisodeProgress = (
 };
 
 export const clearMovieProgress = (movieId: number) => {
-  return useUserApi(`/me/playback/movie/${movieId}`, {
+  return useServiceApi(false)(`/me/playback/movie/${movieId}`, {
     method: "DELETE",
   });
 };

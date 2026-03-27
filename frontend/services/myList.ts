@@ -1,10 +1,10 @@
 import type { TitleRef, TitleSummary } from "~/types";
 
 export const getMyList = async (): Promise<TitleSummary[]> => {
-  const refs = await useUserApi<TitleRef[]>(`/me/watchlist`);
+  const refs = await useServiceApi(false)<TitleRef[]>(`/me/watchlist`);
   if (!refs.length) return [];
 
-  const summaries = await useCatalogApi(false)<TitleSummary[]>(
+  const summaries = await useServiceApi(false)<TitleSummary[]>(
     `/titles/batch`,
     {
       method: "POST",
@@ -23,13 +23,19 @@ export const getMyList = async (): Promise<TitleSummary[]> => {
 };
 
 export const createMyListItem = (title: TitleSummary) => {
-  return useUserApi<object>(`/me/watchlist/${title.type}/${title.id}`, {
-    method: "PUT",
-  });
+  return useServiceApi(false)<object>(
+    `/me/watchlist/${title.type}/${title.id}`,
+    {
+      method: "PUT",
+    },
+  );
 };
 
 export const deleteMyListItem = (title: TitleSummary) => {
-  return useUserApi<object>(`/me/watchlist/${title.type}/${title.id}`, {
-    method: "DELETE",
-  });
+  return useServiceApi(false)<object>(
+    `/me/watchlist/${title.type}/${title.id}`,
+    {
+      method: "DELETE",
+    },
+  );
 };

@@ -83,3 +83,8 @@ resource "aws_cognito_user_pool_client" "app" {
     "ALLOW_REFRESH_TOKEN_AUTH",
   ]
 }
+
+resource "aws_cognito_user_group" "admin" {
+  user_pool_id = aws_cognito_user_pool.this.id
+  name         = "ADMIN"
+}

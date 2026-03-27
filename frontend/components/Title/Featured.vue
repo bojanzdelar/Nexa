@@ -32,7 +32,7 @@ onMounted(() => {
 
     <div class="line-clamp-6">
       <p
-        class="text-md text-shadow-md md:max-w-lg md:text-lg lg:max-w-2xl lg:text-2xl hidden sm:block"
+        class="text-md text-shadow-md md:max-w-lg md:text-lg lg:max-w-2xl lg:text-2xl hidden md:block"
       >
         {{ currentTitle.tagline }}
       </p>

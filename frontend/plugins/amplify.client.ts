@@ -7,8 +7,8 @@ export default defineNuxtPlugin(async () => {
   Amplify.configure({
     Auth: {
       Cognito: {
-        userPoolId: config.public.cognitoUserPoolId,
-        userPoolClientId: config.public.cognitoClientId,
+        userPoolId: config.public.auth.userPoolId,
+        userPoolClientId: config.public.auth.clientId,
       },
     },
   });

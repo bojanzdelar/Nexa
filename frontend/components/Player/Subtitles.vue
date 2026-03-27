@@ -13,16 +13,16 @@ const emit = defineEmits<{
 
 <template>
   <div
-    class="absolute bottom-full right-0 bg-neutral-800 rounded shadow-lg w-80"
+    class="absolute bottom-full right-0 bg-neutral-800 rounded shadow-lg w-48 lg:w-64 xl:w-80"
   >
     <div
-      class="text-white text-sm lg:text-base xl:text-xl px-5 py-3 font-semibold mb-2"
+      class="text-white text-sm lg:text-base xl:text-xl px-3 py-2.5 lg:px-5 lg:py-3 font-semibold mb-2"
     >
       Subtitles
     </div>
     <div class="flex flex-col space-y-1">
       <button
-        class="text-neutral-300 text-sm lg:text-base xl:text-lg px-5 py-3 rounded hover:bg-white/10 text-left flex justify-between"
+        class="text-neutral-300 text-sm lg:text-base xl:text-lg px-3 py-2.5 lg:px-5 lg:py-3 rounded hover:bg-white/10 text-left flex justify-between"
         :class="{ '!text-white': !current }"
         @click="emit('change', null)"
       >
@@ -37,7 +37,7 @@ const emit = defineEmits<{
       <button
         v-for="subtitle in items"
         :key="subtitle.code"
-        class="text-neutral-300 text-sm lg:text-base xl:text-lg px-5 py-3 rounded hover:bg-white/10 text-left flex justify-between"
+        class="text-neutral-300 text-sm lg:text-base xl:text-lg px-3 py-2.5 lg:px-5 lg:py-3 rounded hover:bg-white/10 text-left flex justify-between"
         :class="{ '!text-white': current?.code === subtitle.code }"
         @click="emit('change', subtitle)"
       >

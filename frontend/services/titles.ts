@@ -5,7 +5,7 @@ export const searchTitles = (
   page: number = 1,
   _: boolean = true,
 ) => {
-  return useSearchApi<SearchResponse<TitleSummary>>("/search", {
+  return useServiceApi(false)<SearchResponse<TitleSummary>>("/search", {
     query: {
       q: query,
       page,

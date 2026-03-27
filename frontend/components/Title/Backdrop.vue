@@ -10,10 +10,10 @@ defineProps<{
 
 <template>
   <div
-    class="absolute top-0 left-0 -z-10 h-[40vh] sm:h-[65vh] lg:h-[95vh] w-full"
+    class="absolute top-0 left-0 -z-10 h-[40vh] md:h-[65vh] lg:h-[95vh] w-full"
   >
     <NuxtImg
-      :src="config.public.cdnBaseUrl + title.backdropPath"
+      :src="config.public.cdn.baseUrl + title.backdropPath"
       class="w-full h-full object-cover object-center"
       :alt="title.name"
     />
