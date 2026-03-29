@@ -21,7 +21,7 @@ export const useAuthStore = defineStore("auth", () => {
 
   const isAuthenticated = computed(() => !!user.value);
 
-  const getAccessToken = async (): Promise<string | null> => {
+  const getAccessToken = async () => {
     const session = await fetchAuthSession();
     return session.tokens?.accessToken?.toString() ?? null;
   };

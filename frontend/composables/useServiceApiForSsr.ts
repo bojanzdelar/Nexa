@@ -11,11 +11,11 @@ export const useServiceApiForSsr = async <T>(
 
   // useFetch is combination of useAsyncData and $fetch, just a syntatic sugar
   // useAsyncData should be used with SSR to avoid fetching same data twice
-  const { data } = await useFetch(url, mergedOptions);
+  const { data, error } = await useFetch(url, mergedOptions);
 
-  if (!data.value) {
-    throw new Error("Something went wrong while fetching data!");
+  if (error.value) {
+    throw error.value;
   }
 
-  return data.value;
+  return data.value as T;
 };

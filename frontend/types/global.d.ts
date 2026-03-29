@@ -2,7 +2,7 @@ export {};
 
 declare global {
   interface ScreenOrientation {
-    lock?(orientation: "landscape" | "portrait"): Promise<void>;
+    lock?(orientation: "landscape" | "portrait");
     unlock?(): void;
   }
 

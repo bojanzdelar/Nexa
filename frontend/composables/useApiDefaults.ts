@@ -18,11 +18,11 @@ export const useApiDefaults = <T>(baseURL: string) => {
     onResponseError: ({
       response,
     }: FetchContext & { response: FetchResponse<T> }) => {
-      throw {
-        status: response.status,
-        message: response._data?.message || "API request failed",
+      throw createError({
+        statusCode: response.status,
+        statusMessage: response._data?.message || "API request failed",
         data: response._data,
-      };
+      });
     },
   };
 };

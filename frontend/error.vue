@@ -7,6 +7,8 @@ defineProps({
 
 const router = useRouter();
 
+const { isMobileLandscape } = useMobileOrientation();
+
 const goBack = () => {
   router.back();
 };
@@ -14,10 +16,12 @@ const goBack = () => {
 const reload = () => {
   window.location.reload();
 };
+
+useScrollLock(isMobileLandscape);
 </script>
 
 <template>
-  <NuxtLayout>
+  <NuxtLayout name="default">
     <main class="flex items-center justify-center h-[100dvh]">
       <div class="text-center">
         <h1 class="text-xl md:text-3xl lg:text-5xl font-bold mb-4">
@@ -48,4 +52,9 @@ const reload = () => {
       </div>
     </main>
   </NuxtLayout>
+
+  <CommonOrientationOverlay
+    v-if="isMobileLandscape"
+    message="This app is designed for portrait mode"
+  />
 </template>

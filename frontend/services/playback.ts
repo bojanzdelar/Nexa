@@ -6,24 +6,19 @@ import type {
   MovieProgressPayload,
 } from "~/types";
 
-export const getContinueWatching = async (): Promise<
-  ContinueWatchingItem[]
-> => {
-  const items = await useServiceApi(false)<ContinueWatchingRef[]>(
+export const getContinueWatching = async () => {
+  const items = await useServiceApiForCsr<ContinueWatchingRef[]>(
     `/me/playback/continue-watching`,
   );
   if (!items.length) return [];
 
-  const summaries = await useServiceApi(false)<TitleSummary[]>(
-    `/titles/batch`,
-    {
-      method: "POST",
-      body: items.map((i) => ({
-        id: i.id,
-        type: i.type,
-      })),
-    },
-  );
+  const summaries = await useServiceApiForCsr<TitleSummary[]>(`/titles/batch`, {
+    method: "POST",
+    body: items.map((i) => ({
+      id: i.id,
+      type: i.type,
+    })),
+  });
 
   const summaryMap = new Map(summaries.map((s) => [`${s.id}-${s.type}`, s]));
 
@@ -46,33 +41,33 @@ export const getEpisodeProgress = (
   season: number,
   episode: number,
 ) => {
-  return useServiceApi(false)<{
+  return useServiceApiForCsr<{
     progressSeconds: number;
   }>(`/me/playback/tv/${tvId}/season/${season}/episode/${episode}`);
 };
 
 export const getMovieProgress = (movieId: number) => {
-  return useServiceApi(false)<{
+  return useServiceApiForCsr<{
     progressSeconds: number;
   }>(`/me/playback/movie/${movieId}`);
 };
 
 export const saveEpisodeProgress = (payload: EpisodeProgressPayload) => {
-  return useServiceApi(false)("/me/playback/episode/progress", {
+  return useServiceApiForCsr("/me/playback/episode/progress", {
     method: "POST",
     body: payload,
   });
 };
 
 export const saveMovieProgress = (payload: MovieProgressPayload) => {
-  return useServiceApi(false)("/me/playback/movie/progress", {
+  return useServiceApiForCsr("/me/playback/movie/progress", {
     method: "POST",
     body: payload,
   });
 };
 
 export const clearTvProgress = (tvId: number) => {
-  return useServiceApi(false)(`/me/playback/tv/${tvId}`, {
+  return useServiceApiForCsr(`/me/playback/tv/${tvId}`, {
     method: "DELETE",
   });
 };
@@ -82,7 +77,7 @@ export const clearEpisodeProgress = (
   season: number,
   episode: number,
 ) => {
-  return useServiceApi(false)(
+  return useServiceApiForCsr(
     `/me/playback/tv/${tvId}/season/${season}/episode/${episode}`,
     {
       method: "DELETE",
@@ -91,7 +86,7 @@ export const clearEpisodeProgress = (
 };
 
 export const clearMovieProgress = (movieId: number) => {
-  return useServiceApi(false)(`/me/playback/movie/${movieId}`, {
+  return useServiceApiForCsr(`/me/playback/movie/${movieId}`, {
     method: "DELETE",
   });
 };

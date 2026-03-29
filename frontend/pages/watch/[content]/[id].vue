@@ -168,9 +168,13 @@ const goToNextEpisode = () => {
   });
 };
 
-onMounted(() => {
-  parseQueryParams();
-  fetchData();
+onMounted(async () => {
+  try {
+    parseQueryParams();
+    await fetchData();
+  } catch (e) {
+    handleFatalError(e);
+  }
 });
 </script>
 
