@@ -1,6 +1,6 @@
 server:
-  port: 8080
-
+  port: ${PORT:8080}
+  
 spring:
   application:
     name: catalog-service
@@ -12,3 +12,13 @@ aws:
   dynamodb:
     catalog:
       table-name: NexaCatalog
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      probes:
+        enabled: true

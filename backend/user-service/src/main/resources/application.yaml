@@ -1,5 +1,5 @@
 server:
-  port: 8082
+  port: ${PORT:8080}
 
 spring:
   application:
@@ -17,3 +17,13 @@ aws:
   dynamodb:
     users:
       table-name: NexaUsers
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      probes:
+        enabled: true

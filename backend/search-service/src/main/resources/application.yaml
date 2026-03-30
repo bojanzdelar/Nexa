@@ -1,6 +1,6 @@
 server:
-  port: 8081
-
+  port: ${PORT:8080}
+  
 spring:
   application:
     name: search-service
@@ -20,3 +20,13 @@ aws:
       sk-index: sk-index
   opensearch:
     endpoint: search-nexa-search-lvqeb42upgyez75ixzxo6utlnu.eu-central-1.es.amazonaws.com
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      probes:
+        enabled: true
