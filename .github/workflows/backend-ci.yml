@@ -43,7 +43,7 @@ jobs:
           if [ ${#SERVICES[@]} -eq 0 ]; then
             echo "services=[]" >> $GITHUB_OUTPUT
           else
-            echo "services=$(printf '%s\n' "${SERVICES[@]}" | jq -R . | jq -s .)" >> $GITHUB_OUTPUT
+            echo "services=$(printf '%s\n' "${SERVICES[@]}" | jq -Rsc 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
           fi
 
   build:
