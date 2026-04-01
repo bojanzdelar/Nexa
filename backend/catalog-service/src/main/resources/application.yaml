@@ -1,17 +1,15 @@
 server:
   port: ${PORT:8080}
-  
+
 spring:
   application:
     name: catalog-service
-  jackson:
-    default-property-inclusion: non_null
 
 aws:
-  region: eu-central-1
+  region: ${AWS_REGION:eu-central-1}
   dynamodb:
     catalog:
-      table-name: NexaCatalog
+      table-name: ${DYNAMODB_CATALOG_TABLE:NexaCatalog}
 
 management:
   endpoints:

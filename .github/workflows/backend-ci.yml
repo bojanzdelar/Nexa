@@ -72,7 +72,7 @@ jobs:
         run: echo "IMAGE_TAG=sha-${GITHUB_SHA}" >> $GITHUB_ENV
 
       - name: Set image URI
-        run: echo "IMAGE_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ matrix.service }}" >> $GITHUB_ENV
+        run: echo "IMAGE_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/nexa-${{ matrix.service }}" >> $GITHUB_ENV
 
       - name: Build image
         run: docker build -t $IMAGE_URI:$IMAGE_TAG ./backend/${{ matrix.service }}

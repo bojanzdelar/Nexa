@@ -1,6 +1,6 @@
 server:
   port: ${PORT:8080}
-  
+
 spring:
   application:
     name: search-service
@@ -10,16 +10,16 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: https://cognito-idp.eu-central-1.amazonaws.com/eu-central-1_hPsBH1Y7y
+          issuer-uri: ${COGNITO_ISSUER_URI}
 
 aws:
-  region: eu-central-1
+  region: ${AWS_REGION:eu-central-1}
   dynamodb:
     catalog:
-      table-name: NexaCatalog
-      sk-index: sk-index
+      table-name: ${DYNAMODB_CATALOG_TABLE:NexaCatalog}
+      sk-index: ${DYNAMODB_CATALOG_SK_INDEX:sk-index}
   opensearch:
-    endpoint: search-nexa-search-lvqeb42upgyez75ixzxo6utlnu.eu-central-1.es.amazonaws.com
+    endpoint: ${OPENSEARCH_ENDPOINT}
 
 management:
   endpoints:
