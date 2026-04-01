@@ -45,6 +45,16 @@ module "waf" {
   }
 }
 
+module "ecr" {
+  source = "./ecr"
+
+  services = [
+    "catalog-service",
+    "search-service",
+    "user-service"
+  ]
+}
+
 module "catalog" {
   source = "./dynamodb/catalog"
 }

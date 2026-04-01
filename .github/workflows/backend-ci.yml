@@ -1,0 +1,81 @@
+name: Build & Push Changed Services
+
+on:
+  push:
+    branches: ["master"]
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    outputs:
+      services: ${{ steps.matrix.outputs.services }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Detect changes
+        uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            catalog:
+              - 'backend/catalog-service/**'
+            search:
+              - 'backend/search-service/**'
+            user:
+              - 'backend/user-service/**'
+
+      - name: Build matrix
+        id: matrix
+        run: |
+          SERVICES=()
+
+          if [[ "${{ steps.changes.outputs.catalog }}" == "true" ]]; then
+            SERVICES+=("catalog-service")
+          fi
+          if [[ "${{ steps.changes.outputs.search }}" == "true" ]]; then
+            SERVICES+=("search-service")
+          fi
+          if [[ "${{ steps.changes.outputs.user }}" == "true" ]]; then
+            SERVICES+=("user-service")
+          fi
+
+          if [ ${#SERVICES[@]} -eq 0 ]; then
+            echo "services=[]" >> $GITHUB_OUTPUT
+          else
+            echo "services=$(printf '%s\n' "${SERVICES[@]}" | jq -R . | jq -s .)" >> $GITHUB_OUTPUT
+          fi
+
+  build:
+    runs-on: ubuntu-latest
+    needs: detect
+    if: ${{ needs.detect.outputs.services != '[]' }}
+
+    strategy:
+      matrix:
+        service: ${{ fromJson(needs.detect.outputs.services) }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set image tag
+        run: echo "IMAGE_TAG=sha-${GITHUB_SHA}" >> $GITHUB_ENV
+
+      - name: Set image URI
+        run: echo "IMAGE_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ matrix.service }}" >> $GITHUB_ENV
+
+      - name: Build image
+        run: docker build -t $IMAGE_URI:$IMAGE_TAG ./backend/${{ matrix.service }}
+
+      - name: Push image
+        run: docker push $IMAGE_URI:$IMAGE_TAG
