@@ -1,4 +1,4 @@
-name: Build & Push Changed Services
+name: Build & Deploy Changed Services
 
 on:
   push:
@@ -75,7 +75,12 @@ jobs:
         run: echo "IMAGE_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/nexa-${{ matrix.service }}" >> $GITHUB_ENV
 
       - name: Build image
-        run: docker build -t $IMAGE_URI:$IMAGE_TAG ./backend/${{ matrix.service }}
+        run: docker build -t $IMAGE_URI:$IMAGE_TAG -t $IMAGE_URI:latest ./backend/${{ matrix.service }}
 
       - name: Push image
-        run: docker push $IMAGE_URI:$IMAGE_TAG
+        run: |
+          docker push $IMAGE_URI:$IMAGE_TAG
+          docker push $IMAGE_URI:latest
+
+      - name: Deploy to ECS
+        run: aws ecs update-service --cluster nexa-cluster --service nexa-${{ matrix.service }} --force-new-deployment

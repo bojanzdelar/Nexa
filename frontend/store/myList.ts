@@ -4,6 +4,7 @@ import type { TitleSummary, Show, Movie } from "~/types";
 
 export const useMyListStore = defineStore("myList", () => {
   const authStore = useAuthStore();
+  const { isAuthenticated } = storeToRefs(authStore);
 
   const myList = ref<TitleSummary[]>([]);
   const listsLoaded = ref<boolean>(false);
@@ -17,7 +18,7 @@ export const useMyListStore = defineStore("myList", () => {
   );
 
   const fetchMyList = async () => {
-    if (!authStore.isAuthenticated || listsLoaded.value) return;
+    if (!isAuthenticated.value || listsLoaded.value) return;
 
     const titles = await getMyList();
 
@@ -47,7 +48,7 @@ export const useMyListStore = defineStore("myList", () => {
   };
 
   watch(
-    () => authStore.isAuthenticated,
+    isAuthenticated,
     (isAuthenticated) => {
       if (isAuthenticated) {
         fetchMyList();

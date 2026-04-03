@@ -22,7 +22,7 @@ resource "aws_dynamodb_table" "nexa_catalog" {
   }
 
   global_secondary_index {
-    name            = "sk-index"
+    name            = local.sk_index_name
     projection_type = "ALL"
 
     hash_key  = "SK"

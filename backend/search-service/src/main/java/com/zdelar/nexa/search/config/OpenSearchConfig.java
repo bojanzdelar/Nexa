@@ -7,7 +7,6 @@ import org.opensearch.client.transport.aws.AwsSdk2TransportOptions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.http.SdkHttpClient;
 import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
@@ -29,12 +28,7 @@ public class OpenSearchConfig {
   @Bean
   public OpenSearchTransport openSearchTransport(SdkHttpClient httpClient) {
     return new AwsSdk2Transport(
-        httpClient,
-        endpoint,
-        Region.of(region),
-        AwsSdk2TransportOptions.builder()
-            .setCredentials(DefaultCredentialsProvider.builder().build())
-            .build());
+        httpClient, endpoint, Region.of(region), AwsSdk2TransportOptions.builder().build());
   }
 
   @Bean

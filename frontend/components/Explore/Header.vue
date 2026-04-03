@@ -28,9 +28,9 @@ const mounted = ref(false);
 
 watch(width, (newWidth) => {
   if (newWidth >= minMobileWidth && isMobileMenuOpen.value) {
-    toggleMobileMenu();
+    isMobileMenuOpen.value = false;
   } else if (newWidth <= minMobileWidth && isUserMenuOpen.value) {
-    toggleUserMenu();
+    isUserMenuOpen.value = false;
   }
 });
 
@@ -87,7 +87,7 @@ useEventListener("scroll", handleScroll);
       </ul>
     </div>
 
-    <div class="relative">
+    <div ref="userMenu" class="relative">
       <Icon
         name="heroicons:user"
         class="cursor-pointer h-6 w-6 hidden md:block"
@@ -96,7 +96,6 @@ useEventListener("scroll", handleScroll);
 
       <div
         v-if="isUserMenuOpen"
-        ref="userMenu"
         class="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-neutral-800 py-1"
       >
         <template v-if="isAuthenticated">

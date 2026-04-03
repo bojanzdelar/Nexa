@@ -10,6 +10,7 @@ import type { ContinueWatchingItem } from "~/types";
 usePageTitle("Home");
 
 const authStore = useAuthStore();
+const { isAuthenticated } = storeToRefs(authStore);
 
 const myListStore = useMyListStore();
 const { myList } = storeToRefs(myListStore);
@@ -21,7 +22,7 @@ const [trendingShows, trendingMovies] = (
 ).map((response) => response?.results || []);
 
 onMounted(async () => {
-  if (!authStore.isAuthenticated) return;
+  if (!isAuthenticated.value) return;
 
   continueWatching.value = await getContinueWatching();
 });
@@ -33,13 +34,13 @@ onMounted(async () => {
     <section class="space-y-5 md:space-y-10">
       <ClientOnly>
         <CommonGroup
-          v-if="authStore.isAuthenticated && continueWatching?.length"
+          v-if="isAuthenticated && continueWatching?.length"
           type="continue"
           name="Continue Watching"
           :content="continueWatching"
         />
         <CommonGroup
-          v-if="authStore.isAuthenticated && myList?.length"
+          v-if="isAuthenticated && myList?.length"
           type="titles"
           name="My List"
           :content="myList"

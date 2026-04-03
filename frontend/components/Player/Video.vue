@@ -171,10 +171,14 @@ const changePlaybackSpeed = (speed: number) => {
 
   playbackSpeed.value = speed;
   videoPlayer.value.playbackRate = speed;
+
+  isPlaybackSpeedMenuOpen.value = false;
 };
 
 const changeSubtitle = (_subtitle: Subtitle | null) => {
   subtitle.value = _subtitle;
+
+  isSubtitlesMenuOpen.value = false;
 };
 
 const calculateSubtitlePosition = () => {

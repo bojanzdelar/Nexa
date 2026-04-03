@@ -55,6 +55,38 @@ module "ecr" {
   ]
 }
 
+module "ecs" {
+  source = "./ecs"
+
+  services = {
+    catalog-service = {
+      env = {
+        DYNAMODB_CATALOG_TABLE = module.catalog.table_name
+      }
+    }
+    search-service = {
+      env = merge(
+        {
+          DYNAMODB_CATALOG_TABLE    = module.catalog.table_name
+          DYNAMODB_CATALOG_SK_INDEX = module.catalog.sk_index_name
+          COGNITO_ISSUER_URI        = module.cognito.user_pool_issuer
+        },
+        var.enable_opensearch ? {
+          OPENSEARCH_ENDPOINT = module.opensearch[0].endpoint
+        } : {}
+      )
+    }
+    user-service = {
+      env = {
+        DYNAMODB_USERS_TABLE = module.users.table_name
+        COGNITO_ISSUER_URI   = module.cognito.user_pool_issuer
+      }
+    }
+  }
+
+  enable_opensearch = var.enable_opensearch
+}
+
 module "catalog" {
   source = "./dynamodb/catalog"
 }
