@@ -22,3 +22,8 @@ resource "aws_lambda_function" "hls_playlist" {
     }
   }
 }
+
+resource "aws_cloudwatch_log_group" "logs" {
+  name              = "/aws/lambda/${aws_lambda_function.hls_playlist.function_name}"
+  retention_in_days = 30
+}

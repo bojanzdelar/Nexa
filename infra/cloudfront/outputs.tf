@@ -7,7 +7,7 @@ output "distribution_domain_name" {
 }
 
 output "distribution_https_url" {
-  value = "https://${aws_cloudfront_distribution.this.domain_name}"
+  value = "https://cdn.${var.domain_name}"
 }
 
 output "distribution_hosted_zone_id" {

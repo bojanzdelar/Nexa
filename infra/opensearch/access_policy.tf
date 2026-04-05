@@ -4,7 +4,7 @@ data "aws_iam_policy_document" "opensearch_access" {
 
     principals {
       type        = "AWS"
-      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"] # TODO: aws_iam_role.opensearch_app_role.arn
+      identifiers = var.allowed_role_arns
     }
 
     actions   = ["es:*"]

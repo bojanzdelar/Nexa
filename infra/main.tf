@@ -194,4 +194,6 @@ module "opensearch" {
   source = "./opensearch"
 
   count = var.enable_opensearch ? 1 : 0
+
+  allowed_role_arns = [module.ecs.task_role_arns["search-service"]]
 }

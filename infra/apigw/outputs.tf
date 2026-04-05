@@ -12,7 +12,7 @@ output "hosted_zone_id" {
 
 output "api_endpoints" {
   value = {
-    base    = aws_apigatewayv2_api.platform_api.api_endpoint
-    hls_key = "${aws_apigatewayv2_api.platform_api.api_endpoint}/hls-key"
+    base    = "https://${aws_apigatewayv2_domain_name.api.domain_name}"
+    hls_key = "https://${aws_apigatewayv2_domain_name.api.domain_name}/hls-key"
   }
 }

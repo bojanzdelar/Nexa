@@ -42,3 +42,7 @@ resource "aws_lambda_function" "subtitles_manifest" {
   }
 }
 
+resource "aws_cloudwatch_log_group" "logs" {
+  name              = "/aws/lambda/${aws_lambda_function.subtitles_manifest.function_name}"
+  retention_in_days = 30
+}
