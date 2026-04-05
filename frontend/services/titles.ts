@@ -5,7 +5,7 @@ export const searchTitles = (
   page: number = 1,
   _: boolean = true,
 ) => {
-  return useServiceApiForCsr<SearchResponse<TitleSummary>>("/search", {
+  return useApiForCsr<SearchResponse<TitleSummary>>("/search", {
     query: {
       q: query,
       page,

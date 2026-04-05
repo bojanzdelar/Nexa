@@ -1,10 +1,10 @@
 import type { TitleRef, TitleSummary } from "~/types";
 
 export const getMyList = async () => {
-  const refs = await useServiceApiForCsr<TitleRef[]>(`/me/watchlist`);
+  const refs = await useApiForCsr<TitleRef[]>(`/me/watchlist`);
   if (!refs.length) return [];
 
-  const summaries = await useServiceApiForCsr<TitleSummary[]>(`/titles/batch`, {
+  const summaries = await useApiForCsr<TitleSummary[]>(`/titles/batch`, {
     method: "POST",
     body: refs.map((r) => ({ id: r.id, type: r.type })),
   });
@@ -20,19 +20,13 @@ export const getMyList = async () => {
 };
 
 export const createMyListItem = (title: TitleSummary) => {
-  return useServiceApiForCsr<object>(
-    `/me/watchlist/${title.type}/${title.id}`,
-    {
-      method: "PUT",
-    },
-  );
+  return useApiForCsr<object>(`/me/watchlist/${title.type}/${title.id}`, {
+    method: "PUT",
+  });
 };
 
 export const deleteMyListItem = (title: TitleSummary) => {
-  return useServiceApiForCsr<object>(
-    `/me/watchlist/${title.type}/${title.id}`,
-    {
-      method: "DELETE",
-    },
-  );
+  return useApiForCsr<object>(`/me/watchlist/${title.type}/${title.id}`, {
+    method: "DELETE",
+  });
 };

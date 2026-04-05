@@ -48,43 +48,31 @@ module "waf" {
 module "ecr" {
   source = "./ecr"
 
-  services = [
-    "catalog-service",
-    "search-service",
-    "user-service"
-  ]
+  services = local.services
 }
 
 module "ecs" {
   source = "./ecs"
 
-  services = {
-    catalog-service = {
-      env = {
-        DYNAMODB_CATALOG_TABLE = module.catalog.table_name
-      }
-    }
-    search-service = {
-      env = merge(
-        {
-          DYNAMODB_CATALOG_TABLE    = module.catalog.table_name
-          DYNAMODB_CATALOG_SK_INDEX = module.catalog.sk_index_name
-          COGNITO_ISSUER_URI        = module.cognito.user_pool_issuer
-        },
-        var.enable_opensearch ? {
-          OPENSEARCH_ENDPOINT = module.opensearch[0].endpoint
-        } : {}
-      )
-    }
-    user-service = {
-      env = {
-        DYNAMODB_USERS_TABLE = module.users.table_name
-        COGNITO_ISSUER_URI   = module.cognito.user_pool_issuer
-      }
-    }
-  }
+  services = local.services
 
-  enable_opensearch = var.enable_opensearch
+  container_port        = var.container_port
+  enable_alb            = var.enable_alb
+  target_group_arns     = var.enable_alb ? module.alb[0].target_group_arns : {}
+  desired_count         = var.ecs_desired_count
+  enable_opensearch     = var.enable_opensearch
+  opensearch_domain_arn = try(module.opensearch[0].arn, null)
+}
+
+module "alb" {
+  source = "./alb"
+
+  count = var.enable_alb ? 1 : 0
+
+  services       = local.services
+  container_port = var.container_port
+
+  acm_certificate_arn = module.acm_regional.certificate_arn
 }
 
 module "catalog" {
@@ -165,6 +153,9 @@ module "route53" {
   source = "./route53"
 
   domain_name               = var.root_domain_name
+  enable_alb                = var.enable_alb
+  alb_dns_name              = try(module.alb[0].dns_name, null)
+  alb_zone_id               = try(module.alb[0].zone_id, null)
   apigw_domain_name         = module.apigw.target_domain_name
   apigw_hosted_zone_id      = module.apigw.hosted_zone_id
   cloudfront_domain_name    = module.cloudfront.distribution_domain_name

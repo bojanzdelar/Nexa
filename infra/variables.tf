@@ -22,7 +22,19 @@ variable "aws_region" {
   type = string
 }
 
+variable "enable_alb" {
+  type = bool
+}
+
+variable "ecs_desired_count" {
+  type = number
+}
+
 variable "enable_opensearch" {
-  type    = bool
-  default = false
+  type = bool
+}
+
+variable "container_port" {
+  type    = number
+  default = 8080
 }

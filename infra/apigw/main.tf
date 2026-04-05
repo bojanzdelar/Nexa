@@ -10,7 +10,7 @@ resource "aws_apigatewayv2_api" "platform_api" {
 }
 
 resource "aws_apigatewayv2_domain_name" "api" {
-  domain_name = "api.${var.domain_name}"
+  domain_name = "playback.${var.domain_name}"
 
   domain_name_configuration {
     certificate_arn = var.acm_certificate_arn

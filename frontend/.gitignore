@@ -21,4 +21,8 @@ logs
 # Local env files
 .env
 .env.*
+
+# Allow shared env configs
+!.env.dev
+!.env.prod
 !.env.example

@@ -1,14 +1,32 @@
 variable "services" {
   type = map(object({
-    env = map(string)
+    paths           = list(string)
+    dynamodb_tables = list(string)
+    env             = map(string)
   }))
 }
 
+
 variable "container_port" {
-  type    = number
-  default = 8080
+  type = number
+}
+
+variable "enable_alb" {
+  type = bool
+}
+
+variable "target_group_arns" {
+  type = map(string)
+}
+
+variable "desired_count" {
+  type = number
 }
 
 variable "enable_opensearch" {
   type = bool
+}
+
+variable "opensearch_domain_arn" {
+  type = string
 }

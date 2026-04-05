@@ -5,3 +5,11 @@ variable "services" {
     env             = map(string)
   }))
 }
+
+variable "container_port" {
+  type = number
+}
+
+variable "acm_certificate_arn" {
+  type = string
+}

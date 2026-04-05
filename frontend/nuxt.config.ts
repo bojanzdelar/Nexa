@@ -82,8 +82,10 @@ export default defineNuxtConfig({
         clientId: process.env.NUXT_PUBLIC_COGNITO_CLIENT_ID,
       },
       api: {
-        serviceBaseUrl: process.env.NUXT_PUBLIC_API_SERVICE_BASE_URL,
-        lambdaBaseUrl: process.env.NUXT_PUBLIC_API_LAMBDA_BASE_URL,
+        baseUrl: process.env.NUXT_PUBLIC_API_BASE_URL,
+      },
+      playback: {
+        baseUrl: process.env.NUXT_PUBLIC_PLAYBACK_BASE_URL,
       },
       cdn: {
         baseUrl: process.env.NUXT_PUBLIC_CDN_BASE_URL,

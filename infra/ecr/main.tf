@@ -1,7 +1,7 @@
 resource "aws_ecr_repository" "services" {
-  for_each = toset(var.services)
+  for_each = var.services
 
-  name = "nexa-${each.value}"
+  name = "nexa-${each.key}"
 
   image_scanning_configuration {
     scan_on_push = true

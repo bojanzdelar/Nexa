@@ -7,12 +7,12 @@ import type {
 } from "~/types";
 
 export const getContinueWatching = async () => {
-  const items = await useServiceApiForCsr<ContinueWatchingRef[]>(
+  const items = await useApiForCsr<ContinueWatchingRef[]>(
     `/me/playback/continue-watching`,
   );
   if (!items.length) return [];
 
-  const summaries = await useServiceApiForCsr<TitleSummary[]>(`/titles/batch`, {
+  const summaries = await useApiForCsr<TitleSummary[]>(`/titles/batch`, {
     method: "POST",
     body: items.map((i) => ({
       id: i.id,
@@ -41,33 +41,33 @@ export const getEpisodeProgress = (
   season: number,
   episode: number,
 ) => {
-  return useServiceApiForCsr<{
+  return useApiForCsr<{
     progressSeconds: number;
   }>(`/me/playback/tv/${tvId}/season/${season}/episode/${episode}`);
 };
 
 export const getMovieProgress = (movieId: number) => {
-  return useServiceApiForCsr<{
+  return useApiForCsr<{
     progressSeconds: number;
   }>(`/me/playback/movie/${movieId}`);
 };
 
 export const saveEpisodeProgress = (payload: EpisodeProgressPayload) => {
-  return useServiceApiForCsr("/me/playback/episode/progress", {
+  return useApiForCsr("/me/playback/episode/progress", {
     method: "POST",
     body: payload,
   });
 };
 
 export const saveMovieProgress = (payload: MovieProgressPayload) => {
-  return useServiceApiForCsr("/me/playback/movie/progress", {
+  return useApiForCsr("/me/playback/movie/progress", {
     method: "POST",
     body: payload,
   });
 };
 
 export const clearTvProgress = (tvId: number) => {
-  return useServiceApiForCsr(`/me/playback/tv/${tvId}`, {
+  return useApiForCsr(`/me/playback/tv/${tvId}`, {
     method: "DELETE",
   });
 };
@@ -77,7 +77,7 @@ export const clearEpisodeProgress = (
   season: number,
   episode: number,
 ) => {
-  return useServiceApiForCsr(
+  return useApiForCsr(
     `/me/playback/tv/${tvId}/season/${season}/episode/${episode}`,
     {
       method: "DELETE",
@@ -86,7 +86,7 @@ export const clearEpisodeProgress = (
 };
 
 export const clearMovieProgress = (movieId: number) => {
-  return useServiceApiForCsr(`/me/playback/movie/${movieId}`, {
+  return useApiForCsr(`/me/playback/movie/${movieId}`, {
     method: "DELETE",
   });
 };
