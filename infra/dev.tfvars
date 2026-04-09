@@ -1,9 +1,10 @@
-enable_alb             = false
-ecs_desired_count      = 0
-enable_opensearch      = false
-enable_cf_cdn_waf      = true # change your cf plan to free or disable to avoid costs
-enable_cf_frontend_waf = false
-environment            = "dev"
+ssr_provisioned_concurrency = 0
+enable_alb                  = false
+ecs_desired_count           = 0
+enable_opensearch           = false
+enable_cf_cdn_waf           = true # change your cf plan to free or disable to avoid costs
+enable_cf_frontend_waf      = false
+environment                 = "dev"
 
 app_domain_name    = "nexa.zdelar.com"
 root_domain_name   = "zdelar.com"

@@ -8,7 +8,8 @@ export default defineNuxtConfig({
         lang: "en",
       },
       link: [
-        { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
+        { rel: "icon", type: "image/x-icon", href: "/images/favicon.ico" },
+        { rel: "apple-touch-icon", href: "/images/apple-touch-icon.png" },
         { rel: "manifest", href: "/manifest.webmanifest" },
       ],
       meta: [{ name: "theme-color", content: "#000000" }],
@@ -63,12 +64,12 @@ export default defineNuxtConfig({
       display: "standalone",
       icons: [
         {
-          src: "/pwa-192x192.png",
+          src: "/images/pwa-192x192.png",
           sizes: "192x192",
           type: "image/png",
         },
         {
-          src: "/pwa-512x512.png",
+          src: "/images/pwa-512x512.png",
           sizes: "512x512",
           type: "image/png",
         },

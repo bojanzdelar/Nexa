@@ -110,7 +110,8 @@ module "s3" {
 module "frontend_ssr" {
   source = "./lambda/frontend_ssr"
 
-  cf_frontend_arn = module.cloudfront_frontend.distribution_arn
+  cf_frontend_arn         = module.cloudfront_frontend.distribution_arn
+  provisioned_concurrency = var.ssr_provisioned_concurrency
 }
 
 module "transcode_dispatcher" {

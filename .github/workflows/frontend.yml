@@ -44,5 +44,17 @@ jobs:
       - name: Deploy Lambda
         run: aws lambda update-function-code --function-name nexa-frontend-ssr --zip-file fileb://frontend/.output/server/lambda.zip
 
+      - name: Wait for Lambda update
+        run: aws lambda wait function-updated --function-name nexa-frontend-ssr
+
+      - name: Publish Lambda version
+        id: publish
+        run: |
+          VERSION=$(aws lambda publish-version --function-name nexa-frontend-ssr --query 'Version' --output text)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Update Lambda alias
+        run: aws lambda update-alias --function-name nexa-frontend-ssr --name live --function-version ${{ steps.publish.outputs.version }}
+
       - name: Invalidate CloudFront cache
         run: aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"

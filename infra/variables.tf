@@ -26,6 +26,10 @@ variable "s3_bucket_prefix" {
   type = string
 }
 
+variable "ssr_provisioned_concurrency" {
+  type = number
+}
+
 variable "enable_alb" {
   type = bool
 }

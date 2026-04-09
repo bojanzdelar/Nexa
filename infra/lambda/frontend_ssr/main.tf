@@ -12,10 +12,28 @@ resource "aws_lambda_function" "frontend_ssr" {
 
   filename         = data.archive_file.bootstrap.output_path
   source_code_hash = data.archive_file.bootstrap.output_base64sha256
+
+  timeout     = 20
+  memory_size = 1024
+}
+
+resource "aws_lambda_alias" "frontend_ssr_live" {
+  name             = "live"
+  function_name    = aws_lambda_function.frontend_ssr.function_name
+  function_version = aws_lambda_function.frontend_ssr.version
+}
+
+resource "aws_lambda_provisioned_concurrency_config" "frontend" {
+  count = var.provisioned_concurrency > 0 ? 1 : 0
+
+  function_name                     = aws_lambda_function.frontend_ssr.function_name
+  qualifier                         = aws_lambda_alias.frontend_ssr_live.name
+  provisioned_concurrent_executions = var.provisioned_concurrency
 }
 
 resource "aws_lambda_function_url" "frontend_ssr" {
   function_name      = aws_lambda_function.frontend_ssr.function_name
+  qualifier          = aws_lambda_alias.frontend_ssr_live.name
   authorization_type = "NONE"
 }
 

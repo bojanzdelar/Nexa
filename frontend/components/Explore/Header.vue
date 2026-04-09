@@ -69,7 +69,7 @@ useEventListener("scroll", handleScroll);
       </div>
       <NuxtLink to="/">
         <NuxtImg
-          src="/logo.svg"
+          src="/images/logo.svg"
           width="65"
           class="cursor-pointer object-contain"
           alt="Nexa Logo"
@@ -138,7 +138,7 @@ useEventListener("scroll", handleScroll);
       class="flex justify-between items-center px-2.5 py-4 border-b border-neutral-800"
     >
       <NuxtImg
-        src="/logo.svg"
+        src="/images/logo.svg"
         width="65"
         class="object-contain"
         alt="Nexa Logo"
