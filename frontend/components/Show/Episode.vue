@@ -14,10 +14,11 @@ defineProps<{
     <div class="flex gap-2 lg:gap-4">
       <div class="hidden lg:block lg:w-2/5">
         <div class="relative">
-          <NuxtImg
+          <img
             v-if="episode.stillPath"
             :src="config.public.cdn.baseUrl + episode.stillPath"
             :alt="episode.name"
+            loading="lazy"
             class="rounded w-full"
           />
           <div v-else class="bg-neutral-700 w-full aspect-video rounded"></div>

@@ -208,7 +208,7 @@ await fetchData();
 
       <div class="hidden lg:block xl:w-1/4">
         <div class="sticky top-28">
-          <NuxtImg
+          <img
             :src="config.public.cdn.baseUrl + title?.posterPath"
             :alt="title.name"
             class="w-full rounded shadow-lg"

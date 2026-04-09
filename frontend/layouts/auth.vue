@@ -3,16 +3,15 @@
     <div
       class="flex h-[100dvh] w-screen bg-black md:items-center md:justify-center"
     >
-      <NuxtImg
+      <img
         src="/images/background.jpg"
         class="absolute w-full h-full object-cover opacity-25 !hidden md:!inline"
         alt="Background"
-        format="webp"
         quality="80"
       />
 
       <NuxtLink to="/">
-        <NuxtImg
+        <img
           src="/images/logo.svg"
           class="absolute left-4 top-4 cursor-pointer object-contain md:left-10 md:top-6 w-20 md:w-24"
           alt="Nexa Logo"

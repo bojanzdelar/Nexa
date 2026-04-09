@@ -10,8 +10,9 @@ defineProps<{
 
 <template>
   <div class="group cursor-pointer w-[130px] md:w-[160px] shrink-0">
-    <NuxtImg
+    <img
       :src="config.public.cdn.baseUrl + person.profilePath"
+      loading="lazy"
       class="w-full rounded mb-2 object-cover opacity-75 group-hover:opacity-100 transition-opacity"
     />
     <p class="text-neutral-300 text-sm">{{ person.name }}</p>

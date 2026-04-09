@@ -110,6 +110,7 @@ const signUp = async () => {
         <input
           v-model="form.firstName"
           type="text"
+          autocomplete="given-name"
           placeholder="First name"
           class="w-full rounded bg-neutral-800 px-5 py-3 placeholder-neutral-500 outline-none focus:bg-neutral-700"
         />
@@ -125,6 +126,7 @@ const signUp = async () => {
         <input
           v-model="form.lastName"
           type="text"
+          autocomplete="family-name"
           placeholder="Last name"
           class="w-full rounded bg-neutral-800 px-5 py-3 placeholder-neutral-500 outline-none focus:bg-neutral-700"
         />
@@ -137,6 +139,7 @@ const signUp = async () => {
         <input
           v-model="form.email"
           type="email"
+          autocomplete="email"
           placeholder="Email"
           class="w-full rounded bg-neutral-800 px-5 py-3 placeholder-neutral-500 outline-none focus:bg-neutral-700"
         />
@@ -149,6 +152,7 @@ const signUp = async () => {
         <input
           v-model="form.password"
           type="password"
+          autocomplete="new-password"
           placeholder="Password"
           class="w-full rounded bg-neutral-800 px-5 py-3 placeholder-neutral-500 outline-none focus:bg-neutral-700"
         />
@@ -161,6 +165,7 @@ const signUp = async () => {
         <input
           v-model="form.confirmPassword"
           type="password"
+          autocomplete="new-password"
           placeholder="Confirm Password"
           class="w-full rounded bg-neutral-800 px-5 py-3 placeholder-neutral-500 outline-none focus:bg-neutral-700"
         />

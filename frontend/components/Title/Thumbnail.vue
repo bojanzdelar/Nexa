@@ -29,11 +29,11 @@ const titleRouteName = computed(() => getTitleRouteName(props.title));
         },
       }"
     >
-      <NuxtImg
+      <img
         :src="config.public.cdn.baseUrl + title.posterPath"
         class="w-full rounded-sm md:rounded opacity-75 hover:opacity-100 transition-opacity"
         :alt="title.name"
-        format="webp"
+        loading="lazy"
       />
     </NuxtLink>
 

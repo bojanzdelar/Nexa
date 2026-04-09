@@ -94,6 +94,7 @@ const signIn = async () => {
         <input
           v-model="form.email"
           type="email"
+          autocomplete="email"
           placeholder="Email"
           class="w-full rounded bg-neutral-800 px-5 py-3 placeholder-neutral-500 outline-none focus:bg-neutral-700"
         />
@@ -107,6 +108,7 @@ const signIn = async () => {
         <input
           v-model="form.password"
           type="password"
+          autocomplete="current-password"
           placeholder="Password"
           class="w-full rounded bg-neutral-800 px-5 py-3 placeholder-neutral-500 outline-none focus:bg-neutral-700"
         />
