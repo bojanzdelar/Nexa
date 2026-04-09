@@ -2,7 +2,8 @@ name: Build & Deploy Changed Services
 
 on:
   push:
-    branches: ["master"]
+    branches:
+      - "master"
 
 jobs:
   detect:
@@ -11,7 +12,8 @@ jobs:
       services: ${{ steps.matrix.outputs.services }}
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Detect changes
         uses: dorny/paths-filter@v3
@@ -56,9 +58,10 @@ jobs:
         service: ${{ fromJson(needs.detect.outputs.services) }}
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Configure AWS
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}

@@ -1,3 +1,13 @@
+module "cloudfront_frontend" {
+  source = "./cloudfront/frontend"
+
+  s3_origin_domain_name = module.s3.buckets.frontend_assets.bucket_domain
+  lambda_origin_domain  = module.frontend_ssr.function_url
+  domain_name           = var.app_domain_name
+  acm_certificate_arn   = module.acm_global.certificate_arn
+  web_acl_arn           = var.enable_cf_frontend_waf ? module.waf_frontend[0].web_acl_arn : null
+}
+
 module "apigw" {
   source = "./apigw"
 
@@ -12,33 +22,41 @@ module "apigw" {
   acm_certificate_arn = module.acm_regional.certificate_arn
 }
 
-module "cloudfront" {
-  source = "./cloudfront"
-
-  web_acl_arn      = module.waf.web_acl_arn
-  public_key_value = module.ssm.cloudfront_public_key_value
+module "cloudfront_cdn" {
+  source = "./cloudfront/cdn"
 
   origins = {
-    content_public = {
-      id          = module.s3.content_public_bucket_name
-      domain_name = module.s3.content_public_bucket_regional_domain_name
-    }
-    content_protected = {
-      id          = module.s3.content_protected_bucket_name
-      domain_name = module.s3.content_protected_bucket_regional_domain_name
-    }
-    video_processed = {
-      id          = module.s3.video_processed_bucket_name
-      domain_name = module.s3.video_processed_bucket_regional_domain_name
+    for k, v in local.cloudfront_cdn_origins :
+    k => {
+      id          = v.bucket_name
+      domain_name = v.bucket_domain
     }
   }
 
+  public_key_value    = module.ssm.cloudfront_public_key_value
   domain_name         = var.app_domain_name
   acm_certificate_arn = module.acm_global.certificate_arn
+  web_acl_arn         = var.enable_cf_cdn_waf ? module.waf_cdn[0].web_acl_arn : null
 }
 
-module "waf" {
+module "waf_cdn" {
   source = "./waf"
+
+  count = var.enable_cf_cdn_waf ? 1 : 0
+
+  name = "nexa-cloudfront-waf"
+
+  providers = {
+    aws = aws.us_east_1
+  }
+}
+
+module "waf_frontend" {
+  source = "./waf"
+
+  count = var.enable_cf_frontend_waf ? 1 : 0
+
+  name = "nexa-cf-frontend-waf"
 
   providers = {
     aws = aws.us_east_1
@@ -86,7 +104,13 @@ module "users" {
 module "s3" {
   source = "./s3"
 
-  cloudfront_distribution_arn = module.cloudfront.distribution_arn
+  bucket_prefix = var.s3_bucket_prefix
+}
+
+module "frontend_ssr" {
+  source = "./lambda/frontend_ssr"
+
+  cf_frontend_arn = module.cloudfront_frontend.distribution_arn
 }
 
 module "transcode_dispatcher" {
@@ -94,7 +118,7 @@ module "transcode_dispatcher" {
 
   mediaconvert_role_arn = module.mediaconvert.iam_role_arn
   hls_key_api_base      = module.apigw.api_endpoints.hls_key
-  output_bucket_name    = module.s3.video_processed_bucket_name
+  output_bucket_name    = module.s3.buckets.video_processed.bucket_name
 }
 
 module "hls_key_server" {
@@ -104,14 +128,13 @@ module "hls_key_server" {
   signing_secret_name = module.ssm.hls_signing_secret_name
 }
 
-
 module "hls_playlist" {
   source = "./lambda/hls_playlist"
 
   apigw_execution_arn    = module.apigw.execution_arn
   key_endpoint           = module.apigw.api_endpoints.hls_key
-  playlist_bucket        = module.s3.video_processed_bucket_name
-  cloudfront_domain_name = module.cloudfront.distribution_https_url
+  playlist_bucket        = module.s3.buckets.video_processed.bucket_name
+  cloudfront_domain_name = module.cloudfront_cdn.distribution_https_url
   signing_secret_name    = module.ssm.hls_signing_secret_name
 }
 
@@ -119,17 +142,17 @@ module "subtitles_manifest" {
   source = "./lambda/subtitles_manifest"
 
   apigw_execution_arn = module.apigw.execution_arn
-  subtitles_bucket    = module.s3.content_protected_bucket_name
-  cloudfront_url      = module.cloudfront.distribution_https_url
-  public_key_id       = module.cloudfront.media_public_key_id
+  subtitles_bucket    = module.s3.buckets.content_protected.bucket_name
+  cloudfront_url      = module.cloudfront_cdn.distribution_https_url
+  public_key_id       = module.cloudfront_cdn.media_public_key_id
   private_key_name    = module.ssm.cloudfront_private_key_name
 }
 
 module "mediaconvert" {
   source = "./mediaconvert"
 
-  ingest_bucket_arn    = module.s3.video_ingest_bucket_arn
-  processed_bucket_arn = module.s3.video_processed_bucket_arn
+  ingest_bucket_arn    = module.s3.buckets.video_ingest.bucket_arn
+  processed_bucket_arn = module.s3.buckets.video_processed.bucket_arn
 }
 
 module "cognito" {
@@ -152,16 +175,18 @@ module "ssm" {
 module "route53" {
   source = "./route53"
 
-  domain_name               = var.root_domain_name
-  enable_alb                = var.enable_alb
-  alb_dns_name              = try(module.alb[0].dns_name, null)
-  alb_zone_id               = try(module.alb[0].zone_id, null)
-  apigw_domain_name         = module.apigw.target_domain_name
-  apigw_hosted_zone_id      = module.apigw.hosted_zone_id
-  cloudfront_domain_name    = module.cloudfront.distribution_domain_name
-  cloudfront_hosted_zone_id = module.cloudfront.distribution_hosted_zone_id
-  ses_region                = var.aws_region
-  ses_domain_dkim           = module.ses.domain_dkim
+  domain_name                = var.root_domain_name
+  enable_alb                 = var.enable_alb
+  alb_dns_name               = try(module.alb[0].dns_name, null)
+  alb_zone_id                = try(module.alb[0].zone_id, null)
+  apigw_domain_name          = module.apigw.target_domain_name
+  apigw_hosted_zone_id       = module.apigw.hosted_zone_id
+  cf_frontend_domain_name    = module.cloudfront_frontend.distribution_domain_name
+  cf_frontend_hosted_zone_id = module.cloudfront_frontend.distribution_hosted_zone_id
+  cf_cdn_domain_name         = module.cloudfront_cdn.distribution_domain_name
+  cf_cdn_hosted_zone_id      = module.cloudfront_cdn.distribution_hosted_zone_id
+  ses_region                 = var.aws_region
+  ses_domain_dkim            = module.ses.domain_dkim
   acm_domain_validation_options = concat(
     tolist(module.acm_global.domain_validation_options),
     tolist(module.acm_regional.domain_validation_options)

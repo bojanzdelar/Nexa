@@ -32,4 +32,25 @@ locals {
       }
     }
   }
+
+  cloudfront_frontend_origins = {
+    frontend_assets = module.s3.buckets.frontend_assets
+  }
+
+  cloudfront_cdn_origins = {
+    content_public    = module.s3.buckets.content_public
+    content_protected = module.s3.buckets.content_protected
+    video_processed   = module.s3.buckets.video_processed
+  }
+
+  cloudfront_origins = merge(
+    {
+      for k, v in local.cloudfront_frontend_origins :
+      k => merge(v, { cf_arn = module.cloudfront_frontend.distribution_arn })
+    },
+    {
+      for k, v in local.cloudfront_cdn_origins :
+      k => merge(v, { cf_arn = module.cloudfront_cdn.distribution_arn })
+    }
+  )
 }

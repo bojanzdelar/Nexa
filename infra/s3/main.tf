@@ -1,31 +1,37 @@
+
+module "frontend_assets" {
+  source        = "./secure_bucket"
+  bucket_name   = "nexa-frontend-assets"
+  bucket_prefix = var.bucket_prefix
+  enable_cors   = true
+}
+
 module "content_public" {
-  source                      = "../modules/secure_bucket"
-  bucket_name                 = "nexa-content-public"
-  enable_versioning           = true
-  enable_cors                 = true
-  allow_cloudfront_access     = true
-  cloudfront_distribution_arn = var.cloudfront_distribution_arn
+  source            = "./secure_bucket"
+  bucket_name       = "nexa-content-public"
+  bucket_prefix     = var.bucket_prefix
+  enable_versioning = true
+  enable_cors       = true
 }
 
 module "content_protected" {
-  source                      = "../modules/secure_bucket"
-  bucket_name                 = "nexa-content-protected"
-  enable_versioning           = true
-  enable_cors                 = true
-  allow_cloudfront_access     = true
-  cloudfront_distribution_arn = var.cloudfront_distribution_arn
+  source            = "./secure_bucket"
+  bucket_name       = "nexa-content-protected"
+  bucket_prefix     = var.bucket_prefix
+  enable_versioning = true
+  enable_cors       = true
 }
 
 module "video_ingest" {
-  source            = "../modules/secure_bucket"
+  source            = "./secure_bucket"
   bucket_name       = "nexa-video-ingest"
+  bucket_prefix     = var.bucket_prefix
   enable_versioning = true
 }
 
 module "video_processed" {
-  source                      = "../modules/secure_bucket"
-  bucket_name                 = "nexa-video-processed"
-  enable_cors                 = true
-  allow_cloudfront_access     = true
-  cloudfront_distribution_arn = var.cloudfront_distribution_arn
+  source        = "./secure_bucket"
+  bucket_name   = "nexa-video-processed"
+  bucket_prefix = var.bucket_prefix
+  enable_cors   = true
 }

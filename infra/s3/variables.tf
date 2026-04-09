@@ -1,4 +1,3 @@
-variable "cloudfront_distribution_arn" {
-  type    = string
-  default = null
+variable "bucket_prefix" {
+  type = string
 }

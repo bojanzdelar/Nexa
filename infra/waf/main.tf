@@ -1,5 +1,5 @@
 resource "aws_wafv2_web_acl" "cloudfront" {
-  name  = "nexa-cloudfront-waf"
+  name  = var.name
   scope = "CLOUDFRONT"
 
   default_action {
@@ -8,7 +8,7 @@ resource "aws_wafv2_web_acl" "cloudfront" {
 
   visibility_config {
     cloudwatch_metrics_enabled = true
-    metric_name                = "nexa-cloudfront-waf"
+    metric_name                = var.name
     sampled_requests_enabled   = true
   }
 

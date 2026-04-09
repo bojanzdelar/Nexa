@@ -1,0 +1,48 @@
+name: Build & Deploy Frontend
+
+on:
+  push:
+    branches:
+      - "master"
+    paths:
+      - "frontend/**"
+
+jobs:
+  deploy-frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24.x"
+
+      - name: Install & Build Nuxt (Lambda preset)
+        working-directory: frontend
+        run: |
+          npm ci
+          NITRO_PRESET=aws_lambda npm run build
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Upload static assets to S3
+        run: aws s3 sync frontend/.output/public s3://nexa-frontend-assets --delete --cache-control "public, max-age=31536000, immutable"
+
+      - name: Zip Lambda
+        run: |
+          cd frontend/.output/server
+          zip -r lambda.zip .
+
+      - name: Deploy Lambda
+        run: aws lambda update-function-code --function-name nexa-frontend-ssr --zip-file fileb://frontend/.output/server/lambda.zip
+
+      - name: Invalidate CloudFront cache
+        run: aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"

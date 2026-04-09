@@ -22,11 +22,19 @@ variable "apigw_hosted_zone_id" {
   type = string
 }
 
-variable "cloudfront_domain_name" {
+variable "cf_frontend_domain_name" {
   type = string
 }
 
-variable "cloudfront_hosted_zone_id" {
+variable "cf_frontend_hosted_zone_id" {
+  type = string
+}
+
+variable "cf_cdn_domain_name" {
+  type = string
+}
+
+variable "cf_cdn_hosted_zone_id" {
   type = string
 }
 

@@ -1,0 +1,17 @@
+variable "bucket_name" {
+  type = string
+}
+
+variable "bucket_prefix" {
+  type = string
+}
+
+variable "enable_versioning" {
+  type    = bool
+  default = false
+}
+
+variable "enable_cors" {
+  type    = bool
+  default = false
+}

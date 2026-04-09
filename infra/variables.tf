@@ -22,6 +22,10 @@ variable "aws_region" {
   type = string
 }
 
+variable "s3_bucket_prefix" {
+  type = string
+}
+
 variable "enable_alb" {
   type = bool
 }
@@ -31,6 +35,14 @@ variable "ecs_desired_count" {
 }
 
 variable "enable_opensearch" {
+  type = bool
+}
+
+variable "enable_cf_cdn_waf" {
+  type = bool
+}
+
+variable "enable_cf_frontend_waf" {
   type = bool
 }
 

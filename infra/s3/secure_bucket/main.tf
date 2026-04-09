@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "this" {
-  bucket = var.bucket_name
+  bucket = join("-", compact([var.bucket_prefix, var.bucket_name]))
 }
 
 resource "aws_s3_bucket_public_access_block" "this" {
@@ -44,6 +44,6 @@ resource "aws_s3_bucket_cors_configuration" "this" {
   cors_rule {
     allowed_headers = ["*"]
     allowed_methods = ["GET", "HEAD"]
-    allowed_origins = ["*"]
+    allowed_origins = ["*"] # TODO: set to https://nexa.zdelar.com
   }
 }

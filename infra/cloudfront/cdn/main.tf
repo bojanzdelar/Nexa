@@ -11,7 +11,7 @@ resource "aws_cloudfront_distribution" "this" {
   ]
 
   tags = {
-    Name = "nexa-cdn-main"
+    Name = "nexa-cdn"
   }
 
   dynamic "origin" {

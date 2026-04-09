@@ -1,6 +1,6 @@
 resource "aws_opensearch_domain" "search" {
   domain_name    = "nexa-search"
-  engine_version = "OpenSearch_3.3"
+  engine_version = "OpenSearch_3.5"
 
   cluster_config {
     instance_type          = "t3.small.search"

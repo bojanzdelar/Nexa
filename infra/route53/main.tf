@@ -48,14 +48,26 @@ resource "aws_route53_record" "apigw" {
   }
 }
 
-resource "aws_route53_record" "cloudfront" {
+resource "aws_route53_record" "cf_frontend" {
+  zone_id = aws_route53_zone.this.zone_id
+  name    = "nexa"
+  type    = "A"
+
+  alias {
+    name                   = var.cf_frontend_domain_name
+    zone_id                = var.cf_frontend_hosted_zone_id
+    evaluate_target_health = false
+  }
+}
+
+resource "aws_route53_record" "cf_cdn" {
   zone_id = aws_route53_zone.this.zone_id
   name    = "cdn.nexa"
   type    = "A"
 
   alias {
-    name                   = var.cloudfront_domain_name
-    zone_id                = var.cloudfront_hosted_zone_id
+    name                   = var.cf_cdn_domain_name
+    zone_id                = var.cf_cdn_hosted_zone_id
     evaluate_target_health = false
   }
 }
