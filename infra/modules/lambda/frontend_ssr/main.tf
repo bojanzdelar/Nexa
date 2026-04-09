@@ -34,7 +34,7 @@ resource "aws_lambda_provisioned_concurrency_config" "frontend" {
 resource "aws_lambda_function_url" "frontend_ssr" {
   function_name      = aws_lambda_function.frontend_ssr.function_name
   qualifier          = aws_lambda_alias.frontend_ssr_live.name
-  authorization_type = "NONE"
+  authorization_type = "AWS_IAM"
 }
 
 resource "aws_cloudwatch_log_group" "logs" {

@@ -17,12 +17,13 @@ resource "aws_cloudfront_distribution" "this" {
   origin {
     domain_name              = var.s3_origin_domain_name
     origin_id                = "s3-origin"
-    origin_access_control_id = aws_cloudfront_origin_access_control.this.id
+    origin_access_control_id = aws_cloudfront_origin_access_control.s3.id
   }
 
   origin {
-    domain_name = trimsuffix(replace(var.lambda_origin_domain, "https://", ""), "/")
-    origin_id   = "lambda-origin"
+    domain_name              = trimsuffix(replace(var.lambda_origin_domain, "https://", ""), "/")
+    origin_id                = "lambda-origin"
+    origin_access_control_id = aws_cloudfront_origin_access_control.lambda.id
 
     custom_origin_config {
       http_port              = 80

@@ -1,5 +1,5 @@
 data "aws_iam_policy_document" "cloudfront_read" {
-  for_each = local.cloudfront_origins
+  for_each = var.cloudfront_origins
 
   statement {
     actions   = ["s3:GetObject"]
@@ -19,7 +19,7 @@ data "aws_iam_policy_document" "cloudfront_read" {
 }
 
 resource "aws_s3_bucket_policy" "cloudfront" {
-  for_each = local.cloudfront_origins
+  for_each = var.cloudfront_origins
 
   bucket = each.value.bucket_name
   policy = data.aws_iam_policy_document.cloudfront_read[each.key].json

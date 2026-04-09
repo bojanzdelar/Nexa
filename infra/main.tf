@@ -1,5 +1,5 @@
 module "cloudfront_frontend" {
-  source = "./cloudfront/frontend"
+  source = "./modules/cloudfront/frontend"
 
   s3_origin_domain_name = module.s3.buckets.frontend_assets.bucket_domain
   lambda_origin_domain  = module.frontend_ssr.function_url
@@ -9,7 +9,7 @@ module "cloudfront_frontend" {
 }
 
 module "apigw" {
-  source = "./apigw"
+  source = "./modules/apigw"
 
   cognito_client_id        = module.cognito.client_id
   cognito_user_pool_issuer = module.cognito.user_pool_issuer
@@ -23,7 +23,7 @@ module "apigw" {
 }
 
 module "cloudfront_cdn" {
-  source = "./cloudfront/cdn"
+  source = "./modules/cloudfront/cdn"
 
   origins = {
     for k, v in local.cloudfront_cdn_origins :
@@ -40,7 +40,7 @@ module "cloudfront_cdn" {
 }
 
 module "waf_cdn" {
-  source = "./waf"
+  source = "./modules/waf"
 
   count = var.enable_cf_cdn_waf ? 1 : 0
 
@@ -52,7 +52,7 @@ module "waf_cdn" {
 }
 
 module "waf_frontend" {
-  source = "./waf"
+  source = "./modules/waf"
 
   count = var.enable_cf_frontend_waf ? 1 : 0
 
@@ -64,13 +64,13 @@ module "waf_frontend" {
 }
 
 module "ecr" {
-  source = "./ecr"
+  source = "./modules/ecr"
 
   services = local.services
 }
 
 module "ecs" {
-  source = "./ecs"
+  source = "./modules/ecs"
 
   services = local.services
 
@@ -83,7 +83,7 @@ module "ecs" {
 }
 
 module "alb" {
-  source = "./alb"
+  source = "./modules/alb"
 
   count = var.enable_alb ? 1 : 0
 
@@ -94,28 +94,28 @@ module "alb" {
 }
 
 module "catalog" {
-  source = "./dynamodb/catalog"
+  source = "./modules/dynamodb/catalog"
 }
 
 module "users" {
-  source = "./dynamodb/users"
+  source = "./modules/dynamodb/users"
 }
 
 module "s3" {
-  source = "./s3"
+  source = "./modules/s3"
 
   bucket_prefix = var.s3_bucket_prefix
 }
 
 module "frontend_ssr" {
-  source = "./lambda/frontend_ssr"
+  source = "./modules/lambda/frontend_ssr"
 
   cf_frontend_arn         = module.cloudfront_frontend.distribution_arn
   provisioned_concurrency = var.ssr_provisioned_concurrency
 }
 
 module "transcode_dispatcher" {
-  source = "./lambda/transcode_dispatcher"
+  source = "./modules/lambda/transcode_dispatcher"
 
   mediaconvert_role_arn = module.mediaconvert.iam_role_arn
   hls_key_api_base      = module.apigw.api_endpoints.hls_key
@@ -123,14 +123,14 @@ module "transcode_dispatcher" {
 }
 
 module "hls_key_server" {
-  source = "./lambda/hls_key_server"
+  source = "./modules/lambda/hls_key_server"
 
   apigw_execution_arn = module.apigw.execution_arn
   signing_secret_name = module.ssm.hls_signing_secret_name
 }
 
 module "hls_playlist" {
-  source = "./lambda/hls_playlist"
+  source = "./modules/lambda/hls_playlist"
 
   apigw_execution_arn    = module.apigw.execution_arn
   key_endpoint           = module.apigw.api_endpoints.hls_key
@@ -140,7 +140,7 @@ module "hls_playlist" {
 }
 
 module "subtitles_manifest" {
-  source = "./lambda/subtitles_manifest"
+  source = "./modules/lambda/subtitles_manifest"
 
   apigw_execution_arn = module.apigw.execution_arn
   subtitles_bucket    = module.s3.buckets.content_protected.bucket_name
@@ -150,31 +150,31 @@ module "subtitles_manifest" {
 }
 
 module "mediaconvert" {
-  source = "./mediaconvert"
+  source = "./modules/mediaconvert"
 
   ingest_bucket_arn    = module.s3.buckets.video_ingest.bucket_arn
   processed_bucket_arn = module.s3.buckets.video_processed.bucket_arn
 }
 
 module "cognito" {
-  source = "./cognito"
+  source = "./modules/cognito"
 
   email_address  = var.notification_email
   ses_source_arn = module.ses.domain_identity_arn
 }
 
 module "ses" {
-  source = "./ses"
+  source = "./modules/ses"
 
   domain_identity = var.email_domain_name
 }
 
 module "ssm" {
-  source = "./ssm"
+  source = "./modules/ssm"
 }
 
 module "route53" {
-  source = "./route53"
+  source = "./modules/route53"
 
   domain_name                = var.root_domain_name
   enable_alb                 = var.enable_alb
@@ -195,7 +195,7 @@ module "route53" {
 }
 
 module "acm_global" {
-  source = "./acm"
+  source = "./modules/acm"
 
   providers = {
     aws = aws.us_east_1
@@ -208,7 +208,7 @@ module "acm_global" {
 }
 
 module "acm_regional" {
-  source = "./acm"
+  source = "./modules/acm"
 
   domain_name = var.app_domain_name
   subject_alternative_names = [
@@ -217,9 +217,30 @@ module "acm_regional" {
 }
 
 module "opensearch" {
-  source = "./opensearch"
+  source = "./modules/opensearch"
 
   count = var.enable_opensearch ? 1 : 0
 
   allowed_role_arns = [module.ecs.task_role_arns["search-service"]]
+}
+
+module "integrations" {
+  source = "./integrations"
+
+  providers = {
+    aws           = aws
+    aws.us_east_1 = aws.us_east_1
+  }
+
+  cloudfront_origins = local.cloudfront_origins
+  video_ingest       = module.s3.buckets.video_ingest
+  transcode_lambda = {
+    name = module.transcode_dispatcher.lambda_name
+    arn  = module.transcode_dispatcher.lambda_arn
+  }
+  certificates = {
+    global_arn   = module.acm_global.certificate_arn
+    regional_arn = module.acm_regional.certificate_arn
+    fqdns        = module.route53.acm_validation_fqdns
+  }
 }
