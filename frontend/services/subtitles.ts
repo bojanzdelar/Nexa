@@ -14,14 +14,6 @@ export const loadAvailableSubtitles = (
 };
 
 export const loadSubtitle = async (subtitle: Subtitle) => {
-  const { url } = await usePlaybackApi<{ url: string }>("/subtitles/sign", {
-    query: { key: subtitle.key },
-  });
-
-  return await $fetch<string>(url);
-};
-
-export const loadSubtitle = async (subtitle: Subtitle) => {
   const config = useRuntimeConfig();
   const url = `${config.public.cdn.baseUrl}/${subtitle.key}`;
   return await $fetch<string>(url);
