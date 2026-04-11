@@ -20,11 +20,3 @@ variable "transcode_lambda" {
     arn  = string
   })
 }
-
-variable "certificates" {
-  type = object({
-    global_arn   = string
-    regional_arn = string
-    fqdns        = list(string)
-  })
-}

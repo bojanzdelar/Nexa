@@ -22,7 +22,7 @@ variable "aws_region" {
   type = string
 }
 
-variable "s3_bucket_prefix" {
+variable "s3_bucket_suffix" {
   type = string
 }
 

@@ -3,9 +3,10 @@ import os
 import boto3
 import pycountry
 import rsa
+import requests
 from botocore.signers import CloudFrontSigner
 from datetime import datetime, timedelta
-
+from jose import jwt
 
 s3 = boto3.client("s3")
 ssm = boto3.client("ssm")
@@ -16,8 +17,11 @@ PLACEHOLDER_PATH = "placeholders/video-default"
 CLOUDFRONT_URL = os.environ["CLOUDFRONT_URL"]
 PUBLIC_KEY_ID = os.environ["PUBLIC_KEY_ID"]
 PRIVATE_KEY_NAME = os.environ["PRIVATE_KEY_NAME"]
+USER_POOL_ISSUER = os.environ["USER_POOL_ISSUER"]
 SIGNED_URL_TTL = 300
 
+JWKS_URL = f"{USER_POOL_ISSUER}/.well-known/jwks.json"
+JWKS = requests.get(JWKS_URL).json()
 
 param = ssm.get_parameter(
     Name=PRIVATE_KEY_NAME,
@@ -25,6 +29,33 @@ param = ssm.get_parameter(
 )
 PRIVATE_KEY_PEM = param["Parameter"]["Value"].encode()
 PRIVATE_KEY = rsa.PrivateKey.load_pkcs1(PRIVATE_KEY_PEM)
+
+
+def verify_token(auth_header: str):
+    if not auth_header or not auth_header.startswith("Bearer "):
+        raise Exception("Missing token")
+
+    token = auth_header.split(" ")[1]
+
+    headers = jwt.get_unverified_header(token)
+    kid = headers["kid"]
+
+    key = next(k for k in JWKS["keys"] if k["kid"] == kid)
+
+    payload = jwt.decode(
+        token,
+        key,
+        algorithms=["RS256"],
+        issuer=USER_POOL_ISSUER,
+        options={
+            "verify_aud": False,
+        },
+    )
+
+    if payload.get("token_use") != "access":
+        raise Exception("Not an access token")
+
+    return payload
 
 
 def rsa_signer(message: bytes) -> bytes:
@@ -87,6 +118,15 @@ def list_subtitles(path: str):
 
 
 def lambda_handler(event, context):
+    try:
+        auth_header = event.get("headers", {}).get("authorization")
+        _ = verify_token(auth_header)
+    except Exception as e:
+        return {
+            "statusCode": 401,
+            "body": json.dumps({"message": "Unauthorized"}),
+        }
+
     raw_path = event.get("rawPath", "")
 
     if raw_path == "/subtitles/sign":

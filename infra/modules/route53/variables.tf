@@ -45,12 +45,3 @@ variable "ses_region" {
 variable "ses_domain_dkim" {
   type = list(string)
 }
-
-variable "acm_domain_validation_options" {
-  type = list(object({
-    domain_name           = string
-    resource_record_name  = string
-    resource_record_type  = string
-    resource_record_value = string
-  }))
-}

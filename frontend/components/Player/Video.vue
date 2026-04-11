@@ -350,7 +350,7 @@ onMounted(() => {
     hls.attachMedia(videoPlayer.value);
 
     hls.on(Hls.Events.MANIFEST_PARSED, () => {
-      videoPlayer.value?.play();
+      videoPlayer.value?.play().catch(() => {});
     });
   } else if (videoPlayer.value.canPlayType("application/vnd.apple.mpegurl")) {
     // Safari / iOS

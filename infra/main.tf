@@ -11,9 +11,6 @@ module "cloudfront_frontend" {
 module "apigw" {
   source = "./modules/apigw"
 
-  cognito_client_id        = module.cognito.client_id
-  cognito_user_pool_issuer = module.cognito.user_pool_issuer
-
   hls_key_lambda_invoke_arn            = module.hls_key_server.lambda_invoke_arn
   hls_playlist_lambda_invoke_arn       = module.hls_playlist.lambda_invoke_arn
   subtitles_manifest_lambda_invoke_arn = module.subtitles_manifest.lambda_invoke_arn
@@ -104,7 +101,7 @@ module "users" {
 module "s3" {
   source = "./modules/s3"
 
-  bucket_prefix = var.s3_bucket_prefix
+  bucket_suffix = var.s3_bucket_suffix
 }
 
 module "frontend_ssr" {
@@ -147,6 +144,7 @@ module "subtitles_manifest" {
   cloudfront_url      = module.cloudfront_cdn.distribution_https_url
   public_key_id       = module.cloudfront_cdn.media_public_key_id
   private_key_name    = module.ssm.cloudfront_private_key_name
+  user_pool_issuer    = module.cognito.user_pool_issuer
 }
 
 module "mediaconvert" {
@@ -188,10 +186,6 @@ module "route53" {
   cf_cdn_hosted_zone_id      = module.cloudfront_cdn.distribution_hosted_zone_id
   ses_region                 = var.aws_region
   ses_domain_dkim            = module.ses.domain_dkim
-  acm_domain_validation_options = concat(
-    tolist(module.acm_global.domain_validation_options),
-    tolist(module.acm_regional.domain_validation_options)
-  )
 }
 
 module "acm_global" {
@@ -205,6 +199,7 @@ module "acm_global" {
   subject_alternative_names = [
     "*.${var.app_domain_name}"
   ]
+  route53_zone_id = module.route53.zone_id
 }
 
 module "acm_regional" {
@@ -214,6 +209,7 @@ module "acm_regional" {
   subject_alternative_names = [
     "*.${var.app_domain_name}"
   ]
+  route53_zone_id = module.route53.zone_id
 }
 
 module "opensearch" {
@@ -227,20 +223,10 @@ module "opensearch" {
 module "integrations" {
   source = "./integrations"
 
-  providers = {
-    aws           = aws
-    aws.us_east_1 = aws.us_east_1
-  }
-
   cloudfront_origins = local.cloudfront_origins
   video_ingest       = module.s3.buckets.video_ingest
   transcode_lambda = {
     name = module.transcode_dispatcher.lambda_name
     arn  = module.transcode_dispatcher.lambda_arn
-  }
-  certificates = {
-    global_arn   = module.acm_global.certificate_arn
-    regional_arn = module.acm_regional.certificate_arn
-    fqdns        = module.route53.acm_validation_fqdns
   }
 }

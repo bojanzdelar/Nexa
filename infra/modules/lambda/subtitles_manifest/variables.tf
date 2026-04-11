@@ -17,3 +17,7 @@ variable "public_key_id" {
 variable "private_key_name" {
   type = string
 }
+
+variable "user_pool_issuer" {
+  type = string
+}
