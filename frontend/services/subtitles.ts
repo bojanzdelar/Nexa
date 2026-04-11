@@ -16,5 +16,7 @@ export const loadAvailableSubtitles = (
 export const loadSubtitle = async (subtitle: Subtitle) => {
   const config = useRuntimeConfig();
   const url = `${config.public.cdn.baseUrl}/${subtitle.key}`;
-  return await $fetch<string>(url);
+  return await $fetch<string>(url, {
+    credentials: "include",
+  });
 };
