@@ -33,6 +33,11 @@ locals {
     }
   }
 
+  cloudfront_frontend_url = coalesce(
+    var.frontend_url_override,
+    module.cloudfront_frontend.distribution_https_url
+  )
+
   cloudfront_frontend_origins = {
     frontend_assets = module.s3.buckets.frontend_assets
   }

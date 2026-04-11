@@ -14,6 +14,10 @@ variable "domain_name" {
   type = string
 }
 
+variable "cloudfront_frontend_url" {
+  type = string
+}
+
 variable "acm_certificate_arn" {
   type = string
 }

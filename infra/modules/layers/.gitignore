@@ -1,0 +1,4 @@
+# Layers
+auth/python/*
+!auth/python/auth/
+!auth/python/auth/**

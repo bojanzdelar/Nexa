@@ -1,5 +1,15 @@
-resource "aws_ssm_parameter" "hls_signing_secret" {
-  name  = "/nexa/internal/hls/signing_secret"
+resource "aws_ssm_parameter" "hls_playlist_signing_secret" {
+  name  = "/nexa/internal/hls/playlist/signing_secret"
+  type  = "SecureString"
+  value = "PLACEHOLDER"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
+resource "aws_ssm_parameter" "hls_segment_signing_secret" {
+  name  = "/nexa/internal/hls/segment/signing_secret"
   type  = "SecureString"
   value = "PLACEHOLDER"
 

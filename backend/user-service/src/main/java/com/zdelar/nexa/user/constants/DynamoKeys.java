@@ -4,7 +4,7 @@ public final class DynamoKeys {
 
   public static final String USER_PK_PREFIX = "USER#";
 
-  public static final String PLAYBACK_PREFIX = "PLAYBACK#";
+  public static final String VIEWING_PREFIX = "VIEWING#";
   public static final String WATCHLIST_PREFIX = "WATCHLIST#";
 
   public static final String MOVIE = "movie";
@@ -16,16 +16,16 @@ public final class DynamoKeys {
     return USER_PK_PREFIX + userId;
   }
 
-  public static String playbackTvSk(Long tvId) {
-    return PLAYBACK_PREFIX + TV + "#" + tvId + "#";
+  public static String viewingTvSk(Long tvId) {
+    return VIEWING_PREFIX + TV + "#" + tvId + "#";
   }
 
-  public static String playbackEpisodeSk(Long tvId, int season, int episode) {
-    return PLAYBACK_PREFIX + TV + "#" + tvId + "#s" + season + "#e" + episode;
+  public static String viewingEpisodeSk(Long tvId, int season, int episode) {
+    return VIEWING_PREFIX + TV + "#" + tvId + "#s" + season + "#e" + episode;
   }
 
-  public static String playbackMovieSk(Long movieId) {
-    return PLAYBACK_PREFIX + MOVIE + "#" + movieId;
+  public static String viewingMovieSk(Long movieId) {
+    return VIEWING_PREFIX + MOVIE + "#" + movieId;
   }
 
   public static String watchlistSk(String type, Long titleId) {

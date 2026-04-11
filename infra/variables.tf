@@ -50,6 +50,11 @@ variable "enable_cf_frontend_waf" {
   type = bool
 }
 
+variable "frontend_url_override" {
+  type    = string
+  default = null
+}
+
 variable "container_port" {
   type    = number
   default = 8080

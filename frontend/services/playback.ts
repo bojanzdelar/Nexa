@@ -1,92 +1,31 @@
-import type {
-  ContinueWatchingRef,
-  ContinueWatchingItem,
-  TitleSummary,
-  EpisodeProgressPayload,
-  MovieProgressPayload,
-} from "~/types";
+import type { PlaylistTokenResponse, TitleRef, Subtitle } from "~/types";
 
-export const getContinueWatching = async () => {
-  const items = await useApiForCsr<ContinueWatchingRef[]>(
-    `/me/playback/continue-watching`,
-  );
-  if (!items.length) return [];
+export const getPlaylistToken = async (path: string) => {
+  const proxy = path.replace(/^\/playlists\//, "");
 
-  const summaries = await useApiForCsr<TitleSummary[]>(`/titles/batch`, {
+  return usePlaybackApi<PlaylistTokenResponse>(`/playlists/token/${proxy}`, {
     method: "POST",
-    body: items.map((i) => ({
-      id: i.id,
-      type: i.type,
-    })),
   });
-
-  const summaryMap = new Map(summaries.map((s) => [`${s.id}-${s.type}`, s]));
-
-  return items
-    .map((i) => {
-      const summary = summaryMap.get(`${i.id}-${i.type}`);
-      if (!summary) return null;
-
-      return {
-        ...i,
-        name: summary.name,
-        posterPath: summary.posterPath,
-      };
-    })
-    .filter((i): i is ContinueWatchingItem => i !== null);
 };
 
-export const getEpisodeProgress = (
-  tvId: number,
-  season: number,
-  episode: number,
+export const loadAvailableSubtitles = (
+  title: TitleRef,
+  season?: number,
+  episode?: number,
 ) => {
-  return useApiForCsr<{
-    progressSeconds: number;
-  }>(`/me/playback/tv/${tvId}/season/${season}/episode/${episode}`);
+  const url =
+    title.type === "movie"
+      ? `/subtitles/movies/${title.id}`
+      : `/subtitles/shows/${title.id}?s=${season}&e=${episode}`;
+
+  return usePlaybackApi<Subtitle[]>(url);
 };
 
-export const getMovieProgress = (movieId: number) => {
-  return useApiForCsr<{
-    progressSeconds: number;
-  }>(`/me/playback/movie/${movieId}`);
-};
+export const loadSubtitle = async (subtitle: Subtitle) => {
+  const config = useRuntimeConfig();
+  const url = `${config.public.cdn.baseUrl}/subtitles/${subtitle.key}`;
 
-export const saveEpisodeProgress = (payload: EpisodeProgressPayload) => {
-  return useApiForCsr("/me/playback/episode/progress", {
-    method: "POST",
-    body: payload,
-  });
-};
-
-export const saveMovieProgress = (payload: MovieProgressPayload) => {
-  return useApiForCsr("/me/playback/movie/progress", {
-    method: "POST",
-    body: payload,
-  });
-};
-
-export const clearTvProgress = (tvId: number) => {
-  return useApiForCsr(`/me/playback/tv/${tvId}`, {
-    method: "DELETE",
-  });
-};
-
-export const clearEpisodeProgress = (
-  tvId: number,
-  season: number,
-  episode: number,
-) => {
-  return useApiForCsr(
-    `/me/playback/tv/${tvId}/season/${season}/episode/${episode}`,
-    {
-      method: "DELETE",
-    },
-  );
-};
-
-export const clearMovieProgress = (movieId: number) => {
-  return useApiForCsr(`/me/playback/movie/${movieId}`, {
-    method: "DELETE",
+  return await $fetch<string>(url, {
+    credentials: "include",
   });
 };

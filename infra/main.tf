@@ -12,11 +12,12 @@ module "apigw" {
   source = "./modules/apigw"
 
   hls_key_lambda_invoke_arn            = module.hls_key_server.lambda_invoke_arn
+  hls_playlist_token_lambda_invoke_arn = module.hls_playlist_token.lambda_invoke_arn
   hls_playlist_lambda_invoke_arn       = module.hls_playlist.lambda_invoke_arn
   subtitles_manifest_lambda_invoke_arn = module.subtitles_manifest.lambda_invoke_arn
-
-  domain_name         = var.app_domain_name
-  acm_certificate_arn = module.acm_regional.certificate_arn
+  cloudfront_frontend_url              = local.cloudfront_frontend_url
+  domain_name                          = var.app_domain_name
+  acm_certificate_arn                  = module.acm_regional.certificate_arn
 }
 
 module "cloudfront_cdn" {
@@ -30,10 +31,11 @@ module "cloudfront_cdn" {
     }
   }
 
-  public_key_value    = module.ssm.cloudfront_public_key_value
-  domain_name         = var.app_domain_name
-  acm_certificate_arn = module.acm_global.certificate_arn
-  web_acl_arn         = var.enable_cf_cdn_waf ? module.waf_cdn[0].web_acl_arn : null
+  public_key_value        = module.ssm.cloudfront_public_key_value
+  domain_name             = var.app_domain_name
+  cloudfront_frontend_url = local.cloudfront_frontend_url
+  acm_certificate_arn     = module.acm_global.certificate_arn
+  web_acl_arn             = var.enable_cf_cdn_waf ? module.waf_cdn[0].web_acl_arn : null
 }
 
 module "waf_cdn" {
@@ -41,7 +43,7 @@ module "waf_cdn" {
 
   count = var.enable_cf_cdn_waf ? 1 : 0
 
-  name = "nexa-cloudfront-waf"
+  name = "nexa-cf-cdn-waf"
 
   providers = {
     aws = aws.us_east_1
@@ -101,7 +103,8 @@ module "users" {
 module "s3" {
   source = "./modules/s3"
 
-  bucket_suffix = var.s3_bucket_suffix
+  bucket_suffix           = var.s3_bucket_suffix
+  cloudfront_frontend_url = local.cloudfront_frontend_url
 }
 
 module "frontend_ssr" {
@@ -123,28 +126,44 @@ module "hls_key_server" {
   source = "./modules/lambda/hls_key_server"
 
   apigw_execution_arn = module.apigw.execution_arn
-  signing_secret_name = module.ssm.hls_signing_secret_name
+  auth_layer_arn      = module.layers.auth_arn
+  signing_secret_name = module.ssm.hls_segment_signing_secret_name
+}
+
+module "hls_playlist_token" {
+  source = "./modules/lambda/hls_playlist_token"
+
+  apigw_execution_arn = module.apigw.execution_arn
+  auth_layer_arn      = module.layers.auth_arn
+  signing_secret_name = module.ssm.hls_playlist_signing_secret_name
+  user_pool_issuer    = module.cognito.user_pool_issuer
 }
 
 module "hls_playlist" {
   source = "./modules/lambda/hls_playlist"
 
-  apigw_execution_arn    = module.apigw.execution_arn
-  key_endpoint           = module.apigw.api_endpoints.hls_key
-  playlist_bucket        = module.s3.buckets.video_processed.bucket_name
-  cloudfront_domain_name = module.cloudfront_cdn.distribution_https_url
-  signing_secret_name    = module.ssm.hls_signing_secret_name
+  apigw_execution_arn          = module.apigw.execution_arn
+  auth_layer_arn               = module.layers.auth_arn
+  key_endpoint                 = module.apigw.api_endpoints.hls_key
+  playlist_bucket              = module.s3.buckets.video_processed.bucket_name
+  cloudfront_domain_name       = module.cloudfront_cdn.distribution_https_url
+  public_key_id                = module.cloudfront_cdn.media_public_key_id
+  private_key_name             = module.ssm.cloudfront_private_key_name
+  playlist_signing_secret_name = module.ssm.hls_playlist_signing_secret_name
+  segment_signing_secret_name  = module.ssm.hls_segment_signing_secret_name
 }
 
 module "subtitles_manifest" {
   source = "./modules/lambda/subtitles_manifest"
 
   apigw_execution_arn = module.apigw.execution_arn
+  auth_layer_arn      = module.layers.auth_arn
   subtitles_bucket    = module.s3.buckets.content_protected.bucket_name
-  cloudfront_url      = module.cloudfront_cdn.distribution_https_url
-  public_key_id       = module.cloudfront_cdn.media_public_key_id
-  private_key_name    = module.ssm.cloudfront_private_key_name
   user_pool_issuer    = module.cognito.user_pool_issuer
+}
+
+module "layers" {
+  source = "./modules/layers"
 }
 
 module "mediaconvert" {

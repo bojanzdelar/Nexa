@@ -18,14 +18,14 @@ const { isMobilePortrait } = useMobileOrientation();
 
 const videoSource = computed(() => {
   if (titleType === "movie") {
-    return `${config.public.playback.baseUrl}/playlist/movies/${titleId}`;
+    return `${config.public.playback.baseUrl}/playlists/movies/${titleId}`;
   }
 
   if (seasonNumber.value == null || episodeNumber.value == null) {
     return null;
   }
 
-  return `${config.public.playback.baseUrl}/playlist/shows/${titleId}/s${pad2(seasonNumber.value)}/e${pad2(episodeNumber.value)}`;
+  return `${config.public.playback.baseUrl}/playlists/shows/${titleId}/s${pad2(seasonNumber.value)}/e${pad2(episodeNumber.value)}`;
 });
 
 const titleType = route.params.content as "tv" | "movie";

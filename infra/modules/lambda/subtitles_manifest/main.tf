@@ -4,10 +4,16 @@ data "archive_file" "lambda_zip" {
   output_path = "${path.module}/dist/subtitles_manifest.zip"
 }
 
-resource "aws_lambda_layer_version" "common" {
-  layer_name          = "common-python-deps" # pycountry, rsa, python-jose, requests
-  filename            = "${path.module}/layers/common/common.zip"
-  source_code_hash    = filebase64sha256("${path.module}/layers/common/common.zip")
+data "archive_file" "pycountry_zip" {
+  type        = "zip"
+  source_dir  = "${path.module}/layers/pycountry"
+  output_path = "${path.module}/layers/dist/pycountry.zip"
+}
+
+resource "aws_lambda_layer_version" "pycountry" {
+  layer_name          = "pycountry"
+  filename            = data.archive_file.pycountry_zip.output_path
+  source_code_hash    = data.archive_file.pycountry_zip.output_base64sha256
   compatible_runtimes = ["python3.14"]
 }
 
@@ -19,14 +25,14 @@ resource "aws_lambda_function" "subtitles_manifest" {
 
   filename         = data.archive_file.lambda_zip.output_path
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
-  layers           = [aws_lambda_layer_version.common.arn]
+  layers = [
+    var.auth_layer_arn,
+    aws_lambda_layer_version.pycountry.arn
+  ]
 
   environment {
     variables = {
       SUBTITLES_BUCKET = var.subtitles_bucket
-      CLOUDFRONT_URL   = var.cloudfront_url
-      PUBLIC_KEY_ID    = var.public_key_id
-      PRIVATE_KEY_NAME = var.private_key_name
       USER_POOL_ISSUER = var.user_pool_issuer
     }
   }

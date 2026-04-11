@@ -1,10 +1,8 @@
+from auth.signing import validate_signed_url
 import boto3
 import os
 import base64
 import logging
-import time
-import hmac
-import hashlib
 
 logging.basicConfig(level=logging.INFO)
 
@@ -14,24 +12,6 @@ param = ssm.get_parameter(
     WithDecryption=True
 )
 SECRET = param["Parameter"]["Value"].encode()
-
-
-def validate_signed_url(scope: str, exp: str, sig: str) -> bool:
-    if not scope or not exp or not sig:
-        return False
-
-    if time.time() > int(exp):
-        return False
-
-    payload = f"{scope}:{exp}"
-
-    expected = hmac.new(
-        SECRET,
-        payload.encode(),
-        hashlib.sha256
-    ).hexdigest()
-
-    return hmac.compare_digest(expected, sig)
 
 
 def parse_scope(proxy: str) -> str:
@@ -53,7 +33,7 @@ def lambda_handler(event, context):
         exp = qs.get("exp")
         sig = qs.get("sig")
 
-        if not validate_signed_url(scope, exp, sig):
+        if not validate_signed_url(scope, exp, sig, SECRET):
             return {"statusCode": 401}
 
         param_name = f"/nexa/hls/{scope}"

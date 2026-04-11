@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Hls from "hls.js";
 import {
+  getPlaylistToken,
   getEpisodeProgress,
   getMovieProgress,
   saveEpisodeProgress,
@@ -335,15 +336,20 @@ const saveProgress = async () => {
   }
 };
 
-onMounted(() => {
+onMounted(async () => {
   if (!videoPlayer.value) return;
 
-  const src = props.titleSource; // .m3u8 master file
+  const path = new URL(props.titleSource).pathname;
+  const { token } = await getPlaylistToken(path);
+  const src = `${props.titleSource}?token=${token}`; // .m3u8 master file
 
   if (Hls.isSupported()) {
     hls = new Hls({
       enableWorker: true,
       lowLatencyMode: false,
+      xhrSetup: (xhr) => {
+        xhr.withCredentials = true;
+      },
     });
 
     hls.loadSource(src);

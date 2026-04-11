@@ -2,8 +2,9 @@ ssr_provisioned_concurrency = 0
 enable_alb                  = false
 ecs_desired_count           = 0
 enable_opensearch           = false
-enable_cf_cdn_waf           = true # change your CF plan to free or disable WAF to avoid costs
+enable_cf_cdn_waf           = false
 enable_cf_frontend_waf      = false
+frontend_url_override       = "http://localhost:3000"
 environment                 = "dev"
 
 app_domain_name    = "nexa.zdelar.com"

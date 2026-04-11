@@ -12,13 +12,17 @@ resource "aws_lambda_function" "hls_playlist" {
 
   filename         = data.archive_file.lambda_zip.output_path
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
+  layers           = [var.auth_layer_arn]
 
   environment {
     variables = {
-      PLAYLIST_BUCKET        = var.playlist_bucket
-      KEY_ENDPOINT           = var.key_endpoint
-      CLOUDFRONT_DOMAIN_NAME = var.cloudfront_domain_name
-      SIGNING_SECRET_NAME    = var.signing_secret_name
+      PLAYLIST_BUCKET              = var.playlist_bucket
+      KEY_ENDPOINT                 = var.key_endpoint
+      CLOUDFRONT_DOMAIN_NAME       = var.cloudfront_domain_name
+      PUBLIC_KEY_ID                = var.public_key_id
+      PRIVATE_KEY_NAME             = var.private_key_name
+      PLAYLIST_SIGNING_SECRET_NAME = var.playlist_signing_secret_name
+      SEGMENT_SIGNING_SECRET_NAME  = var.segment_signing_secret_name
     }
   }
 }

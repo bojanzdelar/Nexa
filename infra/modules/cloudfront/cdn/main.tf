@@ -50,6 +50,11 @@ resource "aws_cloudfront_distribution" "this" {
         "trusted_key_groups",
         null
       )
+      response_headers_policy_id = lookup(
+        ordered_cache_behavior.value,
+        "response_headers_policy_id",
+        null
+      )
     }
   }
 

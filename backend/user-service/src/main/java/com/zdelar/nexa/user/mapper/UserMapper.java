@@ -10,32 +10,32 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserMapper {
 
-  private static final long PLAYBACK_TTL_SECONDS = 60L * 60 * 24 * 90;
+  private static final long VIEWING_TTL_SECONDS = 60L * 60 * 24 * 90;
 
-  public UserItem toPlaybackItem(
-      String userId, String playbackSk, long progressSeconds, long durationSeconds) {
+  public UserItem toViewingItem(
+      String userId, String viewingSk, long progressSeconds, long durationSeconds) {
     return UserItem.builder()
         .pk(userPk(userId))
-        .sk(playbackSk)
+        .sk(viewingSk)
         .updatedAt(Instant.now())
         .progressSeconds(progressSeconds)
         .durationSeconds(durationSeconds)
-        .expiresAt(Instant.now().plusSeconds(PLAYBACK_TTL_SECONDS).getEpochSecond())
+        .expiresAt(Instant.now().plusSeconds(VIEWING_TTL_SECONDS).getEpochSecond())
         .build();
   }
 
-  public UserItem toEpisodePlaybackItem(String userId, EpisodeProgressRequest request) {
-    return toPlaybackItem(
+  public UserItem toEpisodeViewingItem(String userId, EpisodeProgressRequest request) {
+    return toViewingItem(
         userId,
-        playbackEpisodeSk(request.tvId(), request.season(), request.episode()),
+        viewingEpisodeSk(request.tvId(), request.season(), request.episode()),
         request.progressSeconds(),
         request.durationSeconds());
   }
 
-  public UserItem toMoviePlaybackItem(String userId, MovieProgressRequest request) {
-    return toPlaybackItem(
+  public UserItem toMovieViewingItem(String userId, MovieProgressRequest request) {
+    return toViewingItem(
         userId,
-        playbackMovieSk(request.movieId()),
+        viewingMovieSk(request.movieId()),
         request.progressSeconds(),
         request.durationSeconds());
   }

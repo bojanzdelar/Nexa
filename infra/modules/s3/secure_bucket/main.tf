@@ -42,11 +42,12 @@ resource "aws_s3_bucket_versioning" "this" {
 }
 
 resource "aws_s3_bucket_cors_configuration" "this" {
+  count  = var.enable_cors ? 1 : 0
   bucket = aws_s3_bucket.this.id
 
   cors_rule {
     allowed_headers = ["*"]
     allowed_methods = ["GET", "HEAD"]
-    allowed_origins = ["*"] # TODO: set to https://nexa.zdelar.com
+    allowed_origins = var.enable_cors ? [var.cloudfront_frontend_url] : []
   }
 }

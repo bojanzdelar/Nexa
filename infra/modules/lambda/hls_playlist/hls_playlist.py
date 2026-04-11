@@ -1,10 +1,12 @@
+from auth.cloudfront import generate_cf_cookies
+from auth.signing import sign_key_url
 import boto3
 from botocore.exceptions import ClientError
 import os
-import time
-import hmac
-import hashlib
 import re
+import rsa
+from jose import jwt
+from urllib.parse import urlparse
 
 s3 = boto3.client("s3")
 ssm = boto3.client("ssm")
@@ -12,11 +14,27 @@ ssm = boto3.client("ssm")
 BUCKET = os.environ["PLAYLIST_BUCKET"]
 KEY_ENDPOINT = os.environ["KEY_ENDPOINT"]
 CLOUDFRONT_DOMAIN_NAME = os.environ["CLOUDFRONT_DOMAIN_NAME"]
-param = ssm.get_parameter(
-    Name=os.environ["SIGNING_SECRET_NAME"],
+PUBLIC_KEY_ID = os.environ["PUBLIC_KEY_ID"]
+PRIVATE_KEY_NAME = os.environ["PRIVATE_KEY_NAME"]
+
+param_private_key = ssm.get_parameter(
+    Name=PRIVATE_KEY_NAME,
     WithDecryption=True
 )
-SECRET = param["Parameter"]["Value"].encode()
+PRIVATE_KEY_PEM = param_private_key["Parameter"]["Value"].encode()
+PRIVATE_KEY = rsa.PrivateKey.load_pkcs1(PRIVATE_KEY_PEM)
+
+param_playlist_secret = ssm.get_parameter(
+    Name=os.environ["PLAYLIST_SIGNING_SECRET_NAME"],
+    WithDecryption=True
+)
+PLAYLIST_SECRET = param_playlist_secret["Parameter"]["Value"].encode()
+
+param_segment_secret = ssm.get_parameter(
+    Name=os.environ["SEGMENT_SIGNING_SECRET_NAME"],
+    WithDecryption=True
+)
+SEGMENT_SECRET = param_segment_secret["Parameter"]["Value"].encode()
 
 TTL = 60
 
@@ -25,19 +43,6 @@ SEGMENT_REGEX = re.compile(r'^(?!#)(.+\.ts)$', re.MULTILINE)
 VARIANT_REGEX = re.compile(r'^video_(\d+p)\.m3u8$', re.MULTILINE)
 
 PLACEHOLDER_PATH = "placeholders/video-default"
-
-
-def sign_key_url(scope: str) -> str:
-    exp = int(time.time()) + TTL
-    payload = f"{scope}:{exp}"
-
-    sig = hmac.new(
-        SECRET,
-        payload.encode(),
-        hashlib.sha256
-    ).hexdigest()
-
-    return f"{KEY_ENDPOINT}/{scope}?exp={exp}&sig={sig}"
 
 
 def parse_request(proxy: str):
@@ -81,17 +86,18 @@ def load_playlist(bucket, content_path, filename):
     raise ClientError({"Error": {"Code": "NoSuchKey"}}, "GetObject")
 
 
-def rewrite_master_playlist(playlist, content_path):
-    prefix = f"/playlist/{content_path}/"
+def rewrite_master_playlist(playlist, content_path, token):
+    prefix = f"/playlists/{content_path}/"
 
     return VARIANT_REGEX.sub(
-        lambda m: prefix + m.group(1),
+        lambda m: f"{prefix}{m.group(1)}?token={token}",
         playlist
     )
 
 
 def rewrite_variant_playlist(playlist, content_path):
-    signed_key_url = sign_key_url(content_path)
+    signed_key_url = sign_key_url(
+        content_path, KEY_ENDPOINT, TTL, SEGMENT_SECRET)
 
     playlist = KEY_REGEX.sub(
         f'#EXT-X-KEY:METHOD=AES-128,URI="{signed_key_url}"',
@@ -110,6 +116,22 @@ def rewrite_variant_playlist(playlist, content_path):
 def lambda_handler(event, context):
     try:
         proxy = event.get("pathParameters", {}).get("proxy", "")
+        qs = event.get("queryStringParameters") or {}
+        token = qs.get("token")
+
+        if not token:
+            return {"statusCode": 401}
+
+        try:
+            payload = jwt.decode(token, PLAYLIST_SECRET, algorithms=["HS256"])
+        except Exception:
+            return {"statusCode": 401}
+
+        request_path = f"/playlists/{proxy}"
+
+        if not request_path.startswith(payload["path"]):
+            return {"statusCode": 403}
+
         content_path, variant = parse_request(proxy)
         filename = variant_to_filename(variant)
 
@@ -117,18 +139,36 @@ def lambda_handler(event, context):
         playlist = obj["Body"].read().decode("utf-8")
 
         if variant == "master":
-            playlist = rewrite_master_playlist(playlist, effective_path)
+            playlist = rewrite_master_playlist(playlist, effective_path, token)
         else:
             playlist = rewrite_variant_playlist(playlist, effective_path)
 
-        return {
+        headers = {
+            "Content-Type": "application/vnd.apple.mpegurl",
+            "Cache-Control": "private, max-age=5"
+        }
+
+        response = {
             "statusCode": 200,
-            "headers": {
-                "Content-Type": "application/vnd.apple.mpegurl",
-                "Cache-Control": "private, max-age=5"
-            },
+            "headers": headers,
             "body": playlist
         }
+
+        if variant == "master":
+            cf_cookies = generate_cf_cookies(
+                domain=CLOUDFRONT_DOMAIN_NAME, private_key=PRIVATE_KEY, public_key_id=PUBLIC_KEY_ID)
+
+            host = urlparse(
+                CLOUDFRONT_DOMAIN_NAME).hostname or CLOUDFRONT_DOMAIN_NAME
+            parent_domain = "." + ".".join(host.split(".")[1:])
+
+            response["cookies"] = [
+                f"CloudFront-Policy={cf_cookies['CloudFront-Policy']}; Path=/; Domain={parent_domain}; Secure; HttpOnly; SameSite=None",
+                f"CloudFront-Signature={cf_cookies['CloudFront-Signature']}; Path=/; Domain={parent_domain}; Secure; HttpOnly; SameSite=None",
+                f"CloudFront-Key-Pair-Id={cf_cookies['CloudFront-Key-Pair-Id']}; Path=/; Domain={parent_domain}; Secure; HttpOnly; SameSite=None",
+            ]
+
+        return response
 
     except ValueError:
         return {"statusCode": 404}
