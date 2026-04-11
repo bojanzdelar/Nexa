@@ -344,6 +344,9 @@ onMounted(() => {
     hls = new Hls({
       enableWorker: true,
       lowLatencyMode: false,
+      xhrSetup: (xhr) => {
+        xhr.withCredentials = true;
+      },
     });
 
     hls.loadSource(src);
