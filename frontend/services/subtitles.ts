@@ -20,3 +20,9 @@ export const loadSubtitle = async (subtitle: Subtitle) => {
 
   return await $fetch<string>(url);
 };
+
+export const loadSubtitle = async (subtitle: Subtitle) => {
+  const config = useRuntimeConfig();
+  const url = `${config.public.cdn.baseUrl}/${subtitle.key}`;
+  return await $fetch<string>(url);
+};
