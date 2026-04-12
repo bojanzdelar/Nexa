@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserMapper {
 
-  private static final long VIEWING_TTL_SECONDS = 60L * 60 * 24 * 90;
+  private static final long VIEWING_TTL_SECONDS = 60L * 60 * 24 * 90; // 90 days
 
   public UserItem toViewingItem(
       String userId, String viewingSk, long progressSeconds, long durationSeconds) {

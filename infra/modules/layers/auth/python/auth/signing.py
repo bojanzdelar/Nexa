@@ -1,6 +1,7 @@
 import time
 import hmac
 import hashlib
+from math import floor
 
 
 def _build_payload(scope: str, exp: int) -> str:
@@ -16,7 +17,7 @@ def _sign_payload(payload: str, secret: bytes) -> str:
 
 
 def sign_key_url(scope: str, base_url: str, ttl: int, secret: bytes) -> str:
-    exp = int(time.time()) + ttl
+    exp = floor(time.time() / ttl) * ttl + ttl
     payload = _build_payload(scope, exp)
     sig = _sign_payload(payload, secret)
 

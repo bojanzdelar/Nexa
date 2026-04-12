@@ -14,6 +14,8 @@ param_secret = ssm.get_parameter(
 SECRET = param_secret["Parameter"]["Value"].encode()
 USER_POOL_ISSUER = os.environ["USER_POOL_ISSUER"]
 
+PLAYLIST_TOKEN_TTL_SECONDS = 10800  # 3 hours
+
 
 def lambda_handler(event, context):
     headers = event.get("headers") or {}
@@ -34,7 +36,7 @@ def lambda_handler(event, context):
 
     payload = {
         "path": path,
-        "exp": int(time.time()) + 1800
+        "exp": int(time.time()) + PLAYLIST_TOKEN_TTL_SECONDS
     }
     playlist_token = jwt.encode(payload, SECRET, algorithm="HS256")
 

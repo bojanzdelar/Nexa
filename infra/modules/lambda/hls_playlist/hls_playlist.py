@@ -36,7 +36,8 @@ param_segment_secret = ssm.get_parameter(
 )
 SEGMENT_SECRET = param_segment_secret["Parameter"]["Value"].encode()
 
-TTL = 60
+CF_COOKIE_TTL_SECONDS = 10800  # 3 hours
+KEY_URL_TTL_SECONDS = 60
 
 KEY_REGEX = re.compile(r'#EXT-X-KEY:METHOD=AES-128,URI="[^"]+"')
 SEGMENT_REGEX = re.compile(r'^(?!#)(.+\.ts)$', re.MULTILINE)
@@ -97,7 +98,7 @@ def rewrite_master_playlist(playlist, content_path, token):
 
 def rewrite_variant_playlist(playlist, content_path):
     signed_key_url = sign_key_url(
-        content_path, KEY_ENDPOINT, TTL, SEGMENT_SECRET)
+        content_path, KEY_ENDPOINT, KEY_URL_TTL_SECONDS, SEGMENT_SECRET)
 
     playlist = KEY_REGEX.sub(
         f'#EXT-X-KEY:METHOD=AES-128,URI="{signed_key_url}"',
@@ -156,7 +157,7 @@ def lambda_handler(event, context):
 
         if variant == "master":
             cf_cookies = generate_cf_cookies(
-                domain=CLOUDFRONT_DOMAIN_NAME, private_key=PRIVATE_KEY, public_key_id=PUBLIC_KEY_ID)
+                domain=CLOUDFRONT_DOMAIN_NAME, content_path=effective_path, private_key=PRIVATE_KEY, public_key_id=PUBLIC_KEY_ID, ttl=CF_COOKIE_TTL_SECONDS)
 
             host = urlparse(
                 CLOUDFRONT_DOMAIN_NAME).hostname or CLOUDFRONT_DOMAIN_NAME

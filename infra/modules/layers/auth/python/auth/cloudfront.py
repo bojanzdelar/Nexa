@@ -14,13 +14,13 @@ def _b64(x: bytes) -> str:
     )
 
 
-def generate_cf_cookies(domain: str, private_key, public_key_id: str, ttl=3600):
+def generate_cf_cookies(domain: str, content_path: str, private_key, public_key_id: str, ttl):
     expire_time = int(time.time()) + ttl
 
     policy = {
         "Statement": [
             {
-                "Resource": f"{domain}/*",
+                "Resource": f"{domain}/*{content_path}/*",
                 "Condition": {
                     "DateLessThan": {"AWS:EpochTime": expire_time}
                 },
