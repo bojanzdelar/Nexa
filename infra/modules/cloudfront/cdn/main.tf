@@ -31,8 +31,14 @@ resource "aws_cloudfront_distribution" "this" {
     allowed_methods = ["GET", "HEAD"]
     cached_methods  = ["GET", "HEAD"]
 
-    compress        = true
-    cache_policy_id = data.aws_cloudfront_cache_policy.optimized.id
+    compress                   = true
+    cache_policy_id            = data.aws_cloudfront_cache_policy.optimized.id
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.cors_with_credentials.id
+
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.allow_only_custom_domain.arn
+    }
   }
 
   dynamic "ordered_cache_behavior" {
@@ -55,6 +61,11 @@ resource "aws_cloudfront_distribution" "this" {
         "response_headers_policy_id",
         null
       )
+
+      function_association {
+        event_type   = "viewer-request"
+        function_arn = aws_cloudfront_function.allow_only_custom_domain.arn
+      }
     }
   }
 

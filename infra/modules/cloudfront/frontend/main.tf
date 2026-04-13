@@ -43,6 +43,11 @@ resource "aws_cloudfront_distribution" "this" {
     compress                 = true
     cache_policy_id          = data.aws_cloudfront_cache_policy.no_cache.id
     origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer_except_host_header.id
+
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.allow_only_custom_domain.arn
+    }
   }
 
   dynamic "ordered_cache_behavior" {
@@ -58,6 +63,11 @@ resource "aws_cloudfront_distribution" "this" {
 
       compress        = true
       cache_policy_id = ordered_cache_behavior.value.cache
+
+      function_association {
+        event_type   = "viewer-request"
+        function_arn = aws_cloudfront_function.allow_only_custom_domain.arn
+      }
     }
   }
 

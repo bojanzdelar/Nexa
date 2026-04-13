@@ -2,9 +2,6 @@ from auth.signing import validate_signed_url
 import boto3
 import os
 import base64
-import logging
-
-logging.basicConfig(level=logging.INFO)
 
 ssm = boto3.client("ssm")
 param = ssm.get_parameter(
@@ -37,7 +34,6 @@ def lambda_handler(event, context):
             return {"statusCode": 401}
 
         param_name = f"/nexa/hls/{scope}"
-        logging.info(f"Fetching HLS key: {param_name}")
 
         response = ssm.get_parameter(
             Name=param_name,
@@ -64,5 +60,4 @@ def lambda_handler(event, context):
         return {"statusCode": 404}
 
     except Exception as e:
-        logging.error(f"HLS key error: {e}")
         return {"statusCode": 500}
