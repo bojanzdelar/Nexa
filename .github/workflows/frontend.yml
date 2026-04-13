@@ -56,5 +56,8 @@ jobs:
       - name: Update Lambda alias
         run: aws lambda update-alias --function-name nexa-frontend-ssr --name live --function-version ${{ steps.publish.outputs.version }}
 
+      - name: Rebind Lambda Function URL
+        run: aws lambda update-function-url-config --function-name nexa-frontend-ssr --qualifier live --auth-type AWS_IAM
+
       - name: Invalidate CloudFront cache
         run: aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"

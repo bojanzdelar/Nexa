@@ -22,7 +22,7 @@ const videoSource = computed(() => {
   }
 
   if (seasonNumber.value == null || episodeNumber.value == null) {
-    return null;
+    return "";
   }
 
   return `${config.public.playback.baseUrl}/playlists/shows/${titleId}/s${pad2(seasonNumber.value)}/e${pad2(episodeNumber.value)}`;
@@ -87,13 +87,25 @@ const parseQueryParams = () => {
 
 const fetchData = async () => {
   if (!titleType || !titleId) return;
+  try {
+    titleData.value =
+      titleType === "tv"
+        ? await getShowDetails(titleId, false)
+        : await getMovieDetails(titleId, false);
 
-  titleData.value =
-    titleType === "tv"
-      ? await getShowDetails(titleId, false)
-      : await getMovieDetails(titleId, false);
+    fetchSeasonAndEpisode();
+  } catch (e: any) {
+    const status = e?.statusCode;
 
-  fetchSeasonAndEpisode();
+    if (!status) {
+      console.error(e);
+      return;
+    }
+
+    if (status && ![500, 502, 503, 504].includes(status)) {
+      throw e;
+    }
+  }
 };
 
 const fetchSeasonAndEpisode = () => {
@@ -179,25 +191,29 @@ onMounted(async () => {
 </script>
 
 <template>
-  <CommonOrientationOverlay
-    v-if="isMobilePortrait"
-    message="Switch to landscape to watch"
-  />
+  <div>
+    <CommonOrientationOverlay
+      v-show="isMobilePortrait"
+      message="Switch to landscape to watch"
+    />
 
-  <PlayerVideo
-    v-else-if="videoSource"
-    :key="`${titleType}-${titleId}-${seasonNumber}-${episodeNumber}`"
-    :title="titleData"
-    :episode-name="
-      episodeData
-        ? formatEpisodeName(seasonNumber, episodeNumber, episodeData.name)
-        : null
-    "
-    :season="seasonNumber"
-    :episode="episodeNumber"
-    :title-source="videoSource"
-    :has-next-episode="nextEpisode != null"
-    @view-details="viewDetails"
-    @next-episode="goToNextEpisode"
-  />
+    <PlayerVideo
+      v-show="!isMobilePortrait && videoSource"
+      :key="`${titleType}-${titleId}-${seasonNumber}-${episodeNumber}`"
+      :title-type="titleType"
+      :title-id="titleId"
+      :title="titleData"
+      :episode-name="
+        episodeData
+          ? formatEpisodeName(seasonNumber, episodeNumber, episodeData.name)
+          : null
+      "
+      :season="seasonNumber"
+      :episode="episodeNumber"
+      :title-source="videoSource"
+      :has-next-episode="nextEpisode != null"
+      @view-details="viewDetails"
+      @next-episode="goToNextEpisode"
+    />
+  </div>
 </template>

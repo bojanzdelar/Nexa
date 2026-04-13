@@ -54,7 +54,7 @@ useScrollLock(isMobileLandscape);
   </NuxtLayout>
 
   <CommonOrientationOverlay
-    v-if="isMobileLandscape"
+    v-show="isMobileLandscape"
     message="This app is designed for portrait mode"
   />
 </template>

@@ -16,7 +16,7 @@ variable "enable_cors" {
   default = false
 }
 
-variable "cloudfront_frontend_url" {
-  type    = string
-  default = null
+variable "cloudfront_frontend_urls" {
+  type    = list(string)
+  default = []
 }

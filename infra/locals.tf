@@ -33,13 +33,14 @@ locals {
     }
   }
 
-  cloudfront_frontend_url = coalesce(
-    var.frontend_url_override,
-    module.cloudfront_frontend.distribution_https_url
-  )
+  cloudfront_frontend_urls = compact([
+    module.cloudfront_frontend.distribution_https_url,
+    var.local_frontend_url
+  ])
 
   cloudfront_frontend_origins = {
-    frontend_assets = module.s3.buckets.frontend_assets
+    frontend_assets    = module.s3.buckets.frontend_assets
+    frontend_snapshots = module.s3.buckets.frontend_snapshots
   }
 
   cloudfront_cdn_origins = {

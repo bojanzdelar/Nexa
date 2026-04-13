@@ -48,6 +48,6 @@ resource "aws_s3_bucket_cors_configuration" "this" {
   cors_rule {
     allowed_headers = ["*"]
     allowed_methods = ["GET", "HEAD"]
-    allowed_origins = var.enable_cors ? [var.cloudfront_frontend_url] : []
+    allowed_origins = var.enable_cors ? var.cloudfront_frontend_urls : []
   }
 }

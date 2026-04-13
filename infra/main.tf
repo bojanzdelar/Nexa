@@ -1,11 +1,13 @@
 module "cloudfront_frontend" {
   source = "./modules/cloudfront/frontend"
 
-  s3_origin_domain_name = module.s3.buckets.frontend_assets.bucket_domain
-  lambda_origin_domain  = module.frontend_ssr.function_url
-  domain_name           = var.app_domain_name
-  acm_certificate_arn   = module.acm_global.certificate_arn
-  web_acl_arn           = var.enable_cf_frontend_waf ? module.waf_frontend[0].web_acl_arn : null
+  s3_assets_origin_domain_name    = module.s3.buckets.frontend_assets.bucket_domain
+  lambda_origin_domain            = module.frontend_ssr.function_url
+  s3_snapshots_origin_domain_name = module.s3.buckets.frontend_snapshots.bucket_domain
+  failover_rewrite_lambda_arn     = module.frontend_failover_rewrite.qualified_arn
+  domain_name                     = var.app_domain_name
+  acm_certificate_arn             = module.acm_global.certificate_arn
+  web_acl_arn                     = var.enable_cf_waf ? module.waf_cf[0].web_acl_arn : null
 }
 
 module "apigw" {
@@ -15,7 +17,7 @@ module "apigw" {
   hls_playlist_token_lambda_invoke_arn = module.hls_playlist_token.lambda_invoke_arn
   hls_playlist_lambda_invoke_arn       = module.hls_playlist.lambda_invoke_arn
   subtitles_manifest_lambda_invoke_arn = module.subtitles_manifest.lambda_invoke_arn
-  cloudfront_frontend_url              = local.cloudfront_frontend_url
+  cloudfront_frontend_urls             = local.cloudfront_frontend_urls
   domain_name                          = var.app_domain_name
   acm_certificate_arn                  = module.acm_regional.certificate_arn
 }
@@ -31,31 +33,19 @@ module "cloudfront_cdn" {
     }
   }
 
-  public_key_value        = module.ssm.cloudfront_public_key_value
-  domain_name             = var.app_domain_name
-  cloudfront_frontend_url = local.cloudfront_frontend_url
-  acm_certificate_arn     = module.acm_global.certificate_arn
-  web_acl_arn             = var.enable_cf_cdn_waf ? module.waf_cdn[0].web_acl_arn : null
+  public_key_value         = module.ssm.cloudfront_public_key_value
+  domain_name              = var.app_domain_name
+  cloudfront_frontend_urls = local.cloudfront_frontend_urls
+  acm_certificate_arn      = module.acm_global.certificate_arn
+  web_acl_arn              = var.enable_cf_waf ? module.waf_cf[0].web_acl_arn : null
 }
 
-module "waf_cdn" {
+module "waf_cf" {
   source = "./modules/waf"
 
-  count = var.enable_cf_cdn_waf ? 1 : 0
+  count = var.enable_cf_waf ? 1 : 0
 
-  name = "nexa-cf-cdn-waf"
-
-  providers = {
-    aws = aws.us_east_1
-  }
-}
-
-module "waf_frontend" {
-  source = "./modules/waf"
-
-  count = var.enable_cf_frontend_waf ? 1 : 0
-
-  name = "nexa-cf-frontend-waf"
+  name = "nexa-cf-waf"
 
   providers = {
     aws = aws.us_east_1
@@ -103,15 +93,24 @@ module "users" {
 module "s3" {
   source = "./modules/s3"
 
-  bucket_suffix           = var.s3_bucket_suffix
-  cloudfront_frontend_url = local.cloudfront_frontend_url
+  bucket_suffix            = var.s3_bucket_suffix
+  cloudfront_frontend_urls = local.cloudfront_frontend_urls
 }
 
 module "frontend_ssr" {
   source = "./modules/lambda/frontend_ssr"
 
-  cf_frontend_arn         = module.cloudfront_frontend.distribution_arn
-  provisioned_concurrency = var.ssr_provisioned_concurrency
+  cf_frontend_arn       = module.cloudfront_frontend.distribution_arn
+  enable_snapshots      = var.enable_snapshots
+  snapshots_bucket_name = module.s3.buckets.frontend_snapshots.bucket_name
+}
+
+module "frontend_failover_rewrite" {
+  source = "./modules/lambda/frontend_failover_rewrite"
+
+  providers = {
+    aws = aws.us_east_1
+  }
 }
 
 module "transcode_dispatcher" {

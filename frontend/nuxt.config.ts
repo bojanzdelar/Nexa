@@ -29,6 +29,11 @@ export default defineNuxtConfig({
     "@vueuse/nuxt",
     "@vite-pwa/nuxt",
   ],
+  nitro: {
+    externals: {
+      inline: ["@aws-sdk/client-s3", "tslib"],
+    },
+  },
   routeRules: {
     "/login": { ssr: false },
     "/register": { ssr: false },

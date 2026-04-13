@@ -130,7 +130,10 @@ def lambda_handler(event, context):
 
         request_path = f"/playlists/{proxy}"
 
-        if not request_path.startswith(payload["path"]):
+        if not (
+            request_path.startswith(payload["path"]) or
+            request_path.startswith("/playlists/placeholders/")
+        ):
             return {"statusCode": 403}
 
         content_path, variant = parse_request(proxy)

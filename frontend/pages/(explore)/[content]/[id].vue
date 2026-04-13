@@ -31,8 +31,13 @@ const recommendedTitles = ref<TitleSummary[]>([]);
 const seasons = ref<Season[]>([]);
 const currentSeasonIndex = ref(0);
 
+const releasedSeasons = computed(() => {
+  return seasons.value.filter((season) => {
+    const firstEpisode = season.episodes[0];
+    return firstEpisode && new Date() >= new Date(firstEpisode.airDate);
+  });
+});
 const titleRelease = computed(() => getTitleRelease(title.value));
-const currentSeason = computed(() => seasons.value[currentSeasonIndex.value]);
 const pageTitle = computed(() => title.value.name);
 
 usePageTitle(pageTitle);
@@ -42,7 +47,7 @@ const changeSeason = (direction: "prev" | "next") => {
     currentSeasonIndex.value--;
   } else if (
     direction === "next" &&
-    currentSeasonIndex.value < seasons.value.length - 1
+    currentSeasonIndex.value < releasedSeasons.value.length - 1
   ) {
     currentSeasonIndex.value++;
   }
@@ -74,7 +79,7 @@ const fetchData = async () => {
       (season: Season) => season.seasonNumber != 0,
     );
 
-    if (seasonQuery && seasonQuery <= seasons.value.length) {
+    if (seasonQuery && seasonQuery <= releasedSeasons.value.length) {
       currentSeasonIndex.value = seasonQuery - 1;
     }
 
@@ -117,8 +122,8 @@ await fetchData();
           </div>
           <span>•</span>
           <span v-if="'numberOfSeasons' in title">
-            {{ title?.numberOfSeasons }}
-            {{ title?.numberOfSeasons > 1 ? "Seasons" : "Season" }}
+            {{ releasedSeasons.length }}
+            {{ releasedSeasons.length > 1 ? "Seasons" : "Season" }}
           </span>
           <span v-else>
             {{ Math.floor(title?.runtime / 60) }}h {{ title?.runtime % 60 }}m
@@ -192,7 +197,7 @@ await fetchData();
               <Icon name="heroicons:chevron-left" class="w-5 h-5" />
             </button>
             <button
-              :disabled="currentSeasonIndex === seasons.length - 1"
+              :disabled="currentSeasonIndex === releasedSeasons.length - 1"
               class="p-2 rounded-full hover:bg-neutral-700/50 transition-colors disabled:opacity-50"
               @click="changeSeason('next')"
             >
@@ -200,7 +205,16 @@ await fetchData();
             </button>
           </div>
 
-          <ShowSeason :show="title as Show" :season="currentSeason" />
+          <div
+            v-for="(season, i) in releasedSeasons"
+            :key="season.seasonNumber"
+          >
+            <ShowSeason
+              v-show="i === currentSeasonIndex"
+              :show="title as Show"
+              :season="season"
+            />
+          </div>
         </div>
 
         <CommonGroup type="cast" name="Cast" :content="cast" />

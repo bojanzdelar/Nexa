@@ -12,6 +12,8 @@ import {
 import type { TitleSummary, Subtitle, SubtitleCue } from "~/types";
 
 const props = defineProps<{
+  titleType: string;
+  titleId: number;
   title: TitleSummary;
   episodeName: string | null;
   season: number | null;
@@ -103,7 +105,8 @@ const onVideoLoaded = async () => {
   videoAspectRatio.value =
     videoPlayer.value.videoWidth / videoPlayer.value.videoHeight;
   availableSubtitles.value = await loadAvailableSubtitles(
-    props.title,
+    props.titleType,
+    props.titleId,
     props.season ?? undefined,
     props.episode ?? undefined,
   );
@@ -290,14 +293,14 @@ const toggleSubtitlesMenu = () => {
 const fetchProgress = async () => {
   let result;
 
-  if (props.title.type === "tv" && props.season && props.episode) {
+  if (props.titleType === "tv" && props.season && props.episode) {
     result = await getEpisodeProgress(
-      props.title.id,
+      props.titleId,
       props.season,
       props.episode,
     );
   } else {
-    result = await getMovieProgress(props.title.id);
+    result = await getMovieProgress(props.titleId);
   }
 
   return result?.progressSeconds ?? 0;
@@ -319,17 +322,17 @@ const saveProgress = async () => {
   const progressSeconds = Math.floor(currentTime.value);
   const durationSeconds = Math.floor(duration.value);
 
-  if (props.title.type === "tv" && props.season && props.episode) {
+  if (props.titleType === "tv" && props.season && props.episode) {
     await saveEpisodeProgress({
-      tvId: props.title.id,
+      tvId: props.titleId,
       season: props.season,
       episode: props.episode,
       progressSeconds,
       durationSeconds,
     });
-  } else if (props.title.type === "movie") {
+  } else if (props.titleType === "movie") {
     await saveMovieProgress({
-      movieId: props.title.id,
+      movieId: props.titleId,
       progressSeconds,
       durationSeconds,
     });
@@ -561,7 +564,7 @@ useEventListener(videoPlayer, "ended", () => {
 
           <div class="flex items-center space-x-4">
             <Icon
-              v-if="title.type === 'tv' && hasNextEpisode"
+              v-if="titleType === 'tv' && hasNextEpisode"
               name="heroicons:forward-solid"
               class="hidden sm:block cursor-pointer w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 m-1 lg:m-2"
               @click="emit('nextEpisode')"

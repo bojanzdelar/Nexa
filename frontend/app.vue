@@ -18,7 +18,7 @@ useScrollLock(shouldRotate);
   </NuxtLayout>
 
   <CommonOrientationOverlay
-    v-if="shouldRotate"
+    v-show="shouldRotate"
     message="This app is designed for portrait mode"
   />
 </template>

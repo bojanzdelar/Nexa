@@ -18,8 +18,8 @@ variable "domain_name" {
   type = string
 }
 
-variable "cloudfront_frontend_url" {
-  type = string
+variable "cloudfront_frontend_urls" {
+  type = list(string)
 }
 
 variable "acm_certificate_arn" {

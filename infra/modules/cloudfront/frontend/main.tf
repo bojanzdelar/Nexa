@@ -15,7 +15,7 @@ resource "aws_cloudfront_distribution" "this" {
   }
 
   origin {
-    domain_name              = var.s3_origin_domain_name
+    domain_name              = var.s3_assets_origin_domain_name
     origin_id                = "s3-origin"
     origin_access_control_id = aws_cloudfront_origin_access_control.s3.id
   }
@@ -33,11 +33,33 @@ resource "aws_cloudfront_distribution" "this" {
     }
   }
 
+  origin {
+    domain_name              = var.s3_snapshots_origin_domain_name
+    origin_id                = "snapshot-origin"
+    origin_access_control_id = aws_cloudfront_origin_access_control.s3.id
+  }
+
+  origin_group {
+    origin_id = "lambda-failover-group"
+
+    failover_criteria {
+      status_codes = [500, 502, 503, 504]
+    }
+
+    member {
+      origin_id = "lambda-origin"
+    }
+
+    member {
+      origin_id = "snapshot-origin"
+    }
+  }
+
   default_cache_behavior {
-    target_origin_id       = "lambda-origin"
+    target_origin_id       = "lambda-failover-group"
     viewer_protocol_policy = "redirect-to-https"
 
-    allowed_methods = ["GET", "HEAD", "OPTIONS", "PUT", "PATCH", "POST", "DELETE"]
+    allowed_methods = ["GET", "HEAD", "OPTIONS"]
     cached_methods  = ["GET", "HEAD"]
 
     compress                 = true
@@ -47,6 +69,11 @@ resource "aws_cloudfront_distribution" "this" {
     function_association {
       event_type   = "viewer-request"
       function_arn = aws_cloudfront_function.allow_only_custom_domain.arn
+    }
+
+    lambda_function_association {
+      event_type = "origin-request"
+      lambda_arn = var.failover_rewrite_lambda_arn
     }
   }
 

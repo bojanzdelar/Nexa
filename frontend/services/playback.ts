@@ -1,4 +1,4 @@
-import type { PlaylistTokenResponse, TitleRef, Subtitle } from "~/types";
+import type { PlaylistTokenResponse, Subtitle } from "~/types";
 
 export const getPlaylistToken = async (path: string) => {
   const proxy = path.replace(/^\/playlists\//, "");
@@ -9,14 +9,15 @@ export const getPlaylistToken = async (path: string) => {
 };
 
 export const loadAvailableSubtitles = (
-  title: TitleRef,
+  titleType: string,
+  titleId: number,
   season?: number,
   episode?: number,
 ) => {
   const url =
-    title.type === "movie"
-      ? `/subtitles/movies/${title.id}`
-      : `/subtitles/shows/${title.id}?s=${season}&e=${episode}`;
+    titleType === "movie"
+      ? `/subtitles/movies/${titleId}`
+      : `/subtitles/shows/${titleId}?s=${season}&e=${episode}`;
 
   return usePlaybackApi<Subtitle[]>(url);
 };

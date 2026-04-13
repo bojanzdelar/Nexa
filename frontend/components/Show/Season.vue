@@ -24,7 +24,7 @@ const releasedEpisodes = computed(() => {
         <span v-else>Extras</span>
       </h3>
       <span class="text-neutral-400">
-        {{ season.episodes.length }} episodes
+        {{ releasedEpisodes.length }} episodes
       </span>
     </div>
 

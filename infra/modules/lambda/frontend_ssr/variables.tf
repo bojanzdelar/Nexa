@@ -2,6 +2,10 @@ variable "cf_frontend_arn" {
   type = string
 }
 
-variable "provisioned_concurrency" {
-  type = number
+variable "enable_snapshots" {
+  type = bool
+}
+
+variable "snapshots_bucket_name" {
+  type = string
 }

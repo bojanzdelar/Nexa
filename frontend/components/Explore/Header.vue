@@ -24,8 +24,6 @@ const isScrolled = ref(false);
 const isMobileMenuOpen = ref(false);
 const isUserMenuOpen = ref(false);
 
-const mounted = ref(false);
-
 watch(width, (newWidth) => {
   if (newWidth >= minMobileWidth && isMobileMenuOpen.value) {
     isMobileMenuOpen.value = false;
@@ -46,8 +44,6 @@ const toggleUserMenu = () => {
   isUserMenuOpen.value = !isUserMenuOpen.value;
 };
 
-onMounted(() => (mounted.value = true));
-
 onClickOutside(mobileMenu, () => (isMobileMenuOpen.value = false));
 onClickOutside(userMenu, () => (isUserMenuOpen.value = false));
 
@@ -59,8 +55,8 @@ useEventListener("scroll", handleScroll);
     class="fixed top-0 z-10 flex w-full items-center justify-between px-4 transition-all lg:px-10 lg:py-2 bg-gradient-to-b from-neutral-900/50 to-transparent"
     :class="{ 'bg-neutral-900': isScrolled }"
   >
-    <div class="flex items-center space-x-4 md:space-x-10">
-      <div v-if="mounted && width < minMobileWidth" class="flex items-center">
+    <div class="flex items-center gap-4 md:gap-10">
+      <div class="flex items-center md:hidden">
         <Icon
           name="heroicons:bars-3"
           class="cursor-pointer h-8 w-8"
@@ -95,10 +91,10 @@ useEventListener("scroll", handleScroll);
       />
 
       <div
-        v-if="isUserMenuOpen"
+        v-show="isUserMenuOpen"
         class="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-neutral-800 py-1"
       >
-        <template v-if="isAuthenticated">
+        <div v-show="isAuthenticated">
           <button
             class="block w-full text-left px-4 py-2 hover:bg-neutral-700"
             @click="
@@ -108,8 +104,8 @@ useEventListener("scroll", handleScroll);
           >
             Sign out
           </button>
-        </template>
-        <template v-else>
+        </div>
+        <div v-show="!isAuthenticated">
           <NuxtLink
             to="/login"
             class="block px-4 py-2 hover:bg-neutral-700"
@@ -124,13 +120,13 @@ useEventListener("scroll", handleScroll);
           >
             Sign up
           </NuxtLink>
-        </template>
+        </div>
       </div>
     </div>
   </header>
 
   <div
-    v-if="isMobileMenuOpen"
+    v-show="isMobileMenuOpen"
     ref="mobileMenu"
     class="fixed top-0 left-0 h-full w-64 bg-neutral-900 z-30 shadow-lg"
   >
@@ -161,7 +157,7 @@ useEventListener("scroll", handleScroll);
       </li>
       <div class="border-t border-neutral-800 my-4" />
 
-      <li v-if="isAuthenticated" class="px-4 py-2">
+      <li v-show="isAuthenticated" class="px-4 py-2">
         <button
           class="block w-full text-left text-neutral-200 transition hover:text-neutral-400"
           @click="
@@ -172,7 +168,7 @@ useEventListener("scroll", handleScroll);
           Sign out
         </button>
       </li>
-      <template v-else>
+      <div v-show="!isAuthenticated">
         <li class="px-4 py-2">
           <NuxtLink
             to="/login"
@@ -191,12 +187,12 @@ useEventListener("scroll", handleScroll);
             Sign up
           </NuxtLink>
         </li>
-      </template>
+      </div>
     </ul>
   </div>
 
   <div
-    v-if="isMobileMenuOpen"
+    v-show="isMobileMenuOpen"
     class="fixed inset-0 bg-black bg-opacity-50 z-20"
     @click="isMobileMenuOpen = false"
   ></div>

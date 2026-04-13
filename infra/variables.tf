@@ -26,10 +26,6 @@ variable "s3_bucket_suffix" {
   type = string
 }
 
-variable "ssr_provisioned_concurrency" {
-  type = number
-}
-
 variable "enable_alb" {
   type = bool
 }
@@ -42,15 +38,15 @@ variable "enable_opensearch" {
   type = bool
 }
 
-variable "enable_cf_cdn_waf" {
+variable "enable_cf_waf" {
   type = bool
 }
 
-variable "enable_cf_frontend_waf" {
+variable "enable_snapshots" {
   type = bool
 }
 
-variable "frontend_url_override" {
+variable "local_frontend_url" {
   type    = string
   default = null
 }

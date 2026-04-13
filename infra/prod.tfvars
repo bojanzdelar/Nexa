@@ -1,10 +1,9 @@
-ssr_provisioned_concurrency = 1
-enable_alb                  = true
-ecs_desired_count           = 1
-enable_opensearch           = true
-enable_cf_cdn_waf           = true
-enable_cf_frontend_waf      = true
-environment                 = "prod"
+enable_alb        = true
+ecs_desired_count = 1
+enable_opensearch = true
+enable_cf_waf     = true
+enable_snapshots  = false
+environment       = "prod"
 
 app_domain_name    = "nexa.zdelar.com"
 root_domain_name   = "zdelar.com"
