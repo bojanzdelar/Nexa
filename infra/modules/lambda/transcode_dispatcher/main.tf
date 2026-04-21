@@ -15,9 +15,9 @@ resource "aws_lambda_function" "transcode" {
 
   environment {
     variables = {
-      HLS_KEY_API_BASE  = var.hls_key_api_base
-      MEDIACONVERT_ROLE = var.mediaconvert_role_arn
-      OUTPUT_BUCKET     = var.output_bucket_name
+      CLOUDFRONT_DOMAIN_NAME = var.cloudfront_domain_name
+      MEDIACONVERT_ROLE      = var.mediaconvert_role_arn
+      OUTPUT_BUCKET          = var.output_bucket_name
     }
   }
 }

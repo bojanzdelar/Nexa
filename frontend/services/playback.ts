@@ -1,7 +1,7 @@
 import type { PlaylistTokenResponse, Subtitle } from "~/types";
 
 export const getPlaylistToken = async (path: string) => {
-  const proxy = path.replace(/^\/playlists\//, "");
+  const proxy = path.replace(/^\/playback\/playlists\//, "");
 
   return usePlaybackApi<PlaylistTokenResponse>(`/playlists/token/${proxy}`, {
     method: "POST",

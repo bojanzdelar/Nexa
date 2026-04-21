@@ -7,6 +7,9 @@ resource "aws_apigatewayv2_integration" "subtitles_manifest_integration" {
 
 resource "aws_apigatewayv2_route" "subtitles_manifest_route" {
   api_id    = aws_apigatewayv2_api.platform_api.id
-  route_key = "GET /subtitles/{type}/{id}"
+  route_key = "GET /playback/subtitles/{type}/{id}"
   target    = "integrations/${aws_apigatewayv2_integration.subtitles_manifest_integration.id}"
+
+  authorization_type = "CUSTOM"
+  authorizer_id      = aws_apigatewayv2_authorizer.origin.id
 }

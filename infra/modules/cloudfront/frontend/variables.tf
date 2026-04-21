@@ -14,6 +14,14 @@ variable "failover_rewrite_lambda_arn" {
   type = string
 }
 
+variable "apigw_origin_hostname" {
+  type = string
+}
+
+variable "origin_secret" {
+  type = string
+}
+
 variable "domain_name" {
   type = string
 }

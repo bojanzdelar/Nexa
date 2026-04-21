@@ -12,8 +12,8 @@ s3 = boto3.client("s3")
 ssm = boto3.client("ssm")
 
 BUCKET = os.environ["PLAYLIST_BUCKET"]
-KEY_ENDPOINT = os.environ["KEY_ENDPOINT"]
-CLOUDFRONT_DOMAIN_NAME = os.environ["CLOUDFRONT_DOMAIN_NAME"]
+CLOUDFRONT_FRONTEND_DOMAIN_NAME = os.environ["CLOUDFRONT_FRONTEND_DOMAIN_NAME"]
+CLOUDFRONT_CDN_DOMAIN_NAME = os.environ["CLOUDFRONT_CDN_DOMAIN_NAME"]
 PUBLIC_KEY_ID = os.environ["PUBLIC_KEY_ID"]
 PRIVATE_KEY_NAME = os.environ["PRIVATE_KEY_NAME"]
 
@@ -88,7 +88,7 @@ def load_playlist(bucket, content_path, filename):
 
 
 def rewrite_master_playlist(playlist, content_path, token):
-    prefix = f"/playlists/{content_path}/"
+    prefix = f"/playback/playlists/{content_path}/"
 
     return VARIANT_REGEX.sub(
         lambda m: f"{prefix}{m.group(1)}?token={token}",
@@ -97,17 +97,18 @@ def rewrite_master_playlist(playlist, content_path, token):
 
 
 def rewrite_variant_playlist(playlist, content_path):
+    hls_prefix = f"{CLOUDFRONT_FRONTEND_DOMAIN_NAME}/playback/hls-key"
     signed_key_url = sign_key_url(
-        content_path, KEY_ENDPOINT, KEY_URL_TTL_SECONDS, SEGMENT_SECRET)
+        content_path, hls_prefix, KEY_URL_TTL_SECONDS, SEGMENT_SECRET)
 
     playlist = KEY_REGEX.sub(
         f'#EXT-X-KEY:METHOD=AES-128,URI="{signed_key_url}"',
         playlist
     )
 
-    cf_prefix = f"{CLOUDFRONT_DOMAIN_NAME}/{content_path}/hls/"
+    cdn_prefix = f"{CLOUDFRONT_CDN_DOMAIN_NAME}/{content_path}/hls/"
     playlist = SEGMENT_REGEX.sub(
-        lambda m: cf_prefix + m.group(1),
+        lambda m: cdn_prefix + m.group(1),
         playlist
     )
 
@@ -128,11 +129,11 @@ def lambda_handler(event, context):
         except Exception:
             return {"statusCode": 401}
 
-        request_path = f"/playlists/{proxy}"
+        request_path = f"/playback/playlists/{proxy}"
 
         if not (
             request_path.startswith(payload["path"]) or
-            request_path.startswith("/playlists/placeholders/")
+            request_path.startswith("/playback/playlists/placeholders/")
         ):
             return {"statusCode": 403}
 
@@ -160,10 +161,10 @@ def lambda_handler(event, context):
 
         if variant == "master":
             cf_cookies = generate_cf_cookies(
-                domain=CLOUDFRONT_DOMAIN_NAME, content_path=effective_path, private_key=PRIVATE_KEY, public_key_id=PUBLIC_KEY_ID, ttl=CF_COOKIE_TTL_SECONDS)
+                domain=CLOUDFRONT_CDN_DOMAIN_NAME, content_path=effective_path, private_key=PRIVATE_KEY, public_key_id=PUBLIC_KEY_ID, ttl=CF_COOKIE_TTL_SECONDS)
 
             host = urlparse(
-                CLOUDFRONT_DOMAIN_NAME).hostname or CLOUDFRONT_DOMAIN_NAME
+                CLOUDFRONT_CDN_DOMAIN_NAME).hostname or CLOUDFRONT_CDN_DOMAIN_NAME
             parent_domain = "." + ".".join(host.split(".")[1:])
 
             response["cookies"] = [

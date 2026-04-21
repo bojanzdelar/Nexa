@@ -32,7 +32,7 @@ def lambda_handler(event, context):
     if not proxy:
         return {"statusCode": 400, "body": "Invalid path"}
 
-    path = f"/playlists/{proxy}"
+    path = f"/playback/playlists/{proxy}"
 
     payload = {
         "path": path,

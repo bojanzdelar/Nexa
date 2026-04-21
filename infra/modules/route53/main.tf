@@ -36,18 +36,6 @@ resource "aws_route53_record" "api" {
   }
 }
 
-resource "aws_route53_record" "apigw" {
-  zone_id = aws_route53_zone.this.zone_id
-  name    = "playback.nexa"
-  type    = "A"
-
-  alias {
-    name                   = var.apigw_domain_name
-    zone_id                = var.apigw_hosted_zone_id
-    evaluate_target_health = false
-  }
-}
-
 resource "aws_route53_record" "cf_frontend" {
   zone_id = aws_route53_zone.this.zone_id
   name    = "nexa"

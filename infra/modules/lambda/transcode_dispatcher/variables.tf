@@ -6,6 +6,6 @@ variable "mediaconvert_role_arn" {
   type = string
 }
 
-variable "hls_key_api_base" {
+variable "cloudfront_domain_name" {
   type = string
 }

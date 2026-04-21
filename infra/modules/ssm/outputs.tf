@@ -13,3 +13,7 @@ output "cloudfront_private_key_name" {
 output "cloudfront_public_key_value" {
   value = aws_ssm_parameter.cloudfront_public_key.value
 }
+
+output "cloudfront_origin_secret" {
+  value = aws_ssm_parameter.cloudfront_origin_secret.value
+}

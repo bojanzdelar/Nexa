@@ -39,6 +39,23 @@ resource "aws_cloudfront_distribution" "this" {
     origin_access_control_id = aws_cloudfront_origin_access_control.s3.id
   }
 
+  origin {
+    domain_name = var.apigw_origin_hostname
+    origin_id   = "apigw-origin"
+
+    custom_origin_config {
+      http_port              = 80
+      https_port             = 443
+      origin_protocol_policy = "https-only"
+      origin_ssl_protocols   = ["TLSv1.2"]
+    }
+
+    custom_header {
+      name  = "X-Origin-Secret"
+      value = var.origin_secret
+    }
+  }
+
   origin_group {
     origin_id = "lambda-failover-group"
 
@@ -95,6 +112,24 @@ resource "aws_cloudfront_distribution" "this" {
         event_type   = "viewer-request"
         function_arn = aws_cloudfront_function.allow_only_custom_domain.arn
       }
+    }
+  }
+
+  ordered_cache_behavior {
+    path_pattern     = "/playback/*"
+    target_origin_id = "apigw-origin"
+
+    viewer_protocol_policy = "redirect-to-https"
+    allowed_methods        = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
+    cached_methods         = ["GET", "HEAD"]
+
+    compress                 = true
+    cache_policy_id          = data.aws_cloudfront_cache_policy.optimized.id
+    origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer_except_host_header.id
+
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.allow_only_custom_domain.arn
     }
   }
 

@@ -69,7 +69,7 @@ def lambda_handler(event, context):
                                 "EncryptionMethod": "AES128",
                                 "StaticKeyProvider": {
                                     "StaticKeyValue": hls_key,
-                                    "Url": f"{os.environ['HLS_KEY_API_BASE']}/{content_path}",
+                                    "Url": f"{os.environ['CLOUDFRONT_DOMAIN_NAME']}/playback/hls-key/{content_path}",
                                     "KeyFormat": "identity",
                                     "KeyFormatVersions": "1"
                                 }

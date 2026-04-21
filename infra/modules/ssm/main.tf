@@ -37,3 +37,13 @@ resource "aws_ssm_parameter" "cloudfront_public_key" {
     ignore_changes = [value]
   }
 }
+
+resource "aws_ssm_parameter" "cloudfront_origin_secret" {
+  name  = "/nexa/internal/cloudfront/origin_secret"
+  type  = "SecureString"
+  value = "PLACEHOLDER"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}

@@ -14,14 +14,6 @@ variable "alb_zone_id" {
   type = string
 }
 
-variable "apigw_domain_name" {
-  type = string
-}
-
-variable "apigw_hosted_zone_id" {
-  type = string
-}
-
 variable "cf_frontend_domain_name" {
   type = string
 }

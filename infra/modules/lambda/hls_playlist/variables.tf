@@ -10,11 +10,11 @@ variable "playlist_bucket" {
   type = string
 }
 
-variable "key_endpoint" {
+variable "cloudfront_frontend_domain_name" {
   type = string
 }
 
-variable "cloudfront_domain_name" {
+variable "cloudfront_cdn_domain_name" {
   type = string
 }
 

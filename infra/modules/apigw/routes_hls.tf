@@ -7,8 +7,11 @@ resource "aws_apigatewayv2_integration" "hls_key_integration" {
 
 resource "aws_apigatewayv2_route" "hls_key_route" {
   api_id    = aws_apigatewayv2_api.platform_api.id
-  route_key = "GET /hls-key/{proxy+}"
+  route_key = "GET /playback/hls-key/{proxy+}"
   target    = "integrations/${aws_apigatewayv2_integration.hls_key_integration.id}"
+
+  authorization_type = "CUSTOM"
+  authorizer_id      = aws_apigatewayv2_authorizer.origin.id
 }
 
 resource "aws_apigatewayv2_integration" "hls_playlist_token_integration" {
@@ -20,8 +23,11 @@ resource "aws_apigatewayv2_integration" "hls_playlist_token_integration" {
 
 resource "aws_apigatewayv2_route" "playlist_token_route" {
   api_id    = aws_apigatewayv2_api.platform_api.id
-  route_key = "POST /playlists/token/{proxy+}"
+  route_key = "POST /playback/playlists/token/{proxy+}"
   target    = "integrations/${aws_apigatewayv2_integration.hls_playlist_token_integration.id}"
+
+  authorization_type = "CUSTOM"
+  authorizer_id      = aws_apigatewayv2_authorizer.origin.id
 }
 
 resource "aws_apigatewayv2_integration" "hls_playlist_integration" {
@@ -33,6 +39,9 @@ resource "aws_apigatewayv2_integration" "hls_playlist_integration" {
 
 resource "aws_apigatewayv2_route" "playlist_route" {
   api_id    = aws_apigatewayv2_api.platform_api.id
-  route_key = "GET /playlists/{proxy+}"
+  route_key = "GET /playback/playlists/{proxy+}"
   target    = "integrations/${aws_apigatewayv2_integration.hls_playlist_integration.id}"
+
+  authorization_type = "CUSTOM"
+  authorizer_id      = aws_apigatewayv2_authorizer.origin.id
 }
