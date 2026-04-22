@@ -14,11 +14,11 @@ variable "alb_zone_id" {
   type = string
 }
 
-variable "cf_frontend_domain_name" {
+variable "cf_edge_domain_name" {
   type = string
 }
 
-variable "cf_frontend_hosted_zone_id" {
+variable "cf_edge_hosted_zone_id" {
   type = string
 }
 

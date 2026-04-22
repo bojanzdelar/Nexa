@@ -13,7 +13,7 @@ resource "aws_cloudfront_response_headers_policy" "cors_with_credentials" {
     }
 
     access_control_allow_origins {
-      items = var.cloudfront_frontend_urls
+      items = var.frontend_urls
     }
 
     origin_override = true

@@ -16,13 +16,13 @@ resource "aws_lambda_function" "hls_playlist" {
 
   environment {
     variables = {
-      PLAYLIST_BUCKET                 = var.playlist_bucket
-      CLOUDFRONT_FRONTEND_DOMAIN_NAME = var.cloudfront_frontend_domain_name
-      CLOUDFRONT_CDN_DOMAIN_NAME      = var.cloudfront_cdn_domain_name
-      PUBLIC_KEY_ID                   = var.public_key_id
-      PRIVATE_KEY_NAME                = var.private_key_name
-      PLAYLIST_SIGNING_SECRET_NAME    = var.playlist_signing_secret_name
-      SEGMENT_SIGNING_SECRET_NAME     = var.segment_signing_secret_name
+      PLAYLIST_BUCKET              = var.playlist_bucket
+      CLOUDFRONT_EDGE_DOMAIN_NAME  = var.cloudfront_edge_domain_name
+      CLOUDFRONT_CDN_DOMAIN_NAME   = var.cloudfront_cdn_domain_name
+      PUBLIC_KEY_ID                = var.public_key_id
+      PRIVATE_KEY_NAME             = var.private_key_name
+      PLAYLIST_SIGNING_SECRET_NAME = var.playlist_signing_secret_name
+      SEGMENT_SIGNING_SECRET_NAME  = var.segment_signing_secret_name
     }
   }
 }

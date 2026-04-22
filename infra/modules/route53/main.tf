@@ -36,14 +36,14 @@ resource "aws_route53_record" "api" {
   }
 }
 
-resource "aws_route53_record" "cf_frontend" {
+resource "aws_route53_record" "cf_edge" {
   zone_id = aws_route53_zone.this.zone_id
   name    = "nexa"
   type    = "A"
 
   alias {
-    name                   = var.cf_frontend_domain_name
-    zone_id                = var.cf_frontend_hosted_zone_id
+    name                   = var.cf_edge_domain_name
+    zone_id                = var.cf_edge_hosted_zone_id
     evaluate_target_health = false
   }
 }

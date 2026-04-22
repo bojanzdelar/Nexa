@@ -1,4 +1,4 @@
-variable "cf_frontend_arn" {
+variable "cf_edge_arn" {
   type = string
 }
 

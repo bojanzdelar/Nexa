@@ -18,6 +18,6 @@ variable "subtitles_manifest_lambda_invoke_arn" {
   type = string
 }
 
-variable "cloudfront_frontend_urls" {
+variable "frontend_urls" {
   type = list(string)
 }

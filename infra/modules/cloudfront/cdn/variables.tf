@@ -14,7 +14,7 @@ variable "domain_name" {
   type = string
 }
 
-variable "cloudfront_frontend_urls" {
+variable "frontend_urls" {
   type = list(string)
 }
 

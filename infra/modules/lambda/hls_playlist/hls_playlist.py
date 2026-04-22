@@ -12,7 +12,7 @@ s3 = boto3.client("s3")
 ssm = boto3.client("ssm")
 
 BUCKET = os.environ["PLAYLIST_BUCKET"]
-CLOUDFRONT_FRONTEND_DOMAIN_NAME = os.environ["CLOUDFRONT_FRONTEND_DOMAIN_NAME"]
+CLOUDFRONT_EDGE_DOMAIN_NAME = os.environ["CLOUDFRONT_EDGE_DOMAIN_NAME"]
 CLOUDFRONT_CDN_DOMAIN_NAME = os.environ["CLOUDFRONT_CDN_DOMAIN_NAME"]
 PUBLIC_KEY_ID = os.environ["PUBLIC_KEY_ID"]
 PRIVATE_KEY_NAME = os.environ["PRIVATE_KEY_NAME"]
@@ -97,7 +97,7 @@ def rewrite_master_playlist(playlist, content_path, token):
 
 
 def rewrite_variant_playlist(playlist, content_path):
-    hls_prefix = f"{CLOUDFRONT_FRONTEND_DOMAIN_NAME}/playback/hls-key"
+    hls_prefix = f"{CLOUDFRONT_EDGE_DOMAIN_NAME}/playback/hls-key"
     signed_key_url = sign_key_url(
         content_path, hls_prefix, KEY_URL_TTL_SECONDS, SEGMENT_SECRET)
 

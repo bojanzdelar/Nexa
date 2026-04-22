@@ -10,7 +10,7 @@ variable "playlist_bucket" {
   type = string
 }
 
-variable "cloudfront_frontend_domain_name" {
+variable "cloudfront_edge_domain_name" {
   type = string
 }
 

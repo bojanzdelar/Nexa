@@ -33,12 +33,12 @@ locals {
     }
   }
 
-  cloudfront_frontend_urls = compact([
-    module.cloudfront_frontend.distribution_https_url,
+  frontend_urls = compact([
+    module.cloudfront_edge.distribution_https_url,
     var.local_frontend_url
   ])
 
-  cloudfront_frontend_origins = {
+  cloudfront_edge_origins = {
     frontend_assets    = module.s3.buckets.frontend_assets
     frontend_snapshots = module.s3.buckets.frontend_snapshots
   }
@@ -51,8 +51,8 @@ locals {
 
   cloudfront_origins = merge(
     {
-      for k, v in local.cloudfront_frontend_origins :
-      k => merge(v, { cf_arn = module.cloudfront_frontend.distribution_arn })
+      for k, v in local.cloudfront_edge_origins :
+      k => merge(v, { cf_arn = module.cloudfront_edge.distribution_arn })
     },
     {
       for k, v in local.cloudfront_cdn_origins :
