@@ -28,8 +28,9 @@ resource "aws_ecs_task_definition" "services" {
         for key, value in merge(
           each.value.env,
           {
-            PORT       = tostring(var.container_port)
-            AWS_REGION = data.aws_region.current.id
+            PORT          = tostring(var.container_port)
+            ORIGIN_SECRET = var.origin_secret
+            AWS_REGION    = data.aws_region.current.id
           }
           ) : {
           name  = key

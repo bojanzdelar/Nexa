@@ -5,6 +5,8 @@ module "cloudfront_edge" {
   lambda_origin_domain            = module.frontend_ssr.function_url
   s3_snapshots_origin_domain_name = module.s3.buckets.frontend_snapshots.bucket_domain
   failover_rewrite_lambda_arn     = module.frontend_failover_rewrite.qualified_arn
+  enable_alb                      = var.enable_alb
+  alb_origin_dns_name             = try(module.alb[0].dns_name, null)
   apigw_origin_hostname           = module.apigw.hostname
   origin_secret                   = module.ssm.cloudfront_origin_secret
   domain_name                     = var.app_domain_name
@@ -70,6 +72,7 @@ module "ecs" {
   desired_count         = var.ecs_desired_count
   enable_opensearch     = var.enable_opensearch
   opensearch_domain_arn = try(module.opensearch[0].arn, null)
+  origin_secret         = module.ssm.cloudfront_origin_secret
 }
 
 module "apigw" {

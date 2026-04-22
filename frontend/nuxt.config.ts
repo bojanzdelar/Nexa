@@ -34,6 +34,9 @@ export default defineNuxtConfig({
       inline: ["@aws-sdk/client-s3", "tslib"],
     },
   },
+  icon: {
+    localApiEndpoint: "/_nuxt_icon",
+  },
   routeRules: {
     "/login": { ssr: false },
     "/register": { ssr: false },
@@ -41,22 +44,22 @@ export default defineNuxtConfig({
     "/watch/**": { ssr: false },
 
     "/api/titles/**": {
-      proxy: "http://localhost:8080/titles/**",
+      proxy: "http://localhost:8080/api/titles/**",
     },
     "/api/tv/**": {
-      proxy: "http://localhost:8080/tv/**",
+      proxy: "http://localhost:8080/api/tv/**",
     },
     "/api/movies/**": {
-      proxy: "http://localhost:8080/movies/**",
+      proxy: "http://localhost:8080/api/movies/**",
     },
     "/api/search": {
-      proxy: "http://localhost:8081/search",
+      proxy: "http://localhost:8081/api/search",
     },
     "/api/search/**": {
-      proxy: "http://localhost:8081/search/**",
+      proxy: "http://localhost:8081/api/search/**",
     },
     "/api/me/**": {
-      proxy: "http://localhost:8082/me/**",
+      proxy: "http://localhost:8082/api/me/**",
     },
   },
   pwa: {

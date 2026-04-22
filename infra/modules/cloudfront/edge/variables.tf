@@ -14,6 +14,14 @@ variable "failover_rewrite_lambda_arn" {
   type = string
 }
 
+variable "enable_alb" {
+  type = bool
+}
+
+variable "alb_origin_dns_name" {
+  type = string
+}
+
 variable "apigw_origin_hostname" {
   type = string
 }

@@ -1,7 +1,7 @@
 locals {
   services = {
     catalog-service = {
-      paths           = ["/titles/*", "/tv/*", "/movies/*"]
+      paths           = ["/api/titles/*", "/api/tv/*", "/api/movies/*"]
       dynamodb_tables = [module.catalog.table_name]
       env = {
         DYNAMODB_CATALOG_TABLE = module.catalog.table_name
@@ -9,7 +9,7 @@ locals {
     }
 
     search-service = {
-      paths           = ["/search", "/search/*"]
+      paths           = ["/api/search", "/api/search/*"]
       dynamodb_tables = [module.catalog.table_name]
       env = merge(
         {
@@ -24,7 +24,7 @@ locals {
     }
 
     user-service = {
-      paths           = ["/me/*"]
+      paths           = ["/api/me/*"]
       dynamodb_tables = [module.users.table_name]
       env = {
         DYNAMODB_USERS_TABLE = module.users.table_name

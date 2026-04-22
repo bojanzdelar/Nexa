@@ -39,6 +39,27 @@ resource "aws_cloudfront_distribution" "this" {
     origin_access_control_id = aws_cloudfront_origin_access_control.s3.id
   }
 
+  dynamic "origin" {
+    for_each = var.enable_alb ? [1] : []
+
+    content {
+      domain_name = var.alb_origin_dns_name
+      origin_id   = "alb-origin"
+
+      custom_origin_config {
+        http_port              = 80
+        https_port             = 443
+        origin_protocol_policy = "https-only"
+        origin_ssl_protocols   = ["TLSv1.2"]
+      }
+
+      custom_header {
+        name  = "X-Origin-Secret"
+        value = var.origin_secret
+      }
+    }
+  }
+
   origin {
     domain_name = var.apigw_origin_hostname
     origin_id   = "apigw-origin"
@@ -115,6 +136,28 @@ resource "aws_cloudfront_distribution" "this" {
     }
   }
 
+  dynamic "ordered_cache_behavior" {
+    for_each = var.enable_alb ? [1] : []
+
+    content {
+      path_pattern     = "/api/*"
+      target_origin_id = "alb-origin"
+
+      viewer_protocol_policy = "redirect-to-https"
+
+      allowed_methods = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
+      cached_methods  = ["GET", "HEAD"]
+
+      cache_policy_id          = data.aws_cloudfront_cache_policy.no_cache.id
+      origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer.id
+
+      function_association {
+        event_type   = "viewer-request"
+        function_arn = aws_cloudfront_function.allow_only_custom_domain.arn
+      }
+    }
+  }
+
   ordered_cache_behavior {
     path_pattern     = "/playback/*"
     target_origin_id = "apigw-origin"
@@ -124,7 +167,7 @@ resource "aws_cloudfront_distribution" "this" {
     cached_methods         = ["GET", "HEAD"]
 
     compress                 = true
-    cache_policy_id          = data.aws_cloudfront_cache_policy.optimized.id
+    cache_policy_id          = data.aws_cloudfront_cache_policy.no_cache.id
     origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer_except_host_header.id
 
     function_association {

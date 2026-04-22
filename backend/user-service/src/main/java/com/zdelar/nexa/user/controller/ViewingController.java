@@ -12,7 +12,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/me/viewing")
+@RequestMapping("/api/me/viewing")
 @RequiredArgsConstructor
 public class ViewingController {
 

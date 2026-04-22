@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/tv")
+@RequestMapping("/api/tv")
 @RequiredArgsConstructor
 public class TvController {
 
