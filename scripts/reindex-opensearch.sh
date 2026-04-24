@@ -15,7 +15,7 @@ echo
 read -rp "API domain [nexa.zdelar.com]: " API_DOMAIN
 API_DOMAIN=${API_DOMAIN:-nexa.zdelar.com}
 
-API_URL="https://api.${API_DOMAIN}/search/reindex"
+API_URL="https://${API_DOMAIN}/api/search/reindex"
 
 echo "Getting access token..."
 

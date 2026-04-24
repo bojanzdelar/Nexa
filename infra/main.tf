@@ -211,9 +211,6 @@ module "route53" {
   source = "./modules/route53"
 
   domain_name            = var.root_domain_name
-  enable_alb             = var.enable_alb
-  alb_dns_name           = try(module.alb[0].dns_name, null)
-  alb_zone_id            = try(module.alb[0].zone_id, null)
   cf_edge_domain_name    = module.cloudfront_edge.distribution_domain_name
   cf_edge_hosted_zone_id = module.cloudfront_edge.distribution_hosted_zone_id
   cf_cdn_domain_name     = module.cloudfront_cdn.distribution_domain_name

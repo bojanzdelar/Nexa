@@ -2,18 +2,6 @@ variable "domain_name" {
   type = string
 }
 
-variable "enable_alb" {
-  type = bool
-}
-
-variable "alb_dns_name" {
-  type = string
-}
-
-variable "alb_zone_id" {
-  type = string
-}
-
 variable "cf_edge_domain_name" {
   type = string
 }
