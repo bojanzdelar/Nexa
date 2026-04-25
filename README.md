@@ -1,5 +1,11 @@
 # Nexa
 
+Cloud-native video streaming platform built on AWS with edge-first delivery.
+
+<p align="center">
+  <img src="./docs/images/homepage.png" alt="Nexa Homepage" width="900"/>
+</p>
+
 Nexa is a cloud-native video streaming platform built on AWS, designed to deliver scalable, fault-tolerant playback and low-latency content delivery using an edge-first architecture. It provides a browsable movie and TV catalog, full-text search, user watchlists, authenticated HLS playback, and server-side rendered pages — all delivered through a single CloudFront entry point.
 
 ---
